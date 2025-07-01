@@ -4,23 +4,25 @@ const express = require("express")
 const http = require("http");
 const cookieParser = require("cookie-parser")
 
-const sanitizeData = require("./middlewares/sanitizeData")
 
 // routes variables
 const userRoutes = require("./routes/users");
+const landTypesRoutes = require("./routes/landTypes")
+const landPurposesRoutes = require("./routes/landPurposes")
+const mpzpRoutes = require("./routes/mpzp")
+const mainPlansRoutes = require("./routes/generalPlans")
 
 const app = express();
 // middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(sanitizeData);
 
-// routes and endpoints
-app.get("/api", (req, res) => {
-    res.status(200).send("<h1>Hello world</h1>")
-})
-
-app.use("/api/user", userRoutes)
+// routes
+app.use("/api/user", userRoutes);
+app.use("/api/land_types", landTypesRoutes);
+app.use("/api/land_purposes", landPurposesRoutes)
+app.use("/api/mpzp", mpzpRoutes);
+app.use("/api/general_plans", mainPlansRoutes);
 
 const server = http.createServer(app);
 
