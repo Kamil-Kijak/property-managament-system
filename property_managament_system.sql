@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Lip 01, 2025 at 09:31 AM
+-- Generation Time: Lip 01, 2025 at 08:03 PM
 -- Wersja serwera: 8.0.39
 -- Wersja PHP: 8.2.26
 
@@ -43,7 +43,7 @@ CREATE TABLE `dzialki` (
   `ID_planu_ogolnego` int NOT NULL,
   `ID_dzierzawy` int DEFAULT NULL,
   `spolka_wodna` tinyint(1) NOT NULL,
-  `ID_nabycia` int DEFAULT NULL
+  `ID_nabycia` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -107,7 +107,7 @@ CREATE TABLE `lokalizacje` (
 
 CREATE TABLE `miejscowosci` (
   `ID` int NOT NULL,
-  `ID_lokalizacji` int DEFAULT NULL,
+  `ID_lokalizacji` int NOT NULL,
   `nazwa` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -226,8 +226,9 @@ ALTER TABLE `dzialki`
   ADD KEY `ID_przeznaczenia` (`ID_przeznaczenia`),
   ADD KEY `ID_mpzp` (`ID_mpzp`),
   ADD KEY `ID_planu_ogolnego` (`ID_planu_ogolnego`),
+  ADD KEY `ID_miejscowosci` (`ID_miejscowosci`),
   ADD KEY `ID_nabycia` (`ID_nabycia`),
-  ADD KEY `ID_miejscowosci` (`ID_miejscowosci`);
+  ADD KEY `ID_dzierzawy` (`ID_dzierzawy`);
 
 --
 -- Indeksy dla tabeli `dzierzawcy`
@@ -412,8 +413,9 @@ ALTER TABLE `dzialki`
   ADD CONSTRAINT `dzialki_ibfk_3` FOREIGN KEY (`ID_przeznaczenia`) REFERENCES `przeznaczenia_dzialek` (`ID`) ON DELETE CASCADE,
   ADD CONSTRAINT `dzialki_ibfk_4` FOREIGN KEY (`ID_mpzp`) REFERENCES `mpzp` (`ID`) ON DELETE CASCADE,
   ADD CONSTRAINT `dzialki_ibfk_5` FOREIGN KEY (`ID_planu_ogolnego`) REFERENCES `plany_ogolne` (`ID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `dzialki_ibfk_6` FOREIGN KEY (`ID_nabycia`) REFERENCES `nabycia` (`ID`) ON DELETE SET NULL,
-  ADD CONSTRAINT `dzialki_ibfk_7` FOREIGN KEY (`ID_miejscowosci`) REFERENCES `miejscowosci` (`ID`) ON DELETE CASCADE;
+  ADD CONSTRAINT `dzialki_ibfk_7` FOREIGN KEY (`ID_miejscowosci`) REFERENCES `miejscowosci` (`ID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dzialki_ibfk_8` FOREIGN KEY (`ID_nabycia`) REFERENCES `nabycia` (`ID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dzialki_ibfk_9` FOREIGN KEY (`ID_dzierzawy`) REFERENCES `dzierzawy` (`ID`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `dzierzawy`
@@ -425,7 +427,7 @@ ALTER TABLE `dzierzawy`
 -- Constraints for table `miejscowosci`
 --
 ALTER TABLE `miejscowosci`
-  ADD CONSTRAINT `miejscowosci_ibfk_1` FOREIGN KEY (`ID_lokalizacji`) REFERENCES `lokalizacje` (`ID`) ON DELETE SET NULL;
+  ADD CONSTRAINT `miejscowosci_ibfk_1` FOREIGN KEY (`ID_lokalizacji`) REFERENCES `lokalizacje` (`ID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `powierzchnie_klas`
