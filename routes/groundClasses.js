@@ -1,6 +1,5 @@
 
 const express = require("express");
-const router = express.Router()
 const connection = require("../util/mysqlConnection")
 
 const checkDataExisting = require("../middlewares/checkDataExisting")
@@ -9,30 +8,25 @@ const roleAuthorization = require("../middlewares/roleAuthorization")
 
 const dataSanitizer = require("../util/dataSanitizer")
 
+const router = express.Router();
+
 router.use(authorization());
 
-router.get("/get", (req, res) => {
-    connection.query("SELECT * FROM nabycia", (err, result) => {
+router.get("/get", [roleAuthorization(["ADMIN", "KSIEGOWOSC"])], (req, res) => {
+    connection.query("SELECT * FROM klasy_gruntu", (err, result) => {
         if(err) {
             return res.status(500).json({
                 error:"bład bazy danych",
                 errorInfo:err
             })
         }
-        res.status(200).json({
-            success:true,
-            message:"pobrano nabycia",
-            data:dataSanitizer(result)
-        })
+        res.status(200).json({success:true, message:"pobrano klasy gruntu", data:dataSanitizer(result)})
     })
 })
 
-router.use(roleAuthorization(["ADMIN"]));
-
-router.post("/update", [checkDataExisting(["ID_purchase", "purchase_date", "case_number", "seller", "price"])], (req, res) => {
-    const {ID_purchase, purchase_date, case_number, seller, price} = req.body;
-    connection.query("UPDATE nabycia SET data_nabycia = ?, nr_aktu = ?, sprzedawca = ?, cena_zakupu = ? where ID = ?",
-         [purchase_date, case_number, seller, price, ID_purchase], (err, result) => {
+router.post("/update", [roleAuthorization(["ADMIN", "KSIEGOWOSC"]) ,checkDataExisting(["ID_ground_class", "ground_class", "tax"])], (req, res) => {
+    const {ID_ground_class, ground_class, tax} = req.body;
+    connection.query("UPDATE klasy_grountu SET klasa = ?, podatek_za_hektar = ? where ID = ?", [ground_class, tax, ID_ground_class], (err, result) => {
         if(err) {
             return res.status(500).json({
                 error:"bład bazy danych",
@@ -43,9 +37,9 @@ router.post("/update", [checkDataExisting(["ID_purchase", "purchase_date", "case
     })
 });
 
-router.post("/delete", [checkDataExisting(["ID_purchase"])], (req, res) => {
-    const {ID_purchase} = req.body;
-    connection.query("DELETE FROM nabycia WHERE ID = ?", [ID_purchase], (err, result) => {
+router.post("/delete", [roleAuthorization(["ADMIN"]), checkDataExisting(["ID_ground_class"])], (req, res) => {
+    const {ID_ground_class} = req.body;
+    connection.query("DELETE FROM klasy_gruntu WHERE ID = ?", [ID_ground_class], (err, result) => {
         if(err) {
             return res.status(500).json({
                 error:"bład bazy danych",
@@ -58,7 +52,4 @@ router.post("/delete", [checkDataExisting(["ID_purchase"])], (req, res) => {
         })
     })
 })
-
-
-
 module.exports = router;

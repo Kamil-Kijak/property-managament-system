@@ -10,7 +10,7 @@ const roleAuthorization = require("../middlewares/roleAuthorization")
 const checkDataExisting = require("../middlewares/checkDataExisting");
 
 
-const dataSanitizer = require("../util/dataSanitazer")
+const dataSanitizer = require("../util/dataSanitizer")
 
 const router = express.Router();
 
@@ -73,6 +73,20 @@ router.post("/login", [checkDataExisting(["ID_user", "password"]), (req, res) =>
         }
     })
 }])
+
+router.post("/update", [authorization(), roleAuthorization(["ADMIN"]), checkDataExisting(["ID_user", "name", "surname", "password", "role"])], (req, res) => {
+    const {ID_user, name, surname, password, role} = req.body
+    connection.query("UPDATE uzytkownicy SET imie = ?, nazwisko = ?, haslo = ?, rola = ? WHERE ID = ?",
+         [name, surname, crypto.createHash("md5").update(password).digest("hex"), role, ID_user], (req, res) => {
+            if(err) {
+                return res.status(500).json({
+                    error:"bład bazy danych",
+                    errorInfo:err
+                })
+            }
+            res.status(200).json({success:true, message:"uzytkownik zaktualizowany"})
+         })
+})
 
 router.post("/insert", [authorization(), roleAuthorization(["ADMIN"]), checkDataExisting(["name", "surname", "password", "role"])], (req, res) => {
     const {name, surname, password, role} = req.body

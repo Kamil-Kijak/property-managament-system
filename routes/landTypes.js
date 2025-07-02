@@ -6,7 +6,7 @@ const checkDataExisting = require("../middlewares/checkDataExisting")
 const authorization = require("../middlewares/authorization")
 const roleAuthorization = require("../middlewares/roleAuthorization")
 
-const dataSanitizer = require("../util/dataSanitazer")
+const dataSanitizer = require("../util/dataSanitizer")
 
 const router = express.Router();
 
@@ -24,6 +24,19 @@ router.get("/get", (req, res) => {
         res.status(200).json({success:true, message:"pobrano rodzaje działek", data:dataSanitizer(result)})
     })
 });
+
+router.post("/update", [checkDataExisting(["ID_land_type", "name"])], (req, res) => {
+    const {ID_land_type, name} = req.body;
+    connection.query("UPDATE rodzaje_dzialek SET nazwa = ? WHERE ID = ?", [name, ID_land_type], (err, result) => {
+        if(err) {
+            return res.status(500).json({
+                error:"bład bazy danych",
+                errorInfo:err
+            })
+        }
+        res.status(200).json({success:true, message:"rekord zaktualizowany"})
+    })
+})
 
 router.post("/delete", [checkDataExisting(["ID_land_type"])], (req, res) => {
     const {ID_land_type} = req.body;

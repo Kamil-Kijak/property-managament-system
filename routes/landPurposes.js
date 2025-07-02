@@ -6,7 +6,7 @@ const checkDataExisting = require("../middlewares/checkDataExisting")
 const authorization = require("../middlewares/authorization")
 const roleAuthorization = require("../middlewares/roleAuthorization")
 
-const dataSanitizer = require("../util/dataSanitazer")
+const dataSanitizer = require("../util/dataSanitizer")
 
 const router = express.Router();
 
@@ -24,6 +24,19 @@ router.get("/get", (req, res) => {
         res.status(200).json({success:true, message:"pobrano przeznaczenia działek", data:dataSanitizer(result)})
     })
 });
+
+router.post("/update", [checkDataExisting(["ID_land_purpose", "type"])], (req, res) => {
+    const {ID_land_purpose, type} = req.body;
+    connection.query("UPDATE przeznaczenia_dzialek SET typ = ? WHERE ID = ?", [type, ID_land_purpose], (err, result) => {
+        if(err) {
+            return res.status(500).json({
+                error:"bład bazy danych",
+                errorInfo:err
+            })
+        }
+        res.status(200).json({success:true, message:"rekord zaktualizowany"})
+    })
+})
 
 router.post("/delete", [checkDataExisting(["ID_land_purpose"])], (req, res) => {
     const {ID_land_purpose} = req.body;
