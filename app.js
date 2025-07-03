@@ -14,6 +14,7 @@ const mainPlansRoutes = require("./routes/generalPlans")
 const purchasesRoutes = require("./routes/purchases")
 const groundClassesRoutes = require("./routes/groundClasses");
 const ownersRoutes = require("./routes/owners")
+const landsRoutes = require("./routes/lands");
 
 const app = express();
 // middlewares
@@ -29,6 +30,7 @@ app.use("/api/general_plans", mainPlansRoutes);
 app.use("/api/purchaces", purchasesRoutes);
 app.use("/api/ground_classes", groundClassesRoutes);
 app.use("/api/owners", ownersRoutes);
+app.use("/api/lands", landsRoutes);
 
 const server = http.createServer(app);
 

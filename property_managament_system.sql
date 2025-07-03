@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Lip 01, 2025 at 08:03 PM
+-- Generation Time: Lip 03, 2025 at 10:07 AM
 -- Wersja serwera: 8.0.39
 -- Wersja PHP: 8.2.26
 
@@ -83,7 +83,9 @@ CREATE TABLE `dzierzawy` (
 CREATE TABLE `klasy_gruntu` (
   `ID` int NOT NULL,
   `klasa` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
-  `podatek_za_hektar` decimal(5,2) NOT NULL
+  `ID_lokalizacji` int NOT NULL,
+  `przelicznik` decimal(3,2) NOT NULL,
+  `podatek_za_hektar` decimal(7,4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -133,7 +135,7 @@ CREATE TABLE `nabycia` (
   `ID` int NOT NULL,
   `data_nabycia` date NOT NULL,
   `nr_aktu` varchar(21) COLLATE utf8mb4_general_ci NOT NULL,
-  `od_kogo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `sprzedawca` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `cena_zakupu` decimal(8,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -247,7 +249,9 @@ ALTER TABLE `dzierzawy`
 -- Indeksy dla tabeli `klasy_gruntu`
 --
 ALTER TABLE `klasy_gruntu`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `klasa` (`klasa`),
+  ADD KEY `ID_lokalizacji` (`ID_lokalizacji`);
 
 --
 -- Indeksy dla tabeli `lokalizacje`
@@ -422,6 +426,12 @@ ALTER TABLE `dzialki`
 --
 ALTER TABLE `dzierzawy`
   ADD CONSTRAINT `dzierzawy_ibfk_1` FOREIGN KEY (`ID_dzierzawcy`) REFERENCES `dzierzawcy` (`ID`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `klasy_gruntu`
+--
+ALTER TABLE `klasy_gruntu`
+  ADD CONSTRAINT `klasy_gruntu_ibfk_1` FOREIGN KEY (`ID_lokalizacji`) REFERENCES `lokalizacje` (`ID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `miejscowosci`
