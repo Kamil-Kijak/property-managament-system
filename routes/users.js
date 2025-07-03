@@ -14,109 +14,72 @@ const dataSanitizer = require("../util/dataSanitizer")
 
 const router = express.Router();
 
-router.get("/get", (req, res) => {
-    connection.query("SELECT ID, imie, nazwisko, rola from uzytkownicy", (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
-        res.status(200).json({
-            success:true,
-            message:"pobrano użytkowników",
-            data:dataSanitizer(result)
-        })
-    })
+router.get("/get", async (req, res) => {
+    try {
+        const [result] = await connection.execute("SELECT ID, imie, nazwisko, rola from uzytkownicy")
+        res.status(200).json({success:true, message:"pobrano użytkowników", data:dataSanitizer(result)})
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 });
 
-router.post("/login", [checkDataExisting(["ID_user", "password"]), (req, res) => {
+router.post("/login", [checkDataExisting(["ID_user", "password"]), async (req, res) => {
     const {ID_user, password} = req.body;
-    connection.query("SELECT COUNT(ID) as count from uzytkownicy where ID = ?", [ID_user], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
+    try {
+        const [result] = await connection.execute("SELECT COUNT(ID) as count from uzytkownicy where ID = ?", [ID_user])
         if(result[0].count == 0) {
-            res.status(400).json({
-                error:"Nie ma takiego użytkownika"
-            })
+            res.status(400).json({error:"Nie ma takiego użytkownika"})
         } else {
-            connection.query("SELECT ID, imie, nazwisko, rola from uzytkownicy where ID = ? and password = ?",
-                 [ID_user, crypto.createHash("md5").update(password).digest("hex")], (err, result) => {
-                    if(err) {
-                        return res.status(500).json({
-                            error:"bład bazy danych",
-                            errorInfo:err
-                        })
-                    }
-                    if(result.length == 0) {
-                         res.status(400).json({
-                            error:"błędne hasło"
-                        })
-                    } else {
-                        // create token
-                        const refreshToken = jwt.sign({
-                            ...result[0]
-                        }, process.env.REFRESH_TOKEN_KEY || "inWhm0r9gfwJ_s07KEYrX", {expiresIn:"8h"})
-                        
-                        res.cookie("REFRESH_TOKEN", refreshToken, {
-                            maxAge:1000 * 60 * 60 * 8,
-                            httpOnly:true,
-                            secure:false
-                        })
-                        res.status(200).json({success:true, message:"zalogowano pomyślnie"})
-                    }
-                 })
+            const [result] = await connection.execute("SELECT ID, imie, nazwisko, rola from uzytkownicy where ID = ? and password = ?", [ID_user, crypto.createHash("md5").update(password).digest("hex")]);
+            if(result.length == 0) {
+                res.status(400).json({error:"błędne hasło"})
+            } else {
+                // create token
+                const refreshToken = jwt.sign({
+                    ...result[0]
+                }, process.env.REFRESH_TOKEN_KEY || "inWhm0r9gfwJ_s07KEYrX", {expiresIn:"8h"})
+                
+                res.cookie("REFRESH_TOKEN", refreshToken, {
+                    maxAge:1000 * 60 * 60 * 8,
+                    httpOnly:true,
+                    secure:false
+                })
+                res.status(200).json({success:true, message:"zalogowano pomyślnie"})
+            }
         }
-    })
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+    
 }])
 
-router.post("/update", [authorization(), roleAuthorization(["ADMIN"]), checkDataExisting(["ID_user", "name", "surname", "password", "role"])], (req, res) => {
+router.post("/update", [authorization(), roleAuthorization(["ADMIN"]), checkDataExisting(["ID_user", "name", "surname", "password", "role"])], async (req, res) => {
     const {ID_user, name, surname, password, role} = req.body
-    connection.query("UPDATE uzytkownicy SET imie = ?, nazwisko = ?, haslo = ?, rola = ? WHERE ID = ?",
-         [name, surname, crypto.createHash("md5").update(password).digest("hex"), role, ID_user], (req, res) => {
-            if(err) {
-                return res.status(500).json({
-                    error:"bład bazy danych",
-                    errorInfo:err
-                })
-            }
-            res.status(200).json({success:true, message:"uzytkownik zaktualizowany"})
-         })
+    try {
+        const [result] = await connection.execute("UPDATE uzytkownicy SET imie = ?, nazwisko = ?, haslo = ?, rola = ? WHERE ID = ?", [name, surname, crypto.createHash("md5").update(password).digest("hex"), role, ID_user])
+        res.status(200).json({success:true, message:"uzytkownik zaktualizowany"})
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
 
-router.post("/insert", [authorization(), roleAuthorization(["ADMIN"]), checkDataExisting(["name", "surname", "password", "role"])], (req, res) => {
+router.post("/insert", [authorization(), roleAuthorization(["ADMIN"]), checkDataExisting(["name", "surname", "password", "role"])], async (req, res) => {
     const {name, surname, password, role} = req.body
-    connection.query("INSERT INTO() VALUES(NULL, ?, ?, ?, ?)",[name, surname, crypto.createHash("md5").update(password).digest("hex"), role], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
-        res.status(200).json({
-            success:true,
-            message:"dodano pomyslnie"
-        })
-    })
+    try {
+        const [result] = await connection.execute("INSERT INTO() VALUES(NULL, ?, ?, ?, ?)",[name, surname, crypto.createHash("md5").update(password).digest("hex"), role])
+        res.status(200).json({success:true, message:"dodano pomyslnie"})
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
-router.post("/delete", [authorization(), roleAuthorization(["ADMIN"]), checkDataExisting(["ID_user"])], (req, res) => {
+router.post("/delete", [authorization(), roleAuthorization(["ADMIN"]), checkDataExisting(["ID_user"])], async (req, res) => {
     const {ID_user} = req.body;
-    connection.query("DELETE FROM uzytkownicy where ID = ?", [ID_user], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
-        res.status(200).json({
-            success:true,
-            message:"usunieto pomyslnie"
-        })
-    })
+    try {
+        const [result] = await connection.execute("DELETE FROM uzytkownicy where ID = ?",[ID_user])
+        res.status(200).json({success:true, message:"usunięto pomyślnie"})
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
 
 router.get("/logout", (req, res) => {

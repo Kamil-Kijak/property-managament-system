@@ -15,55 +15,43 @@ const router = express.Router();
 router.use(authorization());
 router.use(roleAuthorization(["ADMIN"]));
 
-router.get("/get", (req, res) => {
-    connection.query("SELECT * FROM mpzp", (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
+router.get("/get", async (req, res) => {
+    try {
+        const [result] = await connection.execute("SELECT * FROM mpzp");
         res.status(200).json({success:true, message:"pobrano MPZP", data:dataSanitizer(result)})
-    })
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 });
 
-router.post("/update", [checkDataExisting(["ID_mpzp", "code", "description"])], (req, res) => {
+router.post("/update", [checkDataExisting(["ID_mpzp", "code", "description"])], async (req, res) => {
     const {ID_mpzp, code, description} = req.body;
-    connection.query("UPDATE mpzp SET code = ?, description = ? WHERE ID = ?", [code, description, ID_mpzp], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
+    try {
+        const [result] = await connection.execute("UPDATE mpzp SET code = ?, description = ? WHERE ID = ?", [code, description, ID_mpzp]);
         res.status(200).json({success:true, message:"rekord zaktualizowany"})
-    })
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
 
-router.post("/delete", [checkDataExisting(["ID_mpzp"])], (req, res) => {
+router.post("/delete", [checkDataExisting(["ID_mpzp"])], async (req, res) => {
     const {ID_mpzp} = req.body;
-    connection.query("DELETE FROM mpzp where ID = ?", [ID_mpzp], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
+    try {
+        const [result] = await connection.execute("DELETE FROM mpzp where ID = ?", [ID_mpzp]);
         res.status(200).json({success:true, message:"usunięto pomyślnie"})
-    })
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
 
-router.post("/insert", [checkDataExisting(["code", "description"])], (req, res) => {
+router.post("/insert", [checkDataExisting(["code", "description"])], async (req, res) => {
     const {code, description} = req.body;
-    connection.query("INSERT INTO mpzp() values(NULL, ?, ?)", [code, description], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
+    try {
+        const [result] = await connection.execute("INSERT INTO mpzp() values(NULL, ?, ?)", [code, description]);
         res.status(200).json({success:true, message:"dodano pomyślnie"})
-    })
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
 
 module.exports = router;

@@ -14,55 +14,43 @@ router.use(authorization());
 router.use(roleAuthorization(["ADMIN"]));
 
 
-router.get("/get", (req, res) => {
-    connection.query("SELECT * FROM plany_ogolne", (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
+router.get("/get", async (req, res) => {
+    try {
+        const [result] = await connection.execute("SELECT * FROM plany_ogolne");
         res.status(200).json({success:true, message:"pobrano plany ogólne", data:dataSanitizer(result)})
-    })
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 });
 
-router.post("/update", [checkDataExisting(["ID_general_plan", "code", "description"])], (req, res) => {
+router.post("/update", [checkDataExisting(["ID_general_plan", "code", "description"])], async (req, res) => {
     const {ID_general_plan, code, description} = req.body;
-    connection.query("UPDATE plany_ogolne SET code = ?, description = ? WHERE ID = ?", [code, description, ID_general_plan], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
+    try {
+        const [result] = await connection.execute("UPDATE plany_ogolne SET code = ?, description = ? WHERE ID = ?", [code, description, ID_general_plan]);
         res.status(200).json({success:true, message:"rekord zaktualizowany"})
-    })
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
 
-router.post("/delete", [checkDataExisting(["ID_general_plan"])], (req, res) => {
+router.post("/delete", [checkDataExisting(["ID_general_plan"])], async (req, res) => {
     const {ID_general_plan} = req.body;
-    connection.query("DELETE FROM plany_ogolne where ID = ?", [ID_general_plan], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
+    try {
+        const [result] = await connection.execute("DELETE FROM plany_ogolne where ID = ?", [ID_general_plan]);
         res.status(200).json({success:true, message:"usunięto pomyślnie"})
-    })
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
 
-router.post("/insert", [checkDataExisting(["code", "description"])], (req, res) => {
+router.post("/insert", [checkDataExisting(["code", "description"])], async (req, res) => {
     const {code, description} = req.body;
-    connection.query("INSERT INTO plany_ogolne() values(NULL, ?, ?)", [code, description], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
+    try {
+        const [result] = await connection.execute("INSERT INTO plany_ogolne() values(NULL, ?, ?)", [code, description]);
         res.status(200).json({success:true, message:"dodano pomyślnie"})
-    })
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
 
 module.exports = router;

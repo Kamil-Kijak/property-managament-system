@@ -1,18 +1,12 @@
 
-const mysql = require("mysql2")
+const mysql = require("mysql2/promise")
 
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
     host:"localhost",
     user:process.env.DB_USER || "root",
     password:process.env.DB_PASSWORD || "",
     database:process.env.DB_NAME || "database"
 })
 
-connection.connect((err) => {
-    if(err) {
-        return console.log("Wystąpił bład z połączeniem z MYSQL ->", err)
-    }
-    console.log("Usługa MYSQL została poprawnie połączona")
-})
 
-module.exports = connection;
+module.exports = pool;

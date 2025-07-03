@@ -11,52 +11,35 @@ const dataSanitizer = require("../util/dataSanitizer")
 
 router.use(authorization());
 
-router.get("/get", (req, res) => {
-    connection.query("SELECT * FROM nabycia", (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
-        res.status(200).json({
-            success:true,
-            message:"pobrano nabycia",
-            data:dataSanitizer(result)
-        })
-    })
+router.get("/get", async (req, res) => {
+    try {
+        const [result] = await connection.execute("SELECT * FROM nabycia");
+        res.status(200).json({success:true, message:"pobrano nabycia", data:dataSanitizer(result)})
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
 
 router.use(roleAuthorization(["ADMIN"]));
 
-router.post("/update", [checkDataExisting(["ID_purchase", "purchase_date", "case_number", "seller", "price"])], (req, res) => {
+router.post("/update", [checkDataExisting(["ID_purchase", "purchase_date", "case_number", "seller", "price"])], async (req, res) => {
     const {ID_purchase, purchase_date, case_number, seller, price} = req.body;
-    connection.query("UPDATE nabycia SET data_nabycia = ?, nr_aktu = ?, sprzedawca = ?, cena_zakupu = ? where ID = ?",
-         [purchase_date, case_number, seller, price, ID_purchase], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
+    try {
+        const [result] = await connection.execute("UPDATE nabycia SET data_nabycia = ?, nr_aktu = ?, sprzedawca = ?, cena_zakupu = ? where ID = ?", [purchase_date, case_number, seller, price, ID_purchase]);
         res.status(200).json({success:true, message:"rekord został zaktualizowany"})
-    })
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 });
 
-router.post("/delete", [checkDataExisting(["ID_purchase"])], (req, res) => {
+router.post("/delete", [checkDataExisting(["ID_purchase"])], async (req, res) => {
     const {ID_purchase} = req.body;
-    connection.query("DELETE FROM nabycia WHERE ID = ?", [ID_purchase], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
-        res.status(200).json({
-            success:true,
-            message:"usunięto pomyślnie",
-        })
-    })
+    try {
+        const [result] = await connection.execute("DELETE FROM nabycia WHERE ID = ?", [ID_purchase]);
+        res.status(200).json({success:true, message:"usunięto pomyślnie"})
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
 
 

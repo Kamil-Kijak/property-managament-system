@@ -12,22 +12,17 @@ const router = express.Router();
 
 //router.use(authorization());
 
-router.post("/get_owner_lands", [checkDataExisting(["ID_owner"])], (req, res) => {
+router.post("/get_owner_lands", [checkDataExisting(["ID_owner"])], async (req, res) => {
     const {ID_owner} = req.body;
-    connection.query("SELECT d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.nazwa, l.gmina, l.powiat, p.typ FROM dzialki d INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN przeznaczenia_dzialek p on p.ID=d.ID_przeznaczenia INNER JOIN wlasciciele w on w.ID=d.ID_wlasciciela WHERE w.ID = ?",
-        [ID_owner], (err, result) => {
-            if(err) {
-                return res.status(500).json({
-                    error:"bład bazy danych",
-                    errorInfo:err
-                })
-            }
-            res.status(200).json({success:true, message:`pobrano dzialki wlasciciela o ID ${ID_owner}`, data:dataSanitizer(result)})
-        } 
-    )
+     try {
+        const [result] = await connection.execute("SELECT d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.nazwa, l.gmina, l.powiat, p.typ FROM dzialki d INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN przeznaczenia_dzialek p on p.ID=d.ID_przeznaczenia INNER JOIN wlasciciele w on w.ID=d.ID_wlasciciela WHERE w.ID = ?", [ID_owner]);
+        res.status(200).json({success:true, message:`pobrano dzialki wlasciciela o ID ${ID_owner}`, data:dataSanitizer(result)})
+    } catch (err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 });
 
-router.get("/get", [checkDataExisting(["serial_filter", "purpose_filter", "rent_filter", "comune_filter", "district_filter", "province_filter", "low_area_filter", "high_area_filter"])], (req, res) => {
+router.get("/get", [checkDataExisting(["serial_filter", "purpose_filter", "rent_filter", "comune_filter", "district_filter", "province_filter", "low_area_filter", "high_area_filter"])], async (req, res) => {
     const {serial_filter, purpose_filter, rent_filter, low_area_filter, high_area_filter, comune_filter, district_filter, province_filter} = req.body;
     let SQL = "SELECT d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, d.nr_kw, d.hipoteka, d.opis, d.spolka_wodna, d.ID_dzierzawy, m.nazwa, l.wojewodztwo, l.powiat, l.gmina, w.imie as w_imie, w.nazwisko as w_nazwisko, rd.nazwa as 'rodzaj', pd.typ as 'przeznaczenie', mp.kod as 'mpzp', po.kod as 'plan_ogolny', n.data_nabycia, n.nr_aktu, n.sprzedawca, n.cena_zakupu FROM dzialki d INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN wlasciciele w ON w.ID=d.ID_wlasciciela INNER JOIN rodzaje_dzialek rd on rd.ID=d.ID_rodzaju INNER JOIN przeznaczenia_dzialek pd on pd.ID=d.ID_przeznaczenia INNER JOIN mpzp mp on mp.ID=d.ID_mpzp INNER JOIN plany_ogolne po on po.ID=d.ID_planu_ogolnego INNER JOIN nabycia n on n.ID=d.ID_nabycia WHERE d.numer_seryjny_dzialki LIKE ? AND pd.typ LIKE ? AND l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ?"
     const paramns = [`%${serial_filter}`, `%${purpose_filter}`, `%${comune_filter}`, `%${district_filter}`, `%${province_filter}`];
@@ -43,87 +38,41 @@ router.get("/get", [checkDataExisting(["serial_filter", "purpose_filter", "rent_
         }
     }
     SQL += " LIMIT 200"
-    connection.query(SQL, paramns, (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
+    try {
+        const [result] = await connection.execute(SQL, paramns);
         res.status(200).json({success:true, message:"Przefiltrowano rekordy dzialek", data:dataSanitizer(result)});
-    })
+    } catch (err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 });
-router.post("/insert", [checkDataExisting(["land_serial_number", "land_number", "area", "town", "comune", "district", "province", "ID_owner", "kw_number", "mortgage", "ID_type", "description", "ID_purpose", "ID_mpzp", "ID_general_plan", "water_company", "purchase_date", "case_number", "seller", "price"])], (req, res) => {
+router.post("/insert", [checkDataExisting(["land_serial_number", "land_number", "area", "town", "comune", "district", "province", "ID_owner", "kw_number", "mortgage", "ID_type", "description", "ID_purpose", "ID_mpzp", "ID_general_plan", "water_company", "purchase_date", "case_number", "seller", "price"])], async (req, res) => {
     const {land_serial_number, land_number, area, town, comune, district, province, ID_owner, kw_number, mortgage, ID_type, description, ID_purpose, ID_mpzp, ID_general_plan, water_company, purchase_date, case_number, seller, price} = req.body;
     let IDTown;
-    connection.query("SELECT m.ID FROM miejscowosci m WHERE m.nazwa = ? LIMIT 1", 
-        [town], (err, result) => {
-            if(err) {
-                return res.status(500).json({
-                    error:"bład bazy danych",
-                    errorInfo:err
-                })
-            }
+    try {
+        const [result] = await connection.execute("SELECT m.ID FROM miejscowosci m WHERE m.nazwa = ? LIMIT 1", [town]);
+        if(result.length > 0) {
+            IDTown = result[0].ID;
+        } else {
+            let IDLocalization;
+            const [result] = await connection.execute("SELECT l.ID FROM lokalizacje l WHERE l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ? LIMIT 1", [comune, district, province]);
             if(result.length > 0) {
-                IDTown = result[0].ID;
+                IDLocalization = result[0].ID;
             } else {
-                let IDLocalization;
-                connection.query("SELECT l.ID FROM lokalizacje l WHERE l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ? LIMIT 1",
-                     [comune, district, province], (err, result) => {
-                        if(err) {
-                            return res.status(500).json({
-                                error:"bład bazy danych",
-                                errorInfo:err
-                            })
-                        }
-                        if(result.length > 0) {
-                            IDLocalization = result[0].ID;
-                        } else {
-                            connection.query("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?)", [province, district, comune], (err, result) => {
-                                 if(err) {
-                                    return res.status(500).json({
-                                        error:"bład bazy danych",
-                                        errorInfo:err
-                                    })
-                                }
-                                IDLocalization = result.insertId;
-                            })
-                        }
-                        connection.query("INSERT INTO miejscowosci() VALUES(NULL, ?, ?)", [IDLocalization, town], (err, result) => {
-                            if(err) {
-                                return res.status(500).json({
-                                    error:"bład bazy danych",
-                                    errorInfo:err
-                                })
-                            }
-                            IDTown = result.insertId
-                        })
-                     })
+                const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?)", [province, district, comune]);
+                IDLocalization = result.insertId;
             }
+            const [result2] = await connection.execute("INSERT INTO miejscowosci() VALUES(NULL, ?, ?)", [IDLocalization, town]);
+            IDTown = result2.insertId
         }
-    )
-    let IDPurchase;
-    connection.query("INSERT INTO nabycia() VALUES(NULL, ?, ?, ?, ?)", [purchase_date, case_number, seller, price], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                error:"bład bazy danych",
-                errorInfo:err
-            })
-        }
-        IDPurchase = result.insertId;
-    });
-    // main insert
-    connection.query("INSERT INTO dzialki() VALUES(NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)",
-         [land_serial_number, land_number, area, IDTown, ID_owner, kw_number, mortgage, ID_type, description, ID_purpose, ID_mpzp, ID_general_plan, water_company, IDPurchase], (err, result) => {
-            if(err) {
-                return res.status(500).json({
-                    error:"bład bazy danych",
-                    errorInfo:err
-                })
-            }
-            res.status(200).json({success:true, message:"wstawiono rekord poprawnie"})
-         })
+        let IDPurchase;
+        const [result2] = await connection.execute("INSERT INTO nabycia() VALUES(NULL, ?, ?, ?, ?)", [purchase_date, case_number, seller, price])
+        IDPurchase = result2.insertId;
 
+        await connection.execute("INSERT INTO dzialki() VALUES(NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)", [land_serial_number, land_number, area, IDTown, ID_owner, kw_number, mortgage, ID_type, description, ID_purpose, ID_mpzp, ID_general_plan, water_company, IDPurchase]);
+        res.status(200).json({success:true, message:"wstawiono rekord poprawnie"})
+    } catch (err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
 
 module.exports = router;
