@@ -9,4 +9,17 @@ const pool = mysql.createPool({
 })
 
 
+const checkConnection = async () => {
+  try {
+    const conn = await pool.getConnection();
+    await conn.ping();
+    console.log("Połączenie z MySQL powiodło się!");
+    conn.release();
+  } catch (err) {
+    console.error("Błąd połączenia z MySQL:", err.code);
+    process.exit(1);
+  }
+};
+checkConnection()
+
 module.exports = pool;

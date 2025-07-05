@@ -10,7 +10,7 @@ const dataSanitizer = require("../util/dataSanitizer")
 
 const router = express.Router();
 
-//router.use(authorization());
+router.use(authorization());
 
 router.post("/get_owner_lands", [checkDataExisting(["ID_owner"])], async (req, res) => {
     const {ID_owner} = req.body;
@@ -21,6 +21,16 @@ router.post("/get_owner_lands", [checkDataExisting(["ID_owner"])], async (req, r
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 });
+
+router.get("/get_rent_lands", [checkDataExisting(["przeznaczenie"])], async (req, res) => {
+    const {przeznaczenie} = req.body;
+    try {
+        const [result] = await connection.execute("SELECT d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.nazwa, l.gmina, l.powiat FROM dzialki d INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN przeznaczenia_dzialek p on p.ID=d.ID_przeznaczenia WHERE d.ID_dzierzawy IS NULL AND p.typ = ?", [przeznaczenie]);
+        res.status(200).json({success:true, message:"pobrano działki przeznaczone do dzierżawy", data:dataSanitizer(result)});
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+})
 
 router.get("/get", [checkDataExisting(["serial_filter", "purpose_filter", "rent_filter", "comune_filter", "district_filter", "province_filter", "low_area_filter", "high_area_filter"])], async (req, res) => {
     const {serial_filter, purpose_filter, rent_filter, low_area_filter, high_area_filter, comune_filter, district_filter, province_filter} = req.body;
