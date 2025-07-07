@@ -1,0 +1,54 @@
+
+const express = require("express");
+const connection = require("../util/mysqlConnection")
+
+const checkDataExisting = require("../middlewares/checkDataExisting")
+const authorization = require("../middlewares/authorization")
+const roleAuthorization = require("../middlewares/roleAuthorization")
+
+const dataSanitizer = require("../util/dataSanitizer")
+
+const router = express.Router();
+
+router.use(authorization());
+
+router.get("/get", [checkDataExisting(["ID_land"])], async (req, res) => {
+    const {ID_land} = req.body;
+    try {
+        const [result] = await connection.execute("SELECT pd.powierzchnia, kg.klasa, kg.przelicznik, kg.podatek_za_hektar FROM powierzchnie_dzialek pd INNER JOIN klasy_gruntu kg kg.ID=pd.ID_klasy WHERE pd.ID_dzialki = ?", [ID_land]);
+        res.status(200).json({success:true, message:`pobrano powierzchnie dzialki ${ID_land}`, data:dataSanitizer(result)})
+    } catch (err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+})
+
+router.post("/insert", [checkDataExisting(["ID_land", "ID_class", "area"])], async (req, res) => {
+    const {ID_land, ID_class, area} = req.body;
+    try {
+        const [result] = await connection.execute("INSERT INTO powierzchnie_dzialek VALUES(NULL, ?, ?, ?)", [ID_land, ID_class, area]);
+        res.status(200).json({success:true, message:"wstawiono nowy rekord"})
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+});
+
+router.post("/update", [checkDataExisting(["ID_area", "ID_class", "area"])], async (req, res) => {
+    const {ID_area, ID_class, area} = req.body;
+    try {
+        const [result] = await connection.execute("UPDATE powierzchnie_dzialek SET ID_klasy = ?, powierzchnia = ? WHERE ID = ?", [ID_class, area, ID_area]);
+        res.status(200).json({success:true, message:"zaktualizowano rekord"})
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+})
+router.post("/delete", [checkDataExisting(["ID_area"])], async (req, res) => {
+    const {ID_area} = req.body;
+    try {
+        const [result] = await connection.execute("DELETE FROM powierzchnie_dzialek WHERE ID = ?", [ID_area]);
+        res.status(200).json({success:true, message:"usunięto pomyślnie"})
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+})
+
+module.exports = router;

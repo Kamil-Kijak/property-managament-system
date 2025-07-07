@@ -51,9 +51,18 @@ router.post("/login", [checkDataExisting(["ID_user", "password"]), async (req, r
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
     
-}])
+}]);
 
-router.post("/update", [authorization(), roleAuthorization(["ADMIN"]), checkDataExisting(["ID_user", "name", "surname", "password", "role"])], async (req, res) => {
+router.get("/logout", (req, res) => {
+    res.clearCookie("ACCESS_TOKEN")
+    res.clearCookie("REFRESH_TOKEN")
+    res.status(200).json({success:true,message:"logout successfully"})
+})
+
+router.use(authorization());
+router.use(roleAuthorization(["ADMIN"]));
+
+router.post("/update", [checkDataExisting(["ID_user", "name", "surname", "password", "role"])], async (req, res) => {
     const {ID_user, name, surname, password, role} = req.body
     try {
         const [result] = await connection.execute("UPDATE uzytkownicy SET imie = ?, nazwisko = ?, haslo = ?, rola = ? WHERE ID = ?", [name, surname, crypto.createHash("md5").update(password).digest("hex"), role, ID_user])
@@ -63,7 +72,7 @@ router.post("/update", [authorization(), roleAuthorization(["ADMIN"]), checkData
     }
 })
 
-router.post("/insert", [authorization(), roleAuthorization(["ADMIN"]), checkDataExisting(["name", "surname", "password", "role"])], async (req, res) => {
+router.post("/insert", [checkDataExisting(["name", "surname", "password", "role"])], async (req, res) => {
     const {name, surname, password, role} = req.body
     try {
         const [result] = await connection.execute("INSERT INTO() VALUES(NULL, ?, ?, ?, ?)",[name, surname, crypto.createHash("md5").update(password).digest("hex"), role])
@@ -72,7 +81,7 @@ router.post("/insert", [authorization(), roleAuthorization(["ADMIN"]), checkData
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 })
-router.post("/delete", [authorization(), roleAuthorization(["ADMIN"]), checkDataExisting(["ID_user"])], async (req, res) => {
+router.post("/delete", [checkDataExisting(["ID_user"])], async (req, res) => {
     const {ID_user} = req.body;
     try {
         const [result] = await connection.execute("DELETE FROM uzytkownicy where ID = ?",[ID_user])
@@ -80,12 +89,6 @@ router.post("/delete", [authorization(), roleAuthorization(["ADMIN"]), checkData
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
-})
-
-router.get("/logout", (req, res) => {
-    res.clearCookie("ACCESS_TOKEN")
-    res.clearCookie("REFRESH_TOKEN")
-    res.status(200).json({success:true,message:"logout successfully"})
 })
 
 module.exports = router;

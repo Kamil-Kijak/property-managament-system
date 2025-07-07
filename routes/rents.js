@@ -12,29 +12,18 @@ const router = express.Router();
 
 router.use(authorization());
 
-router.get("/get_renter", [checkDataExisting(["ID_rent"])], async (req, res) => {
-    const {ID_rent} = req.body;
-    try {
-        const [result] = await connection.execute("SELECT dz.imie dz.nazwisko FROM dzierzawy d INNER JOIN dzierzawcy dz on d.ID_dzierzawcy=dz.ID WHERE d.ID = ?", [ID_rent]);
-        res.status(200).json({success:true, message:"pobrano dane dzierżawcy", data:dataSanitizer(result)});
-    } catch(err) {
-        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
-    }
-})
 
-router.get("/get", [checkDataExisting(["month_filter", "year_filter", "show_expired"])], async (req, res) => {
-    const {month_filter, year_filter, show_expired} = req.body;
+router.get("/get", [checkDataExisting(["month_filter", "year_filter"])], async (req, res) => {
+    const {month_filter, year_filter} = req.body;
     let SQL = "SELECT d.*, dz.imie, dz.nazwisko FROM dzierzawy d INNER JOIN dzierzawcy dz on d.ID_dzierzawcy=dz.ID";
     const paramns = [];
     if(month_filter != "" && year_filter != "") {
         SQL += " WHERE MONTH(d.data_wystawienia_fv_czynszowej) = ? AND YEAR(d.data_wystawienia_fv_czynszowej) = ?"
         paramns.push(month_filter, year_filter);
     }
-    if(show_expired == false) {
-        SQL+=" AND d.data_zakonczenia >= CURDATE()"
-    }
-    SQL+= " ORDER BY d.data_zakonczenia"
     try {
+        // deleting old/expired rents
+        await connection.execute("DELETE FROM dzierzawy WHERE data_zakonczenia < CURDATE()")
         const [result] = await connection.execute(SQL, paramns);
         res.status(200).json({success:true, message:"przefiltrowano dzierżawy", data:dataSanitizer(result)})
     } catch(err) {
@@ -42,10 +31,11 @@ router.get("/get", [checkDataExisting(["month_filter", "year_filter", "show_expi
     }
 });
 
-router.post("/insert", [checkDataExisting(["ID_renter", "start_date", "end_date", "rent", "invoice_issue_date"])], async (req, res) => {
-    const {ID_renter, start_date, end_date, rent, invoice_issue_date} = req.body;
+router.post("/insert", [checkDataExisting(["ID_renter", "start_date", "end_date", "rent", "invoice_issue_date", "ID_land"])], async (req, res) => {
+    const {ID_renter, start_date, end_date, rent, invoice_issue_date, ID_land} = req.body;
     try {
         const [result] = await connection.execute("INSERT INTO dzierzawy VALUES(NULL, ?, ?, ?, ?, ?)", [ID_renter, start_date, end_date, rent, invoice_issue_date]);
+        await connection.execute("UPDATE dzialki SET ID_dzierzawy = ? WHERE ID = ?", [result.insertId, ID_land]);
         res.status(200).json({success:true, message:"wstawiono rekord"});
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

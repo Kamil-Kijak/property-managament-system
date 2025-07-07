@@ -12,15 +12,35 @@ const router = express.Router();
 
 router.use(authorization());
 
+
+router.post("/get_renter_lands", [checkDataExisting(["ID_renter"])], async (req, res) => {
+    const {ID_renter} = req.body;
+    try {
+        const [result] = await connection.execute("SELECT d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.miejscowosc, l.gmina, l.powiat, l.wojewodztwo, di.wysokosc_czynszu FROM dzialki d INNER JOIN dzierzawy di on d.ID_dzierzawy=di.ID INNER JOIN dzierzawcy dz on dz.ID=di.ID_dzierzawcy INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji WHERE dz.ID = ?", [ID_renter]);
+        res.status(200).json({success:true, message:`pobrano dzialki dzierzawcy o ID ${ID_renter}`, data:dataSanitizer(result)})
+    } catch (err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+})
+
 router.post("/get_owner_lands", [checkDataExisting(["ID_owner"])], async (req, res) => {
     const {ID_owner} = req.body;
-     try {
+    try {
         const [result] = await connection.execute("SELECT d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.nazwa, l.gmina, l.powiat, p.typ FROM dzialki d INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN przeznaczenia_dzialek p on p.ID=d.ID_przeznaczenia INNER JOIN wlasciciele w on w.ID=d.ID_wlasciciela WHERE w.ID = ?", [ID_owner]);
         res.status(200).json({success:true, message:`pobrano dzialki wlasciciela o ID ${ID_owner}`, data:dataSanitizer(result)})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 });
+router.get("/get_land", [checkDataExisting(["ID_land"])], async (req, res) => {
+    const {ID_land} = req.body;
+    try {
+        const [result] = await connection.execute("SELECT d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.nazwa, l.ID, l.gmina, l.powiat, p.typ FROM dzialki d INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN przeznaczenia_dzialek p on p.ID=d.ID_przeznaczenia INNER JOIN wlasciciele w on w.ID=d.ID_wlasciciela WHERE d.ID", [ID_land]);
+        res.status(200).json({success:true, message:`pobrano działkę o ID ${ID_land}`, data:dataSanitizer(result)})
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+})
 
 router.get("/get_rent_lands", [checkDataExisting(["przeznaczenie"])], async (req, res) => {
     const {przeznaczenie} = req.body;
@@ -34,7 +54,7 @@ router.get("/get_rent_lands", [checkDataExisting(["przeznaczenie"])], async (req
 
 router.get("/get", [checkDataExisting(["serial_filter", "purpose_filter", "rent_filter", "comune_filter", "district_filter", "province_filter", "low_area_filter", "high_area_filter"])], async (req, res) => {
     const {serial_filter, purpose_filter, rent_filter, low_area_filter, high_area_filter, comune_filter, district_filter, province_filter} = req.body;
-    let SQL = "SELECT d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, d.nr_kw, d.hipoteka, d.opis, d.spolka_wodna, d.ID_dzierzawy, m.nazwa, l.wojewodztwo, l.powiat, l.gmina, w.imie as w_imie, w.nazwisko as w_nazwisko, rd.nazwa as 'rodzaj', pd.typ as 'przeznaczenie', mp.kod as 'mpzp', po.kod as 'plan_ogolny', n.data_nabycia, n.nr_aktu, n.sprzedawca, n.cena_zakupu FROM dzialki d INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN wlasciciele w ON w.ID=d.ID_wlasciciela INNER JOIN rodzaje_dzialek rd on rd.ID=d.ID_rodzaju INNER JOIN przeznaczenia_dzialek pd on pd.ID=d.ID_przeznaczenia INNER JOIN mpzp mp on mp.ID=d.ID_mpzp INNER JOIN plany_ogolne po on po.ID=d.ID_planu_ogolnego INNER JOIN nabycia n on n.ID=d.ID_nabycia WHERE d.numer_seryjny_dzialki LIKE ? AND pd.typ LIKE ? AND l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ?"
+    let SQL = "SELECT d.ID, d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, d.nr_kw, d.hipoteka, d.opis, d.spolka_wodna, d.ID_dzierzawy, m.nazwa, l.wojewodztwo, l.powiat, l.gmina, w.imie as w_imie, w.nazwisko as w_nazwisko, rd.nazwa as 'rodzaj', pd.typ as 'przeznaczenie', mp.kod as 'mpzp', po.kod as 'plan_ogolny', n.data_nabycia, n.nr_aktu, n.sprzedawca, n.cena_zakupu FROM dzialki d INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN wlasciciele w ON w.ID=d.ID_wlasciciela INNER JOIN rodzaje_dzialek rd on rd.ID=d.ID_rodzaju INNER JOIN przeznaczenia_dzialek pd on pd.ID=d.ID_przeznaczenia INNER JOIN mpzp mp on mp.ID=d.ID_mpzp INNER JOIN plany_ogolne po on po.ID=d.ID_planu_ogolnego INNER JOIN nabycia n on n.ID=d.ID_nabycia WHERE d.numer_seryjny_dzialki LIKE ? AND pd.typ LIKE ? AND l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ?"
     const paramns = [`%${serial_filter}`, `%${purpose_filter}`, `%${comune_filter}`, `%${district_filter}`, `%${province_filter}`];
     if(low_area_filter != "" && high_area_filter != "") {
         paramns.push(low_area_filter, high_area_filter);
@@ -83,6 +103,7 @@ router.post("/insert", [checkDataExisting(["land_serial_number", "land_number", 
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
-})
+});
+
 
 module.exports = router;

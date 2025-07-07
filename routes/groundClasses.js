@@ -34,6 +34,7 @@ router.post("/update", [roleAuthorization(["ADMIN", "KSIEGOWOSC"]) ,checkDataExi
 
 router.post("/insert", [roleAuthorization(["ADMIN"]), checkDataExisting(["ground_class", "comune", "disctrict", "province", "converter", "tax"])], async (req, res) => {
     const {ground_class, comune, disctrict, province, converter, tax} = req.body;
+    let localizationID;
     try {
         const [result] = await connection.execute("SELECT ID FROM lokalizacje where comune = ?, disctrict = ?, province = ? limit 1", [comune, disctrict, province]);
         if(result.length > 0) {

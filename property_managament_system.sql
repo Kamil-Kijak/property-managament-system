@@ -1,11 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: localhost
--- Generation Time: Lip 03, 2025 at 10:07 AM
--- Wersja serwera: 8.0.39
--- Wersja PHP: 8.2.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -154,10 +146,10 @@ CREATE TABLE `plany_ogolne` (
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `powierzchnie_klas`
+-- Struktura tabeli dla tabeli `powierzchnie_dzialek`
 --
 
-CREATE TABLE `powierzchnie_klas` (
+CREATE TABLE `powierzchnie_dzialek` (
   `ID` int NOT NULL,
   `ID_dzialki` int NOT NULL,
   `ID_klasy` int NOT NULL,
@@ -285,9 +277,9 @@ ALTER TABLE `plany_ogolne`
   ADD PRIMARY KEY (`ID`);
 
 --
--- Indeksy dla tabeli `powierzchnie_klas`
+-- Indeksy dla tabeli `powierzchnie_dzialek`
 --
-ALTER TABLE `powierzchnie_klas`
+ALTER TABLE `powierzchnie_dzialek`
   ADD PRIMARY KEY (`ID`),
   ADD KEY `ID_dzialki` (`ID_dzialki`),
   ADD KEY `ID_klasy` (`ID_klasy`);
@@ -375,9 +367,9 @@ ALTER TABLE `plany_ogolne`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `powierzchnie_klas`
+-- AUTO_INCREMENT for table `powierzchnie_dzialek`
 --
-ALTER TABLE `powierzchnie_klas`
+ALTER TABLE `powierzchnie_dzialek`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
 --
@@ -440,11 +432,11 @@ ALTER TABLE `miejscowosci`
   ADD CONSTRAINT `miejscowosci_ibfk_1` FOREIGN KEY (`ID_lokalizacji`) REFERENCES `lokalizacje` (`ID`) ON DELETE CASCADE;
 
 --
--- Constraints for table `powierzchnie_klas`
+-- Constraints for table `powierzchnie_dzialek`
 --
-ALTER TABLE `powierzchnie_klas`
-  ADD CONSTRAINT `powierzchnie_klas_ibfk_1` FOREIGN KEY (`ID_dzialki`) REFERENCES `dzialki` (`ID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `powierzchnie_klas_ibfk_2` FOREIGN KEY (`ID_klasy`) REFERENCES `klasy_gruntu` (`ID`) ON DELETE CASCADE;
+ALTER TABLE `powierzchnie_dzialek`
+  ADD CONSTRAINT `powierzchnie_dzialek_ibfk_1` FOREIGN KEY (`ID_dzialki`) REFERENCES `dzialki` (`ID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `powierzchnie_dzialek_ibfk_2` FOREIGN KEY (`ID_klasy`) REFERENCES `klasy_gruntu` (`ID`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

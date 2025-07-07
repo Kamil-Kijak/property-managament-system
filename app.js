@@ -17,6 +17,7 @@ const ownersRoutes = require("./routes/owners")
 const landsRoutes = require("./routes/lands");
 const rentsRoutes = require("./routes/rents");
 const rentersRoutes = require("./routes/renters");
+const areasRoutes = require("./routes/areas");
 
 const app = express();
 // middlewares
@@ -35,6 +36,7 @@ app.use("/api/owners", ownersRoutes);
 app.use("/api/lands", landsRoutes);
 app.use("/api/rents", rentsRoutes);
 app.use("/api/renters", rentersRoutes);
+app.use("/api/areas", areasRoutes);
 
 const server = http.createServer(app);
 
