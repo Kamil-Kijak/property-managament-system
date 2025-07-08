@@ -27,6 +27,21 @@ router.get("/auth", [authorization()], (req, res) => {
     res.status(200).json({success:true, message:"Zweryfikowano poprawnie"})
 })
 
+router.post("/register_admin", [checkDataExisting(["name", "surname", "password"])], async (req, res) => {
+    const {name, surname, password} = req.body;
+    try {
+        const [result] = await connection.execute("SELECT COUNT(ID) as count FROM uzytkownicy WHERE rola = 'ADMIN'");
+        if(result[0].count == 0) {
+            await connection.execute("INSERT INTO uzytkownicy VALUES(NULL, ?, ?, ?, 'ADMIN')",[name, surname, crypto.createHash("md5").update(password).digest("hex")])
+            res.status(200).json({success:true, message:"zarejestrowano pomyslnie admina"})
+        } else {
+            res.status(406).json({error:"ADMIN juz istnieje"})
+        }
+    } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+});
+
 router.post("/login", [checkDataExisting(["ID_user", "password"]), async (req, res) => {
     const {ID_user, password} = req.body;
     try {
@@ -48,7 +63,7 @@ router.post("/login", [checkDataExisting(["ID_user", "password"]), async (req, r
                     httpOnly:true,
                     secure:false
                 })
-                res.status(200).json({success:true, message:"zalogowano pomyślnie"})
+                res.status(200).json({success:true, message:"zalogowano pomyślnie", data:dataSanitizer(result)[0]})
             }
         }
     } catch(err) {
@@ -79,7 +94,7 @@ router.post("/update", [checkDataExisting(["ID_user", "name", "surname", "passwo
 router.post("/insert", [checkDataExisting(["name", "surname", "password", "role"])], async (req, res) => {
     const {name, surname, password, role} = req.body
     try {
-        const [result] = await connection.execute("INSERT INTO() VALUES(NULL, ?, ?, ?, ?)",[name, surname, crypto.createHash("md5").update(password).digest("hex"), role])
+        const [result] = await connection.execute("INSERT INTO uzytkownicy VALUES(NULL, ?, ?, ?, ?)",[name, surname, crypto.createHash("md5").update(password).digest("hex"), role])
         res.status(200).json({success:true, message:"dodano pomyslnie"})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

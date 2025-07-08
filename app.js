@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express")
 const http = require("http");
 const cookieParser = require("cookie-parser")
+const path = require("path");
 
 
 // routes variables
@@ -23,6 +24,11 @@ const app = express();
 // middlewares
 app.use(express.json());
 app.use(cookieParser());
+
+// static page host
+if(process.env.STATIC_HOST) {
+    app.use(express.static(path.join(__dirname, "app", "dist")))
+}
 
 // routes
 app.use("/api/user", userRoutes);
