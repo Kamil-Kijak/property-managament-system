@@ -23,6 +23,10 @@ router.get("/get", async (req, res) => {
     }
 });
 
+router.get("/auth", [authorization()], (req, res) => {
+    res.status(200).json({success:true, message:"Zweryfikowano poprawnie"})
+})
+
 router.post("/login", [checkDataExisting(["ID_user", "password"]), async (req, res) => {
     const {ID_user, password} = req.body;
     try {

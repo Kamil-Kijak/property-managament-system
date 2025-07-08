@@ -17,7 +17,7 @@ const ownersRoutes = require("./routes/owners")
 const landsRoutes = require("./routes/lands");
 const rentsRoutes = require("./routes/rents");
 const rentersRoutes = require("./routes/renters");
-const areasRoutes = require("./routes/areas");
+const areasRoutes = require("./routes/Areas");
 
 const app = express();
 // middlewares
