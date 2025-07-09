@@ -24,7 +24,7 @@ router.get("/get", async (req, res) => {
 });
 
 router.get("/auth", [authorization()], (req, res) => {
-    res.status(200).json({success:true, message:"Zweryfikowano poprawnie"})
+    res.status(200).json({success:true, message:"Zweryfikowano poprawnie", user:req.user})
 })
 
 router.post("/register_admin", [checkDataExisting(["name", "surname", "password"])], async (req, res) => {
@@ -49,7 +49,7 @@ router.post("/login", [checkDataExisting(["ID_user", "password"]), async (req, r
         if(result[0].count == 0) {
             res.status(400).json({error:"Nie ma takiego użytkownika"})
         } else {
-            const [result] = await connection.execute("SELECT ID, imie, nazwisko, rola from uzytkownicy where ID = ? and password = ?", [ID_user, crypto.createHash("md5").update(password).digest("hex")]);
+            const [result] = await connection.execute("SELECT ID, imie, nazwisko, rola from uzytkownicy where ID = ? and haslo = ?", [ID_user, crypto.createHash("md5").update(password).digest("hex")]);
             if(result.length == 0) {
                 res.status(400).json({error:"błędne hasło"})
             } else {

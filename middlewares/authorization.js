@@ -6,7 +6,8 @@ const authorization = () => {
         if(req.cookies["REFRESH_TOKEN"]) {
             try {
                 const decoded = jwt.verify(req.cookies["REFRESH_TOKEN"], process.env.REFRESH_TOKEN_KEY || "inWhm0r9gfwJ_s07KEYrX");
-                const accessToken = jwt.sign(decoded, process.env.ACCESS_TOKEN_KEY || "K1BjP6-xTEAS8uKoq1vNm", {
+                const { exp, ...safePayload } = decoded;
+                const accessToken = jwt.sign(safePayload, process.env.ACCESS_TOKEN_KEY || "K1BjP6-xTEAS8uKoq1vNm", {
                     expiresIn:"10m"
                 })
                 res.cookie("ACCESS_TOKEN", accessToken, {
@@ -17,6 +18,7 @@ const authorization = () => {
                 req.user = decoded
                 next();
             } catch (err) {
+                console.log(err);
                 res.status(403).json({requestRelogin:true, error:"Dostęp nieupoważniony"})
             }
         } else {
