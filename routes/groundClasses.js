@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.use(authorization());
 
-router.get("/get", [roleAuthorization(["ADMIN", "KSIEGOWOSC"]), checkDataExisting(["comune", "disctrict", "province"])], async (req, res) => {
+router.get("/get", [roleAuthorization(["KSIEGOWOSC"]), checkDataExisting(["comune", "disctrict", "province"])], async (req, res) => {
     const {comune, disctrict, province} = req.body;
     try {
         const [result] = await connection.execute("SELECT k.* FROM klasy_gruntu k INNER JOIN lokalizacje l on k.ID_lokalizacji=l.ID WHERE l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ?", [comune, disctrict, province]);
@@ -22,7 +22,7 @@ router.get("/get", [roleAuthorization(["ADMIN", "KSIEGOWOSC"]), checkDataExistin
     }
 })
 
-router.post("/update", [roleAuthorization(["ADMIN", "KSIEGOWOSC"]) ,checkDataExisting(["ID_ground_class", "ground_class", "converter", "tax"])], async (req, res) => {
+router.post("/update", [roleAuthorization(["KSIEGOWOSC"]) ,checkDataExisting(["ID_ground_class", "ground_class", "converter", "tax"])], async (req, res) => {
     const {ID_ground_class, ground_class, tax, converter} = req.body;
     try {
         const [result] = await connection.execute("UPDATE klasy_grountu SET klasa = ?, podatek_za_hektar = ?, converter = ? where ID = ?", [ground_class, tax, converter, ID_ground_class]);
@@ -32,7 +32,7 @@ router.post("/update", [roleAuthorization(["ADMIN", "KSIEGOWOSC"]) ,checkDataExi
     }
 });
 
-router.post("/insert", [roleAuthorization(["ADMIN"]), checkDataExisting(["ground_class", "comune", "disctrict", "province", "converter", "tax"])], async (req, res) => {
+router.post("/insert", [roleAuthorization(["KSIĘGOWOŚĆ"]), checkDataExisting(["ground_class", "comune", "disctrict", "province", "converter", "tax"])], async (req, res) => {
     const {ground_class, comune, disctrict, province, converter, tax} = req.body;
     let localizationID;
     try {

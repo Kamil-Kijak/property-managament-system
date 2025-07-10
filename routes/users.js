@@ -81,10 +81,10 @@ router.get("/logout", (req, res) => {
 router.use(authorization());
 router.use(roleAuthorization(["ADMIN"]));
 
-router.post("/update", [checkDataExisting(["ID_user", "name", "surname", "password", "role"])], async (req, res) => {
-    const {ID_user, name, surname, password, role} = req.body
+router.post("/update", [checkDataExisting(["ID_user", "name", "surname", "role"])], async (req, res) => {
+    const {ID_user, name, surname, role} = req.body
     try {
-        const [result] = await connection.execute("UPDATE uzytkownicy SET imie = ?, nazwisko = ?, haslo = ?, rola = ? WHERE ID = ?", [name, surname, crypto.createHash("md5").update(password).digest("hex"), role, ID_user])
+        const [result] = await connection.execute("UPDATE uzytkownicy SET imie = ?, nazwisko = ?, rola = ? WHERE ID = ?", [name, surname, role, ID_user])
         res.status(200).json({success:true, message:"uzytkownik zaktualizowany"})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

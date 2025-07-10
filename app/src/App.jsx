@@ -1,9 +1,11 @@
 
 import {BrowserRouter, Routes, Route} from "react-router-dom"
-import { createContext, useState } from "react"
+import { createContext, useState, useEffect} from "react"
 
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
+import LandsPage from "./pages/LandsPage";
+import UsersPage from "./pages/UsersPage";
 
 import LoadingScreen from "./components/LoadingScreen";
 
@@ -16,6 +18,13 @@ export default function App({}) {
         "loading":false,
         "warning":false
     });
+    useEffect(() => {
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = "auto";
+        };
+        }, []);
+
     return (
         <userContext.Provider value={{
             value:user,
@@ -34,8 +43,18 @@ export default function App({}) {
                 <LoadingScreen active={screens.loading} />
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/login" element={<LoginPage/>}/>
+                        <Route path="/login" element={<LoginPage/> }/>
                         <Route path="/" element={<MainPage/>}/>
+                        <Route path="/lands" element={<LandsPage/>}/>
+                        <Route path="/owners" element={<LandsPage/>}/>
+                        <Route path="/renters" element={<LandsPage/>}/>
+                        <Route path="/areas" element={<LandsPage/>}/>
+                        <Route path="/groundclasses" element={<LandsPage/>}/>
+                        <Route path="/users" element={<UsersPage/>}/>
+                        <Route path="/landtypes" element={<LandsPage/>}/>
+                        <Route path="/landpurposes" element={<LandsPage/>}/>
+                        <Route path="/generalplans" element={<LandsPage/>}/>
+                        <Route path="/mpzp" element={<LandsPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </screenContext.Provider>

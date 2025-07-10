@@ -7,11 +7,14 @@ import {faWarning} from "@fortawesome/free-solid-svg-icons"
 import WarningScreen from "../components/WarningScreen";
 import { screenContext, userContext } from "../App";
 import { useNavigate } from "react-router-dom";
+import { useRequest } from "../hooks/useRequest";
 
 
 export default function LoginPage({}) {
 
     const navigate = useNavigate();
+    const requestGetUsers = useRequest("/api/user/get", {});
+    const request = useRequest();
 
     const [users, setUsers] = useState([]);
     const [adminCreate, setAdminCreate] = useState(false);
@@ -19,7 +22,6 @@ export default function LoginPage({}) {
     const [loginError, setLoginError] = useState(null);
 
     const screens = useContext(screenContext);
-    const user = useContext(userContext);
 
     const [registerFormData, registerErrors, setRegisterFormData] = useForm({
         "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Imie musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
@@ -32,88 +34,64 @@ export default function LoginPage({}) {
     })
 
     useEffect(() => {
-        const getUsers = async () => {
-            try {
-                const res = await fetch("/api/user/get");
-                const data = await res.json();
-                if(res.status >= 500) {
-                    throw new Error(data.error)
-                }
-                setUsers(data.data);
-            } catch(err) {
-                
+        requestGetUsers("/api/user/get", {}).then(result => {
+            if(!result.error) {
+                setUsers(result.data);
             }
-        }
-        getUsers()
-    }, []);
+        })
+    }, [adminCreate]);
 
     const checkFormData = () => {
-        if(Object.keys(registerErrors).every(ele => registerErrors[ele] == null)) {
-            if(checkingPassword === registerFormData.password) {
-                screens.warning.set(true);
+        if(Object.keys(registerFormData).length == 3) {
+            if(Object.keys(registerErrors).every(ele => registerErrors[ele] == null)) {
+                if(checkingPassword === registerFormData.password) {
+                    screens.warning.set(true);
+                }
             }
         }
     }
     const registerAdmin = () => {
         // admin register
-        const requestRegister = async () => {
-            try {
-                const res = await fetch("/api/user/register_admin", {
+        screens.warning.set(false);
+        screens.loading.set(true);
+        request("/api/user/register_admin", {
                     method:"POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     body:JSON.stringify({name:registerFormData.name, surname:registerFormData.surname, password:registerFormData.password})
-                });
-                const data = await res.json();
-                if(!res.ok) {
-                    throw new Error(data.error)
-                }
-                screens.loading.set(false);
-                setAdminCreate(false);
-            } catch(err) {
-                console.error(err)
-            }
-        }
-        screens.warning.set(false);
-        screens.loading.set(true);
-        requestRegister();
+                }).then(result => {
+                    if(!result.error) {
+                        setAdminCreate(false);
+                    }
+                    screens.loading.set(false);
+                })
     }
     const loginUser = () => {
-        const requestLogin =  async () => {
-            try {
-                const res = await fetch("/api/user/login", {
+        if(Object.keys(loginErrors).every(ele => loginErrors[ele] == null)) {
+            screens.loading.set(true);
+            request("/api/user/login", {
                     method:"POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     body:JSON.stringify({ID_user:loginFormData.ID, password:loginFormData.password})
-                });
-                const data = await res.json();
-                screens.loading.set(false);
-                if(data.success) {
-                    console.log(data.data);
-                    navigate("/");
-                } else {
-                    if(res.status >= 500) {
-                        throw new Error(data);
+                }).then(result => {
+                    screens.loading.set(false);
+                    if(result.success) {
+                        navigate("/")
+                    } else {
+                        if(!result.serverError) {
+                            setLoginError(result.error);
+                        }
                     }
-                    setLoginError(data.error);
-                }
-            } catch(err) {
-                console.log(err.error)
-            }
-        }
-        if(Object.keys(loginErrors).every(ele => loginErrors[ele] == null)) {
-            requestLogin();
-            screens.loading.set(true);
+                })
         }
     }
 
     return(
         <main className="w-screen min-h-screen">
             <WarningScreen
-                icon={faWarning}
                 active={screens.warning.value}
                 title="Przed stworzeniem konta"
                 description={
