@@ -92,7 +92,6 @@ export default function LoginPage({}) {
     return(
         <main className="w-screen min-h-screen">
             <WarningScreen
-                active={screens.warning.value}
                 title="Przed stworzeniem konta"
                 description={
                     <>

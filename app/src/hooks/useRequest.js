@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router-dom";
 
+import { useContext } from "react";
+import { screenContext } from "../App";
 
 const useRequest = () => {
+    const screens = useContext(screenContext);
     const navigate = useNavigate()
     const fetchRequest = async (path, options) => {
         try {
@@ -16,11 +19,11 @@ const useRequest = () => {
             return data;
         } catch(err) {
             // display error
-            console.error(err);
+            screens.error.set(true);
             return {
                 success:false,
                 serverError:true,
-                error:err
+                error:err,
             }
         }
     }

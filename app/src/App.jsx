@@ -6,8 +6,12 @@ import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
 import LandsPage from "./pages/LandsPage";
 import UsersPage from "./pages/UsersPage";
+import LandTypesPage from "./pages/LandTypesPage";
+import LandPurposesPage from "./pages/LandPurposesPage";
+import GeneralPlansPage from "./pages/GeneralPlansPage";
 
 import LoadingScreen from "./components/LoadingScreen";
+import ErrorScreen from "./components/ErrorScreen";
 
 const userContext = createContext(null);
 const screenContext = createContext(null);
@@ -16,7 +20,8 @@ export default function App({}) {
     const [user, setUser] = useState({});
     const [screens, SetScreens] = useState({
         "loading":false,
-        "warning":false
+        "warning":false,
+        "error":false
     });
     useEffect(() => {
         document.body.style.overflow = "hidden";
@@ -38,9 +43,14 @@ export default function App({}) {
                 "warning":{
                     value:screens.warning,
                     set:(value) => SetScreens(prev => ({...prev, warning:value}))
+                },
+                "error":{
+                    value:screens.error,
+                    set:(value) => SetScreens(prev => ({...prev, error:value}))
                 }
             }}>
-                <LoadingScreen active={screens.loading} />
+                <LoadingScreen/>
+                <ErrorScreen/>
                 <BrowserRouter>
                     <Routes>
                         <Route path="/login" element={<LoginPage/> }/>
@@ -51,9 +61,9 @@ export default function App({}) {
                         <Route path="/areas" element={<LandsPage/>}/>
                         <Route path="/groundclasses" element={<LandsPage/>}/>
                         <Route path="/users" element={<UsersPage/>}/>
-                        <Route path="/landtypes" element={<LandsPage/>}/>
-                        <Route path="/landpurposes" element={<LandsPage/>}/>
-                        <Route path="/generalplans" element={<LandsPage/>}/>
+                        <Route path="/landtypes" element={<LandTypesPage/>}/>
+                        <Route path="/landpurposes" element={<LandPurposesPage/>}/>
+                        <Route path="/generalplans" element={<GeneralPlansPage/>}/>
                         <Route path="/mpzp" element={<LandsPage/>}/>
                     </Routes>
                 </BrowserRouter>

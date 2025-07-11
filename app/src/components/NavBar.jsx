@@ -66,7 +66,7 @@ export default function NavBar({requiredRoles = []}) {
         <nav className="h-screen min-h-screen border-r-4 border-green-500 flex flex-col items-start w-[220px] relative">
             <section className="flex flex-col items-center text-xl px-5">
                 <h1 className="text-center font-bold my-2">Zalogowano jako</h1>
-                <h1 className="my-1">{user.value.imie} {user.nazwisko}</h1>
+                <h1 className="my-1">{user.value.imie} {user.value.nazwisko}</h1>
                 <h1 className="my-1">Rola: {user.value.rola}</h1>
                 <button className="base-btn text-md" onClick={logout}>Wyloguj się <FontAwesomeIcon icon={faRightFromBracket}/></button>
                 <div className="bg-green-500 w-full h-1.5 rounded-2xl mt-3"></div>

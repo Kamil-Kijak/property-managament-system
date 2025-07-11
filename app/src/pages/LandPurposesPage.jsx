@@ -1,0 +1,182 @@
+
+import { useContext, useState, useEffect} from "react";
+import NavBar from "../components/NavBar"
+import { useRequest } from "../hooks/useRequest";
+import { screenContext } from "../App";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import WarningScreen from "../components/WarningScreen";
+import { useForm } from "../hooks/useForm";
+
+export default function LandPurposesPage({}) {
+    const screens = useContext(screenContext)
+    const request = useRequest();
+
+    const [insertFormData, insertErrors, setInsertFormData] = useForm({
+        "type":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{1,49}$/, error:"nazwa musi się mieścić od 1 do 50 liter"}
+    })
+    const [editFormData, editErrors, setEditFormData] = useForm({
+        "type":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{1,49}$/, error:"nazwa musi się mieścić od 1 do 50 liter"}
+    })
+
+    const [landPurposes, setLandPurposes] = useState([]);
+    const [form, setForm] = useState(null);
+    const [editLandPurposeID, setEditLandPurposeID] = useState(null);
+
+
+    const getLandPurposes = () => {
+            screens.loading.set(true);
+            request("/api/land_purposes/get", {}).then(result => {
+                if(!result.error) {
+                    setLandPurposes(result.data)
+                    screens.loading.set(false);
+                }
+            })
+        }
+        useEffect(() => {
+            getLandPurposes();
+        }, [])
+    const requestDelete = () => {
+        screens.warning.set(false)
+        screens.loading.set(true);
+        request("/api/land_purposes/delete", {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({ID_land_purpose:editLandPurposeID})
+            }).then(result => {
+                if(!result.error) {
+                    getLandPurposes();
+                }
+                screens.loading.set(false);
+            })
+    }
+    const requestInsertLandPurpose = () => {
+        screens.loading.set(true);
+        setForm(null);
+        request("/api/land_purposes/insert", {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({...insertFormData})
+            }).then(result => {
+                if(!result.error) {
+                    getLandPurposes();
+                }
+                screens.loading.set(false);
+            })
+    }
+    const requestEditLandPurpose = () => {
+        screens.loading.set(true);
+        setForm(null);
+        request("/api/land_purposes/update", {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({ID_land_purpose:editLandPurposeID, ...editFormData})
+            }).then(result => {
+                if(!result.error) {
+                    getLandPurposes();
+                }
+                screens.loading.set(false);
+            })
+    }
+    return (
+        <main className="flex justify-between">
+            <WarningScreen
+                title="Uwaga"
+                cancelCallback={() => screens.warning.set(false)}
+                acceptCallback={() => requestDelete()}
+                description={
+                    <>
+                         <p className="text-red-600 font-bold">
+                            Usunięcie tego przeznaczenia działki spowoduje że każda działka która ma to przeznaczenie w systemie zostanie usunięta nieodwracalnie
+                            </p>
+                        <p className="text-white font-bold text-lg mt-5">
+                            Czy napewno chcesz usunąć to przeznaczenie działki?
+                        </p>
+                    </>
+                }
+            />
+            <NavBar requiredRoles={["ADMIN"]}/>
+            <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
+                <section className="my-10">
+                    {landPurposes.map((ele) => {
+                        return (
+                            <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={ele.ID}>
+                                <h1 className="text-4xl text-green-600 font-bold">ID: {ele.ID}</h1>
+                                <section className="flex flex-col items-start justify-center">
+                                    <h1 className="mx-10 text-2xl">{ele.typ}</h1>
+                                </section>
+                                <section className="flex flex-col items-center">
+                                    <button className="base-btn" onClick={() => {
+                                        setForm("edit");
+                                        setEditLandPurposeID(ele.ID)
+                                        setEditFormData({
+                                            type:ele.typ
+                                        })
+                                    }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                                    <button className="warning-btn" onClick={() => {
+                                        screens.warning.set(true)
+                                        setEditLandPurposeID(ele.ID);
+                                    }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
+                                </section>
+                            </section>
+                        )
+                    })}
+                </section>
+                <button className="base-btn text-2xl" onClick={() => {
+                    setForm("insert")
+                }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowe przeznaczenie działki</button>
+                {
+                    form == "insert" &&
+                    <section className="base-card my-10">
+                        <h1 className="text-2xl my-2 text-center">Tworzenie przeznaczenia działki</h1>
+                        <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
+                        <section className="py-2 flex-col items-center">
+                            <section className="flex flex-col items-start mb-2">
+                                <h1 className="font-bold mb-1">Nazwa przeznaczenia</h1>
+                                <input type="text" placeholder="purpose name..." onChange={(e) => setInsertFormData(prev => ({...prev, type:e.target.value}))} className="border-2 border-black p-1 rounded-md" />
+                            </section>
+                        </section>
+                        <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
+                        <button className="base-btn" onClick={() => {
+                            if(Object.keys(insertFormData).length == 1) {
+                                if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
+                                    requestInsertLandPurpose();
+                                }
+                                }
+                        }}>Stwórz przeznaczenie działki</button>
+                    </section>
+                }
+                {
+                    form == "edit" &&
+                    <section className="base-card my-10">
+                        <h1 className="text-2xl my-2 text-center">Edycja przeznaczenia działki</h1>
+                        <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
+                        <section className="py-2 flex-col items-center">
+                            <section className="flex flex-col items-start mb-2">
+                                <h1 className="font-bold mb-1">Nazwa przeznaczenia</h1>
+                                <input type="text" placeholder="purpose name..." onChange={(e) => setEditFormData(prev => ({...prev, type:e.target.value}))} value={editFormData.type} className="border-2 border-black p-1 rounded-md" />
+                            </section>
+                        </section>
+                        <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
+                        <button className="base-btn" onClick={() => {
+                            if(Object.keys(editFormData).length == 1) {
+                                if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                                    requestEditLandPurpose();
+                                }
+                                }
+                        }}>Zaktualizuj</button>
+                    </section>
+                }
+            </section>
+        </main>
+    )
+}

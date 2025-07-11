@@ -2,10 +2,14 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faXmark, faCheck} from "@fortawesome/free-solid-svg-icons"
 import {faWarning} from "@fortawesome/free-solid-svg-icons"
+import { useContext } from "react"
+import { screenContext } from "../App"
 
 export default function WarningScreen({active = false, title = "Uwaga", description = <p className="text-red-600 font-bold">Ostrzeżenie</p>, acceptCallback, cancelCallback}) {
+    const screens = useContext(screenContext);
+
     return (
-        active && <>
+        screens.warning.value && <>
             <section className="fixed top-0 bottom-0 right-0 left-0 bg-black/60 z-5"></section>
             <section className="fixed top-0 bottom-0 right-0 left-0 flex justify-center items-center z-10 ">
                 <section className="base-card bg-black/75 relative w-[95%] rounded-none">

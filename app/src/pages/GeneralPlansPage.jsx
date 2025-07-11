@@ -1,0 +1,194 @@
+
+
+import { useContext, useState, useEffect} from "react";
+import NavBar from "../components/NavBar"
+import { useRequest } from "../hooks/useRequest";
+import { screenContext } from "../App";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import WarningScreen from "../components/WarningScreen";
+import { useForm } from "../hooks/useForm";
+
+export default function GeneralPlansPage({}) {
+    const screens = useContext(screenContext)
+    const request = useRequest();
+
+    const [insertFormData, insertErrors, setInsertFormData] = useForm({
+        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"kod musi zawierać 2 duże litery"},
+        "description":{regexp:/^.{1,49}$/, error:"opis musi się mieścić od 1 do 50 liter"}
+    })
+    const [editFormData, editErrors, setEditFormData] = useForm({
+        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"kod musi zawierać 2 duże litery"},
+        "description":{regexp:/^.{1,49}$/, error:"opis musi się mieścić od 1 do 50 liter"}
+    })
+
+    const [generalPlans, setgeneralPlans] = useState([]);
+    const [form, setForm] = useState(null);
+    const [editGeneralPlanID, setEditGeneralPlanID] = useState(null);
+
+
+    const getGeneralPlans = () => {
+            screens.loading.set(true);
+            request("/api/general_plans/get", {}).then(result => {
+                if(!result.error) {
+                    setgeneralPlans(result.data)
+                    screens.loading.set(false);
+                }
+            })
+        }
+        useEffect(() => {
+            getGeneralPlans();
+        }, [])
+    const requestDelete = () => {
+        screens.warning.set(false)
+        screens.loading.set(true);
+        request("/api/general_plans/delete", {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({ID_general_plan:editGeneralPlanID})
+            }).then(result => {
+                if(!result.error) {
+                    getGeneralPlans();
+                }
+                screens.loading.set(false);
+            })
+    }
+    const requestInsertGeneralPlan = () => {
+        screens.loading.set(true);
+        setForm(null);
+        request("/api/general_plans/insert", {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({...insertFormData})
+            }).then(result => {
+                if(!result.error) {
+                    getGeneralPlans();
+                }
+                screens.loading.set(false);
+            })
+    }
+    const requestEditGeneralPlan = () => {
+        screens.loading.set(true);
+        setForm(null);
+        request("/api/general_plans/update", {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({ID_general_plan:editGeneralPlanID, ...editFormData})
+            }).then(result => {
+                if(!result.error) {
+                    getGeneralPlans();
+                }
+                screens.loading.set(false);
+            })
+    }
+    return (
+        <main className="flex justify-between">
+            <WarningScreen
+                title="Uwaga"
+                cancelCallback={() => screens.warning.set(false)}
+                acceptCallback={() => requestDelete()}
+                description={
+                    <>
+                         <p className="text-red-600 font-bold">
+                            Usunięcie tego planu ogólnego spowoduje że każda działka która ma ten plan ogólny w systemie zostanie usunięta nieodwracalnie
+                            </p>
+                        <p className="text-white font-bold text-lg mt-5">
+                            Czy napewno chcesz usunąć ten plan ogólny?
+                        </p>
+                    </>
+                }
+            />
+            <NavBar requiredRoles={["ADMIN"]}/>
+            <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
+                <section className="my-10">
+                    {generalPlans.map((ele) => {
+                        return (
+                            <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={ele.ID}>
+                                <h1 className="text-4xl text-green-600 font-bold">{ele.kod}</h1>
+                                <section className="flex flex-col items-start justify-center">
+                                    <p className="mx-10 text-xl">{ele.opis}</p>
+                                </section>
+                                <section className="flex flex-col items-center">
+                                    <button className="base-btn" onClick={() => {
+                                        setForm("edit");
+                                        setEditGeneralPlanID(ele.ID)
+                                        setEditFormData({
+                                            code:ele.kod,
+                                            description:ele.opis
+                                        })
+                                    }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                                    <button className="warning-btn" onClick={() => {
+                                        screens.warning.set(true)
+                                        setEditGeneralPlanID(ele.ID);
+                                    }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
+                                </section>
+                            </section>
+                        )
+                    })}
+                </section>
+                <button className="base-btn text-2xl" onClick={() => {
+                    setForm("insert")
+                }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowy plan ogólny</button>
+                {
+                    form == "insert" &&
+                    <section className="base-card my-10">
+                        <h1 className="text-2xl my-2 text-center">Tworzenie planu ogólnego</h1>
+                        <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
+                        <section className="py-2 flex-col items-center">
+                            <section className="flex flex-col items-start mb-2">
+                                <h1 className="font-bold mb-1">Kod planu</h1>
+                                <input type="text" placeholder="purpose name..." onChange={(e) => setInsertFormData(prev => ({...prev, code:e.target.value}))} className="border-2 border-black p-1 rounded-md" />
+                            </section>
+                            <section className="flex flex-col items-start mb-2">
+                                <h1 className="font-bold mb-1">Opis planu</h1>
+                                <textarea type="text" placeholder="purpose name..." onChange={(e) => setInsertFormData(prev => ({...prev, description:e.target.value}))} className="border-2 border-black p-1 rounded-md resize-none w-full h-[6rem]"></textarea>
+                            </section>
+                        </section>
+                        <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
+                        <button className="base-btn" onClick={() => {
+                            if(Object.keys(insertFormData).length == 2) {
+                                if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
+                                    requestInsertGeneralPlan();
+                                }
+                                }
+                        }}>Stwórz plan ogólny</button>
+                    </section>
+                }
+                {
+                    form == "edit" &&
+                    <section className="base-card my-10">
+                        <h1 className="text-2xl my-2 text-center">Edycja planu ogólnego</h1>
+                        <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
+                        <section className="py-2 flex-col items-center">
+                            <section className="flex flex-col items-start mb-2">
+                                <h1 className="font-bold mb-1">Kod planu</h1>
+                                <input type="text" placeholder="purpose name..." onChange={(e) => setEditFormData(prev => ({...prev, code:e.target.value}))} value={editFormData.code} className="border-2 border-black p-1 rounded-md" />
+                            </section>
+                            <section className="flex flex-col items-start mb-2">
+                                <h1 className="font-bold mb-1">Opis planu</h1>
+                                <textarea type="text" placeholder="purpose name..." onChange={(e) => setEditFormData(prev => ({...prev, description:e.target.value}))} value={editFormData.description} className="border-2 border-black p-1 rounded-md resize-none w-full h-[6rem]"></textarea>
+                            </section>
+                        </section>
+                        <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
+                        <button className="base-btn" onClick={() => {
+                            if(Object.keys(editFormData).length == 2) {
+                                if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                                    requestEditGeneralPlan();
+                                }
+                                }
+                        }}>Zaktualizuj</button>
+                    </section>
+                }
+            </section>
+        </main>
+    )
+}

@@ -26,7 +26,7 @@ router.get("/get", async (req, res) => {
 router.post("/update", [checkDataExisting(["ID_general_plan", "code", "description"])], async (req, res) => {
     const {ID_general_plan, code, description} = req.body;
     try {
-        const [result] = await connection.execute("UPDATE plany_ogolne SET code = ?, description = ? WHERE ID = ?", [code, description, ID_general_plan]);
+        const [result] = await connection.execute("UPDATE plany_ogolne SET kod = ?, opis = ? WHERE ID = ?", [code, description, ID_general_plan]);
         res.status(200).json({success:true, message:"rekord zaktualizowany"})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

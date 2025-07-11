@@ -18,7 +18,8 @@ export default function UsersPage({}) {
 
     const [editUserID, setEditUserID] = useState(null);
     const [users, setUsers] = useState([]);
-    const [form, setForm] = useState({});
+    const [form, setForm] = useState(null);
+    const [checkingPassword, setCheckingPassword] = useState("");
     
     const request = useRequest();
     const navigate = useNavigate()
@@ -52,6 +53,7 @@ export default function UsersPage({}) {
 
     const requestInsertUser = () => {
         screens.loading.set(true);
+        setForm(null);
         request("/api/user/insert", {
                 method:"POST",
                 credentials:"include",
@@ -69,6 +71,7 @@ export default function UsersPage({}) {
 
     const requestEditUser = () => {
         screens.loading.set(true);
+        setForm(null);
         request("/api/user/update", {
                 method:"POST",
                 credentials:"include",
@@ -83,10 +86,6 @@ export default function UsersPage({}) {
                 }
                 screens.loading.set(false);
             })
-    }
-    const deleteuser = (ID) => {
-        screens.warning.set(true)
-        setEditUserID(ID);
     }
     const requestDelete = () => {
         screens.warning.set(false)
@@ -120,7 +119,6 @@ export default function UsersPage({}) {
     return(
         <main className="flex justify-between">
             <WarningScreen
-                active={screens.warning.value}
                 title="Uwaga"
                 cancelCallback={() => screens.warning.set(false)}
                 acceptCallback={() => requestDelete()}
@@ -131,11 +129,11 @@ export default function UsersPage({}) {
                 }
             />
             <NavBar requiredRoles={["ADMIN"]}/>
-            <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen">
+            <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
                 <section className="my-10">
                     {users.map((ele) => {
                         return (
-                            <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center my-5" key={ele.ID}>
+                            <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={ele.ID}>
                                 <FontAwesomeIcon icon={faUserTie} className="text-6xl text-green-600"/>
                                 <section className="flex flex-col items-start">
                                     <h1 className="mx-10 text-2xl">{ele.imie + " " + ele.nazwisko}</h1>
@@ -151,7 +149,10 @@ export default function UsersPage({}) {
                                             role:ele.rola
                                         })
                                     }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
-                                    <button className="warning-btn" onClick={() => deleteuser(ele.ID)}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
+                                    <button className="warning-btn" onClick={() => {
+                                        screens.warning.set(true)
+                                        setEditUserID(ele.ID);
+                                    }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                                 </section>
                             </section>
                         )
@@ -180,7 +181,7 @@ export default function UsersPage({}) {
                             </section>
                             <section className="flex flex-col items-start mb-2">
                                 <h1 className="font-bold mb-1">Powtórz hasło</h1>
-                                <input type="password" placeholder="repeat password..." className="border-2 border-black p-1 rounded-md" />
+                                <input type="password" onChange={(e) => setCheckingPassword(e.target.value)} placeholder="repeat password..." className="border-2 border-black p-1 rounded-md" />
                             </section>
                             <section className="flex flex-col items-start mb-2">
                                 <h1 className="font-bold mb-1">Rola</h1>
@@ -192,11 +193,14 @@ export default function UsersPage({}) {
                                 </select>
                             </section>
                         </section>
+                        {checkingPassword !== (insertFormData.password || "") && <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">Hasła nie są takie same</p>}
                         <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(insertFormData).length == 4) {
                                 if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
-                                    requestInsertUser();
+                                    if(checkingPassword === insertFormData.password) {
+                                        requestInsertUser();
+                                    }
                                 }
                                 }
                         }}>Stwórz użytkownika</button>
