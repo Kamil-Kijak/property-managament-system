@@ -16,7 +16,7 @@ router.use(roleAuthorization(["ADMIN"]));
 
 router.get("/get", async (req, res) => {
     try {
-        const [result] = await connection.execute("SELECT * FROM plany_ogolne");
+        const [result] = await connection.execute("SELECT * FROM plany_ogolne order by kod");
         res.status(200).json({success:true, message:"pobrano plany ogólne", data:dataSanitizer(result)})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

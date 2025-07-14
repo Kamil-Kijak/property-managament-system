@@ -59,6 +59,12 @@ router.get("/get", [checkDataExisting(["serial_filter", "purpose_filter", "rent_
     if(low_area_filter != "" && high_area_filter != "") {
         paramns.push(low_area_filter, high_area_filter);
         SQL+= " AND d.powierzchnia BETWEEN ? AND ?"
+    } else if(low_area_filter != "") {
+        paramns.push(low_area_filter);
+        SQL+= " AND d.powierzchnia >= ?"
+    } else {
+        paramns.push(high_area_filter);
+        SQL+= " AND d.powierzchnia <= ?"
     }
     if(rent_filter != "") {
         if(rent_filter == "1") {
@@ -67,7 +73,7 @@ router.get("/get", [checkDataExisting(["serial_filter", "purpose_filter", "rent_
             SQL += " AND d.ID_dzierzawy IS NULL"
         }
     }
-    SQL += " LIMIT 200"
+    // SQL += " LIMIT 200"
     try {
         const [result] = await connection.execute(SQL, paramns);
         res.status(200).json({success:true, message:"Przefiltrowano rekordy dzialek", data:dataSanitizer(result)});

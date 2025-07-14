@@ -17,7 +17,7 @@ router.use(roleAuthorization(["ADMIN"]));
 
 router.get("/get", async (req, res) => {
     try {
-        const [result] = await connection.execute("SELECT * FROM mpzp");
+        const [result] = await connection.execute("SELECT * FROM mpzp order by kod");
         res.status(200).json({success:true, message:"pobrano MPZP", data:dataSanitizer(result)})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
@@ -27,7 +27,7 @@ router.get("/get", async (req, res) => {
 router.post("/update", [checkDataExisting(["ID_mpzp", "code", "description"])], async (req, res) => {
     const {ID_mpzp, code, description} = req.body;
     try {
-        const [result] = await connection.execute("UPDATE mpzp SET code = ?, description = ? WHERE ID = ?", [code, description, ID_mpzp]);
+        const [result] = await connection.execute("UPDATE mpzp SET kod = ?, opis = ? WHERE ID = ?", [code, description, ID_mpzp]);
         res.status(200).json({success:true, message:"rekord zaktualizowany"})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

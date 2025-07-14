@@ -33,7 +33,6 @@ export default function NavBar({requiredRoles = []}) {
             }
         })
     }, [])
-
     const logout = () => {
         screens.loading.set(true);
         request("/api/user/logout", {credentials:"include"}).then(result => {
