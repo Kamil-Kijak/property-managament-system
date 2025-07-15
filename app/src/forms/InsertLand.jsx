@@ -34,6 +34,10 @@ export default function InsertLand({onClose = () => {}}) {
         "mortgage":{regexp:/.+/, error:"Czy ma kartoteke?"},
         "description":{regexp:/.{0, 1000}/, error:"Opis musi się mieścić w 1000 znaków"},
         "water_company":{regexp:/.+/, error:"Czy jest spółką wodną"},
+        "purchase_date":{regexp:/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\d{4})$/, error:"Podaj date w dobrym formacie"},
+        "case_number":{regexp:/^\d+\/\d+$/, error:"Numer aktu musi być w formacie cyfry/cyfry"},
+        "seller":{regexp:/^.{1,49}$/, error:"Sprzedawca musi się mieścić w 50 znakach"},
+        "price":{regexp:/^\d+\.\d{2}$/, error:"Cena musi być liczbą z 2 miejscami po przecinku"},
     })
 
     const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
