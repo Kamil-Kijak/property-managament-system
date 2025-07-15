@@ -52,10 +52,10 @@ router.get("/get_rent_lands", [checkDataExisting(["przeznaczenie"])], async (req
     }
 })
 
-router.get("/get", [checkDataExisting(["serial_filter", "purpose_filter", "rent_filter", "comune_filter", "district_filter", "province_filter", "low_area_filter", "high_area_filter"])], async (req, res) => {
-    const {serial_filter, purpose_filter, rent_filter, low_area_filter, high_area_filter, comune_filter, district_filter, province_filter} = req.body;
-    let SQL = "SELECT d.ID, d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, d.nr_kw, d.hipoteka, d.opis, d.spolka_wodna, d.ID_dzierzawy, m.nazwa, l.wojewodztwo, l.powiat, l.gmina, w.imie as w_imie, w.nazwisko as w_nazwisko, rd.nazwa as 'rodzaj', pd.typ as 'przeznaczenie', mp.kod as 'mpzp', po.kod as 'plan_ogolny', n.data_nabycia, n.nr_aktu, n.sprzedawca, n.cena_zakupu FROM dzialki d INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN wlasciciele w ON w.ID=d.ID_wlasciciela INNER JOIN rodzaje_dzialek rd on rd.ID=d.ID_rodzaju INNER JOIN przeznaczenia_dzialek pd on pd.ID=d.ID_przeznaczenia INNER JOIN mpzp mp on mp.ID=d.ID_mpzp INNER JOIN plany_ogolne po on po.ID=d.ID_planu_ogolnego INNER JOIN nabycia n on n.ID=d.ID_nabycia WHERE d.numer_seryjny_dzialki LIKE ? AND pd.typ LIKE ? AND l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ?"
-    const paramns = [`%${serial_filter}`, `%${purpose_filter}`, `%${comune_filter}`, `%${district_filter}`, `%${province_filter}`];
+router.get("/get", [checkDataExisting(["serial_filter", "purpose_filter", "rent_filter", "commune_filter", "district_filter", "province_filter", "town_filter", "low_area_filter", "high_area_filter"])], async (req, res) => {
+    const {serial_filter, purpose_filter, rent_filter, low_area_filter, high_area_filter, commune_filter, district_filter, province_filter, town_filter} = req.query;
+    let SQL = "SELECT d.ID, d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, d.nr_kw, d.hipoteka, d.opis, d.spolka_wodna, d.ID_dzierzawy, m.nazwa, l.wojewodztwo, l.powiat, l.gmina, w.imie as w_imie, w.nazwisko as w_nazwisko, rd.nazwa as 'rodzaj', pd.typ as 'przeznaczenie', mp.kod as 'mpzp', po.kod as 'plan_ogolny', n.data_nabycia, n.nr_aktu, n.sprzedawca, n.cena_zakupu FROM dzialki d INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN wlasciciele w ON w.ID=d.ID_wlasciciela INNER JOIN rodzaje_dzialek rd on rd.ID=d.ID_rodzaju INNER JOIN przeznaczenia_dzialek pd on pd.ID=d.ID_przeznaczenia INNER JOIN mpzp mp on mp.ID=d.ID_mpzp INNER JOIN plany_ogolne po on po.ID=d.ID_planu_ogolnego INNER JOIN nabycia n on n.ID=d.ID_nabycia WHERE d.numer_seryjny_dzialki LIKE ? AND pd.typ LIKE ? AND l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ? AND m.nazwa = ?"
+    const paramns = [`%${serial_filter}`, `%${purpose_filter}`, commune_filter, district_filter, province_filter, town_filter];
     if(low_area_filter != "" && high_area_filter != "") {
         paramns.push(low_area_filter, high_area_filter);
         SQL+= " AND d.powierzchnia BETWEEN ? AND ?"
@@ -81,8 +81,8 @@ router.get("/get", [checkDataExisting(["serial_filter", "purpose_filter", "rent_
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 });
-router.post("/insert", [checkDataExisting(["land_serial_number", "land_number", "area", "town", "comune", "district", "province", "ID_owner", "kw_number", "mortgage", "ID_type", "description", "ID_purpose", "ID_mpzp", "ID_general_plan", "water_company", "purchase_date", "case_number", "seller", "price"])], async (req, res) => {
-    const {land_serial_number, land_number, area, town, comune, district, province, ID_owner, kw_number, mortgage, ID_type, description, ID_purpose, ID_mpzp, ID_general_plan, water_company, purchase_date, case_number, seller, price} = req.body;
+router.post("/insert", [checkDataExisting(["land_serial_number", "land_number", "area", "town", "commune", "district", "province", "ID_owner", "kw_number", "mortgage", "ID_type", "description", "ID_purpose", "ID_mpzp", "ID_general_plan", "water_company", "purchase_date", "case_number", "seller", "price"])], async (req, res) => {
+    const {land_serial_number, land_number, area, town, commune, district, province, ID_owner, kw_number, mortgage, ID_type, description, ID_purpose, ID_mpzp, ID_general_plan, water_company, purchase_date, case_number, seller, price} = req.body;
     let IDTown;
     try {
         const [result] = await connection.execute("SELECT m.ID FROM miejscowosci m WHERE m.nazwa = ? LIMIT 1", [town]);
@@ -90,11 +90,11 @@ router.post("/insert", [checkDataExisting(["land_serial_number", "land_number", 
             IDTown = result[0].ID;
         } else {
             let IDLocalization;
-            const [result] = await connection.execute("SELECT l.ID FROM lokalizacje l WHERE l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ? LIMIT 1", [comune, district, province]);
+            const [result] = await connection.execute("SELECT l.ID FROM lokalizacje l WHERE l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ? LIMIT 1", [commune, district, province]);
             if(result.length > 0) {
                 IDLocalization = result[0].ID;
             } else {
-                const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?)", [province, district, comune]);
+                const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?)", [province, district, commune]);
                 IDLocalization = result.insertId;
             }
             const [result2] = await connection.execute("INSERT INTO miejscowosci() VALUES(NULL, ?, ?)", [IDLocalization, town]);

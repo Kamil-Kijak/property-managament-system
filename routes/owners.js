@@ -43,8 +43,8 @@ router.post("/update", [checkDataExisting(["ID_owner", "name", "surname", "phone
 router.post("/insert", [checkDataExisting(["name", "surname", "phone"])], async (req, res) => {
     const {name, surname, phone} = req.body;
     try {
-        const [result] = await connection.execute("INSERT INTO wlasciciele() VALUES(NULL, ?, ?, ?", [name, surname, phone]);
-        res.status(200).json({success:true, message:"dodano pomyślnie"})
+        const [result] = await connection.execute("INSERT INTO wlasciciele() VALUES(NULL, ?, ?, ?)", [name, surname, phone]);
+        res.status(200).json({success:true, message:"dodano pomyślnie", insertID:result.insertId})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }

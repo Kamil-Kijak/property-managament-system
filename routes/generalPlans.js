@@ -11,7 +11,6 @@ const dataSanitizer = require("../util/dataSanitizer")
 const router = express.Router();
 
 router.use(authorization());
-router.use(roleAuthorization(["ADMIN"]));
 
 
 router.get("/get", async (req, res) => {
@@ -22,6 +21,7 @@ router.get("/get", async (req, res) => {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 });
+router.use(roleAuthorization(["ADMIN"]));
 
 router.post("/update", [checkDataExisting(["ID_general_plan", "code", "description"])], async (req, res) => {
     const {ID_general_plan, code, description} = req.body;

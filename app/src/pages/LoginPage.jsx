@@ -29,7 +29,7 @@ export default function LoginPage({}) {
         "password":{regexp:/^\w{8,}$/, error:"Hasło powinno mieć minimum 8 znaków"}
     })
     const [loginFormData, loginErrors, setLoginFormData] = useForm({
-        "ID":{regexp:/\d/, error:"Podaj użytkownika"},
+        "ID_user":{regexp:/\d/, error:"Podaj użytkownika"},
         "password":{regexp:/.+/, error:"Wpisz hasło"}
     })
 
@@ -59,7 +59,7 @@ export default function LoginPage({}) {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body:JSON.stringify({name:registerFormData.name, surname:registerFormData.surname, password:registerFormData.password})
+                    body:JSON.stringify({...registerFormData})
                 }).then(result => {
                     if(!result.error) {
                         setAdminCreate(false);
@@ -75,7 +75,7 @@ export default function LoginPage({}) {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body:JSON.stringify({ID_user:loginFormData.ID, password:loginFormData.password})
+                    body:JSON.stringify({...loginFormData})
                 }).then(result => {
                     screens.loading.set(false);
                     if(result.success) {
@@ -146,7 +146,7 @@ export default function LoginPage({}) {
                             <section className="flex flex-col items-start mb-2">
                                     <h1 className="font-bold mb-1">Użytkownik</h1>
                                     <select className="border-2 border-black rounded-lg p-2" defaultValue={""}
-                                        onChange={(e) => setLoginFormData(prev => ({...prev, ID:e.target.value}))}>
+                                        onChange={(e) => setLoginFormData(prev => ({...prev, ID_user:e.target.value}))}>
                                         <option value="" className="hidden">Wybierz użytkownika</option>
                                         {users.map((ele) => <option key={ele.ID} value={ele.ID}>
                                             {ele.imie} {ele.nazwisko} {ele.rola}
@@ -160,7 +160,7 @@ export default function LoginPage({}) {
                             </section>
                             }
                             {
-                                loginFormData.ID && loginFormData.ID != "" &&
+                                loginFormData.ID_user && loginFormData.ID_user != "" &&
                                 <section className="py-4 flex flex-col items-center">
                                     <section className="flex flex-col items-start mb-4">
                                         <h1 className="font-bold mb-1">Hasło</h1>
