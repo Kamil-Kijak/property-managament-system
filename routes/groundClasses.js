@@ -6,7 +6,6 @@ const checkDataExisting = require("../middlewares/checkDataExisting")
 const authorization = require("../middlewares/authorization")
 const roleAuthorization = require("../middlewares/roleAuthorization")
 
-const dataSanitizer = require("../util/dataSanitizer")
 
 const router = express.Router();
 
@@ -16,7 +15,7 @@ router.get("/get", [roleAuthorization(["KSIEGOWOSC"]), checkDataExisting(["comun
     const {comune, disctrict, province} = req.body;
     try {
         const [result] = await connection.execute("SELECT k.* FROM klasy_gruntu k INNER JOIN lokalizacje l on k.ID_lokalizacji=l.ID WHERE l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ?", [comune, disctrict, province]);
-        res.status(200).json({success:true, message:`pobrano klasy gruntu dla ${comune}, ${disctrict}, ${province}`, data:dataSanitizer(result)})
+        res.status(200).json({success:true, message:`pobrano klasy gruntu dla ${comune}, ${disctrict}, ${province}`, data:result})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }

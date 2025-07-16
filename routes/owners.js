@@ -6,7 +6,6 @@ const checkDataExisting = require("../middlewares/checkDataExisting")
 const authorization = require("../middlewares/authorization")
 const roleAuthorization = require("../middlewares/roleAuthorization")
 
-const dataSanitizer = require("../util/dataSanitizer")
 
 const router = express.Router();
 
@@ -15,7 +14,7 @@ router.use(authorization());
 router.get("/get_all", async (req, res) => {
     try {
         const [result] = await connection.execute("SELECT * FROM wlasciciele order by nazwisko");
-        res.status(200).json({success:true, message:"pobrano dane wlascicieli", data:dataSanitizer(result)})
+        res.status(200).json({success:true, message:"pobrano dane wlascicieli", data:result})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
@@ -24,7 +23,7 @@ router.get("/get", [checkDataExisting(["name_filter", "surname_filter"])], async
     const {name_filter, surname_filter} = req.body;
     try {
         const [result] = await connection.execute("SELECT * FROM wlasciciele WHERE imie LIKE ? AND surname LIKE ?", [`%${name_filter}`, `%${surname_filter}`]);
-        res.status(200).json({success:true, message:"pobrano włascicieli",data:dataSanitizer(result)})
+        res.status(200).json({success:true, message:"pobrano włascicieli",data:result})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }

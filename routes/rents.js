@@ -6,7 +6,6 @@ const checkDataExisting = require("../middlewares/checkDataExisting")
 const authorization = require("../middlewares/authorization")
 const roleAuthorization = require("../middlewares/roleAuthorization")
 
-const dataSanitizer = require("../util/dataSanitizer")
 
 const router = express.Router();
 
@@ -25,7 +24,7 @@ router.get("/get", [checkDataExisting(["month_filter", "year_filter"])], async (
         // deleting old/expired rents
         await connection.execute("DELETE FROM dzierzawy WHERE data_zakonczenia < CURDATE()")
         const [result] = await connection.execute(SQL, paramns);
-        res.status(200).json({success:true, message:"przefiltrowano dzierżawy", data:dataSanitizer(result)})
+        res.status(200).json({success:true, message:"przefiltrowano dzierżawy", data:result})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }

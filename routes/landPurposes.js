@@ -6,7 +6,6 @@ const checkDataExisting = require("../middlewares/checkDataExisting")
 const authorization = require("../middlewares/authorization")
 const roleAuthorization = require("../middlewares/roleAuthorization")
 
-const dataSanitizer = require("../util/dataSanitizer")
 
 const router = express.Router();
 
@@ -15,7 +14,7 @@ router.use(authorization());
 router.get("/get", async (req, res) => {
     try {
         const [result] = await connection.execute("SELECT * FROM przeznaczenia_dzialek");
-        res.status(200).json({success:true, message:"pobrano przeznaczenia działek", data:dataSanitizer(result)})
+        res.status(200).json({success:true, message:"pobrano przeznaczenia działek", data:result})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }

@@ -55,6 +55,7 @@ export default function LandsPage({}) {
             }).then(result => {
                 if(!result.error) {
                     setLands(result.data)
+                    console.log(result.data)
                 }
                 screens.loading.set(false);
             })
@@ -152,9 +153,7 @@ export default function LandsPage({}) {
                     
                     />
                     <section className="my-10">
-                        {
-                            lands.length == 0 && <h1 className="text-2xl font-bold">Dodaj filtry i kliknij wyszukaj żeby wyszukać działki</h1>
-                        }
+                       
                     </section>
                     <button className="base-btn text-2xl" onClick={() => {
                             setForm("insert")

@@ -10,14 +10,13 @@ const roleAuthorization = require("../middlewares/roleAuthorization")
 const checkDataExisting = require("../middlewares/checkDataExisting");
 
 
-const dataSanitizer = require("../util/dataSanitizer")
 
 const router = express.Router();
 
 router.get("/get", async (req, res) => {
     try {
         const [result] = await connection.execute("SELECT ID, imie, nazwisko, rola from uzytkownicy")
-        res.status(200).json({success:true, message:"pobrano użytkowników", data:dataSanitizer(result)})
+        res.status(200).json({success:true, message:"pobrano użytkowników", data:result})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
@@ -63,7 +62,7 @@ router.post("/login", [checkDataExisting(["ID_user", "password"]), async (req, r
                     httpOnly:true,
                     secure:false
                 })
-                res.status(200).json({success:true, message:"zalogowano pomyślnie", data:dataSanitizer(result)[0]})
+                res.status(200).json({success:true, message:"zalogowano pomyślnie", data:result[0]})
             }
         }
     } catch(err) {
