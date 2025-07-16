@@ -11,8 +11,8 @@ import LandPurposesPage from "./pages/LandPurposesPage";
 import GeneralPlansPage from "./pages/GeneralPlansPage";
 import MpzpPage from "./pages/MpzpPage";
 
-import LoadingScreen from "./components/LoadingScreen";
-import ErrorScreen from "./components/ErrorScreen";
+import LoadingScreen from "./components/screens/LoadingScreen";
+import ErrorScreen from "./components/screens/ErrorScreen";
 
 const userContext = createContext(null);
 const screenContext = createContext(null);

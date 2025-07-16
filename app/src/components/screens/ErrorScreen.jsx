@@ -2,7 +2,7 @@
 import { faWarning, faXmark} from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import { useContext } from "react"
-import { screenContext } from "../App"
+import { screenContext } from "../../App"
 
 export default function ErrorScreen({desc}) {
     const screens = useContext(screenContext);

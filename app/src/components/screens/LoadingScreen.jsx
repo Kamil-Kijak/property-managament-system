@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { screenContext } from "../App"
+import { screenContext } from "../../App"
 
 
 export default function LoadingScreen() {

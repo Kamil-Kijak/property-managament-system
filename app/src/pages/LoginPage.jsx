@@ -4,7 +4,7 @@ import { useForm } from "../hooks/useForm";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faWarning} from "@fortawesome/free-solid-svg-icons"
 
-import WarningScreen from "../components/WarningScreen";
+import WarningScreen from "../components/screens/WarningScreen";
 import { screenContext, userContext } from "../App";
 import { useNavigate } from "react-router-dom";
 import { useRequest } from "../hooks/useRequest";
@@ -40,16 +40,7 @@ export default function LoginPage({}) {
             }
         })
     }, [adminCreate]);
-
-    const checkFormData = () => {
-        if(Object.keys(registerFormData).length == 3) {
-            if(Object.keys(registerErrors).every(ele => registerErrors[ele] == null)) {
-                if(checkingPassword === registerFormData.password) {
-                    screens.warning.set(true);
-                }
-            }
-        }
-    }
+    
     const registerAdmin = () => {
         // admin register
         screens.warning.set(false);
@@ -133,7 +124,15 @@ export default function LoginPage({}) {
                         </section>
                         {checkingPassword !== (registerFormData.password || "") && <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">Hasła nie są takie same</p>}
                         <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{registerErrors[Object.keys(registerErrors).find(ele => registerErrors[ele] != null)]}</p>
-                        <button className="base-btn" onClick={checkFormData}>Stwórz konto</button>
+                        <button className="base-btn" onClick={() => {
+                            if(Object.keys(registerFormData).length == 3) {
+                                if(Object.keys(registerErrors).every(ele => registerErrors[ele] == null)) {
+                                    if(checkingPassword === registerFormData.password) {
+                                        screens.warning.set(true);
+                                    }
+                                }
+                            }
+                        }}>Stwórz konto</button>
                         <button className="base-btn" onClick={() => setAdminCreate(false)}>Powrót</button>
                     </section>
                     :

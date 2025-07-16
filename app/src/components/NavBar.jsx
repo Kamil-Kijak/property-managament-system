@@ -12,8 +12,7 @@ import { useContext, useRef, useState, useEffect} from "react"
 export default function NavBar({requiredRoles = []}) {
     const screens = useContext(screenContext);
     const user = useContext(userContext);
-    const location = useLocation()
-    const [scrollButtonVisible, setScrollButtonVisible] = useState(true);
+    const location = useLocation();
     const scrollContainer = useRef();
 
     const navigate = useNavigate()
@@ -42,25 +41,6 @@ export default function NavBar({requiredRoles = []}) {
             screens.loading.set(false);
         });
     }
-    const scrollDown = () => {
-        const element = scrollContainer.current;
-        if(element) {
-            element.scrollTo({
-                top: element.scrollHeight + 1,
-                behavior: "smooth",
-            })
-        }
-    }
-    const handleScroll = (e) => {
-        const el = e.target;
-        if (el.scrollTop + el.clientHeight >= el.scrollHeight) {
-            if(scrollButtonVisible == true)
-                setScrollButtonVisible(false);
-        } else {
-            if(scrollButtonVisible == false)
-                setScrollButtonVisible(true);
-        }
-    };
     return (
         <nav className="h-screen min-h-screen border-r-4 border-green-500 flex flex-col items-start w-[220px] relative">
             <section className="flex flex-col items-center text-xl px-5">
@@ -70,7 +50,7 @@ export default function NavBar({requiredRoles = []}) {
                 <button className="base-btn text-md" onClick={logout}>Wyloguj się <FontAwesomeIcon icon={faRightFromBracket}/></button>
                 <div className="bg-green-500 w-full h-1.5 rounded-2xl mt-3"></div>
             </section>
-            <section ref={scrollContainer} className="flex flex-col items-start justify-start mt-5 w-full overflow-y-scroll scrollbar-hide min-h-[70%]" onScroll={handleScroll}>
+            <section ref={scrollContainer} className="flex flex-col items-start justify-start mt-5 w-full overflow-y-scroll scrollbar-hide min-h-[70%]">
                 <button className={location.pathname == '/lands' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/lands")}><FontAwesomeIcon icon={faHouse}/> Działki</button>
                 <button className={location.pathname == '/owners' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/owners")}><FontAwesomeIcon icon={faUsers}/> Właściciele działek</button>
                 <button className={location.pathname == '/renters' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/renters")}><FontAwesomeIcon icon={faUsers}/> Dzierżawcy</button>
@@ -93,12 +73,6 @@ export default function NavBar({requiredRoles = []}) {
                         <button className={location.pathname == '/mpzp' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/mpzp")}><FontAwesomeIcon icon={faCity}/> MPZP</button>
                     </section>
                 }
-            {
-                scrollButtonVisible && 
-                    <section onClick={scrollDown} className="w-[50px] h-[50px] absolute bg-white border-4 border-green-600 top-[calc(100%-50px)] left-[calc(50%-25px)] rounded-full animate-bounce flex justify-center items-center cursor-pointer">
-                        <FontAwesomeIcon icon={faArrowDown} className="text-xl font-bold text-green-600"/>
-                    </section>
-            }
             </section>
         </nav>
     )
