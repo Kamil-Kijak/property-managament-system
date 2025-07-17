@@ -97,7 +97,7 @@ export default function MpzpPage({}) {
                                     <p className="mx-10 text-xl">{ele.opis}</p>
                                 </section>
                                 <section className="flex flex-col items-center">
-                                    <button className="base-btn" onClick={() => {
+                                    <button className="info-btn" onClick={() => {
                                         setForm("edit");
                                         setEditMpzpID(ele.ID)
                                         setEditFormData({

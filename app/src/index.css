@@ -3,6 +3,10 @@
 .base-btn {
     @apply bg-green-500 text-white font-bold rounded-xl p-2 my-2 hover:bg-green-600 transition-colors duration-150 ease-in-out cursor-pointer
 }
+.info-btn {
+    @apply bg-blue-600 text-white font-bold rounded-xl p-2 my-2 hover:bg-blue-700 transition-colors duration-150 ease-in-out cursor-pointer
+}
+
 .base-card {
     @apply shadow-2xl shadow-black/40 py-2 flex flex-col items-center px-6 rounded-xl
 }

@@ -12,7 +12,7 @@ const router = express.Router();
 router.use(authorization());
 
 router.get("/get", [checkDataExisting(["ID_land"])], async (req, res) => {
-    const {ID_land} = req.body;
+    const {ID_land} = req.query;
     try {
         const [result] = await connection.execute("SELECT pd.powierzchnia, kg.klasa, kg.przelicznik, kg.podatek_za_hektar FROM powierzchnie_dzialek pd INNER JOIN klasy_gruntu kg kg.ID=pd.ID_klasy WHERE pd.ID_dzialki = ?", [ID_land]);
         res.status(200).json({success:true, message:`pobrano powierzchnie dzialki ${ID_land}`, data:result})
@@ -40,7 +40,7 @@ router.post("/update", [checkDataExisting(["ID_area", "ID_class", "area"])], asy
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 })
-router.post("/delete", [checkDataExisting(["ID_area"])], async (req, res) => {
+router.post("/delete", [roleAuthorization(["KSIĘGOWOŚĆ"]), checkDataExisting(["ID_area"])], async (req, res) => {
     const {ID_area} = req.body;
     try {
         const [result] = await connection.execute("DELETE FROM powierzchnie_dzialek WHERE ID = ?", [ID_area]);

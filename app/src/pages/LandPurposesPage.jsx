@@ -96,7 +96,7 @@ export default function LandPurposesPage({}) {
                                     <h1 className="mx-10 text-2xl">{ele.typ}</h1>
                                 </section>
                                 <section className="flex flex-col items-center">
-                                    <button className="base-btn" onClick={() => {
+                                    <button className="info-btn" onClick={() => {
                                         setForm("edit");
                                         setEditLandPurposeID(ele.ID)
                                         setEditFormData({

@@ -12,7 +12,7 @@ const router = express.Router();
 router.use(authorization());
 
 router.get("/get", [roleAuthorization(["KSIEGOWOSC"]), checkDataExisting(["comune", "disctrict", "province"])], async (req, res) => {
-    const {comune, disctrict, province} = req.body;
+    const {comune, disctrict, province} = req.query;
     try {
         const [result] = await connection.execute("SELECT k.* FROM klasy_gruntu k INNER JOIN lokalizacje l on k.ID_lokalizacji=l.ID WHERE l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ?", [comune, disctrict, province]);
         res.status(200).json({success:true, message:`pobrano klasy gruntu dla ${comune}, ${disctrict}, ${province}`, data:result})

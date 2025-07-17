@@ -4,6 +4,7 @@ const express = require("express")
 const http = require("http");
 const cookieParser = require("cookie-parser")
 const path = require("path");
+const rateLimit = require("express-rate-limit")
 
 
 // routes variables
@@ -21,7 +22,14 @@ const rentersRoutes = require("./routes/renters");
 const areasRoutes = require("./routes/Areas");
 
 const app = express();
+
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 150,
+});
+
 // middlewares
+app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
 

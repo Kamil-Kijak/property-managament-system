@@ -116,7 +116,7 @@ export default function UsersPage({}) {
                                     <h1 className="mx-10 text-xl font-bold">{ele.rola}</h1>
                                 </section>
                                 <section className="flex flex-col items-center">
-                                    <button className="base-btn" onClick={() => {
+                                    <button className="info-btn" onClick={() => {
                                         setForm("edit");
                                         setEditUserID(ele.ID)
                                         setEditFormData({

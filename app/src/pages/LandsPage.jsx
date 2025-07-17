@@ -11,6 +11,10 @@ import {useLocalizations} from "../hooks/useLocalizations"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import InsertLand from "../forms/InsertLand";
+import Land from "../components/Land";
+
+import WarningScreen from "../components/screens/WarningScreen";
+import EditLand from "../forms/EditLand";
 
 export default function LandsPage({}) {
     const screens = useContext(screenContext);
@@ -25,6 +29,7 @@ export default function LandsPage({}) {
     const [landPurposes, setLandPurposes] = useState([]);
     const [lands, setLands] = useState([]);
     const [form, setForm] = useState("");
+    const [editLandID, setEditLandID] = useState();
     const request = useRequest();
 
     useEffect(() => {
@@ -35,6 +40,7 @@ export default function LandsPage({}) {
                 screens.loading.set(false);
             }
         })
+        search()
     }, []);
 
     const search = () => {
@@ -55,7 +61,24 @@ export default function LandsPage({}) {
             }).then(result => {
                 if(!result.error) {
                     setLands(result.data)
-                    console.log(result.data)
+                }
+                screens.loading.set(false);
+            })
+    }
+
+    const requestDelete = () => {
+        screens.warning.set(false)
+        screens.loading.set(true);
+        request("/api/lands/delete", {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({ID_land:editLandID})
+            }).then(result => {
+                if(!result.error) {
+                    search();
                 }
                 screens.loading.set(false);
             })
@@ -63,6 +86,21 @@ export default function LandsPage({}) {
 
     return(
         <main className="flex justify-between">
+            <WarningScreen
+                title="Uwaga"
+                cancelCallback={() => screens.warning.set(false)}
+                acceptCallback={() => requestDelete()}
+                description={
+                    <>
+                        <p className="text-red-600 font-bold">
+                            Kiedy usuniesz tą działkę utracisz wszystkie dane na temat tej działki
+                        </p>
+                        <p className="text-white font-bold text-lg mt-5">
+                            Czy napewno chcesz usunąć tą działkę?
+                        </p>
+                    </>
+                }
+            />
             <NavBar requiredRoles={[]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative">
                 {
@@ -142,18 +180,22 @@ export default function LandsPage({}) {
                         </section>
                         <section className="ml-1 w-[100px]">
                             <h1 className="font-bold">Powyżej ha</h1>
-                            <input type="number" placeholder="ha..." className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" min={0} onChange={(e) => setSearchFilters(prev => ({...prev, high_area_filter:e.target.value}))}/>
+                            <input type="number" placeholder="ha..." className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" min={0} onChange={(e) => setSearchFilters(prev => ({...prev, low_area_filter:e.target.value}))}/>
                         </section>
                         <section className="ml-1 w-[100px]">
                             <h1 className="font-bold">Poniżej ha</h1>
-                            <input type="number" placeholder="ha..." className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" min={0} onChange={(e) => setSearchFilters(prev => ({...prev, low_area_filter:e.target.value}))}/>
+                            <input type="number" placeholder="ha..." className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" min={0} onChange={(e) => setSearchFilters(prev => ({...prev, high_area_filter:e.target.value}))}/>
                         </section>
                         </>
                     }
                     
                     />
                     <section className="my-10">
-                       
+                       {
+                            lands.map((obj, index) => {
+                                return ( <Land index={index} obj={obj} key={index} setEditLandID={setEditLandID} EditLand={(ID) => {setForm("edit");setEditLandID(ID)}}/>)
+                            })
+                       }
                     </section>
                     <button className="base-btn text-2xl" onClick={() => {
                             setForm("insert")
@@ -161,7 +203,10 @@ export default function LandsPage({}) {
                     </>
                 }
                 {
-                    form == "insert" && <InsertLand onClose={() => setForm("")}/>
+                    form == "insert" && <InsertLand onClose={() => {setForm(""); search()}}/>
+                }
+                {
+                    form == "edit" && <EditLand onClose={() => {setForm(""); search()}} editLandID={editLandID}/>
                 }
             </section>
         </main>
