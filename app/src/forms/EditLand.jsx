@@ -47,32 +47,16 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
         })
         const request = useRequest();
         const fetchAllData = async () => {
-            const ownersResult = await request("/api/owners/get_all", {credentials:"include"});
-            if(!ownersResult.error) {
-                setSelectData(prev => ({...prev, owners:ownersResult.data}))
-            }
-            const landTypesResult = await request("/api/land_types/get", {credentials:"include"});
-            if(!landTypesResult.error) {
-                setSelectData(prev => ({...prev, land_types:landTypesResult.data}))
-            }
-            const landPurposesResult = await request("/api/land_purposes/get", {credentials:"include"});
-            if(!landPurposesResult.error) {
-                setSelectData(prev => ({...prev, land_purposes:landPurposesResult.data}))
-            }
-            const generalPlansResult = await request("/api/general_plans/get", {credentials:"include"});
-            if(!generalPlansResult.error) {
-                setSelectData(prev => ({...prev, general_plans:generalPlansResult.data}))
-            }
-            const mpzpResult = await request("/api/mpzp/get", {credentials:"include"});
-            if(!mpzpResult.error) {
-                setSelectData(prev => ({...prev, mpzp:mpzpResult.data}))
+            screens.loading.set(true);
+            const landSelectData = await request("/api/lands/get_insertion_required_data", {credentials:"include"});
+            if(!landSelectData.error) {
+                setSelectData({...landSelectData.data})
             }
             const actualLandData = await request(`/api/lands/get_land?ID_land=${editLandID}`, {credentials:"include"});
             if(!actualLandData.error) {
                 setLocalizations({town:actualLandData.data.miejscowosc, commune:actualLandData.data.gmina, district:actualLandData.data.powiat, province:actualLandData.data.wojewodztwo})
                 const objectsToDelete = ["miejscowosc", "gmina", "powiat", "wojewodztwo"]
                 objectsToDelete.forEach(obj => delete actualLandData[obj]);
-                console.log(actualLandData.data.hipoteka);
                 setLandFormData({
                     land_serial_number:actualLandData.data.numer_seryjny_dzialki,
                     land_number:actualLandData.data.nr_dzialki,
@@ -92,12 +76,10 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                     case_number:actualLandData.data.nr_aktu
                 });
             }
-
             screens.loading.set(false);
         }
         
         useEffect(() => {
-            screens.loading.set(true);
             fetchAllData();
         }, []);
 
@@ -121,18 +103,18 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
         }
 
         const requestEditLand = async () => {
-        screens.loading.set(true);
-        const result = await request("/api/lands/update", {
-                    method:"POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body:JSON.stringify({...landFormData, ...localizations, ID_land:editLandID})
-                })
-        if(!result.error) {
-            onClose();
-        }
-        screens.loading.set(false);
+            screens.loading.set(true);
+            const result = await request("/api/lands/update", {
+                        method:"POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body:JSON.stringify({...landFormData, ...localizations, ID_land:editLandID})
+                    })
+            if(!result.error) {
+                onClose();
+            }
+            screens.loading.set(false);
     }
 
     return (

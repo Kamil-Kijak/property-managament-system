@@ -31,9 +31,9 @@ export default function LandPurposesPage({}) {
                 }
             })
         }
-        useEffect(() => {
-            getLandPurposes();
-        }, [])
+    useEffect(() => {
+        getLandPurposes();
+    }, [])
     const requestDelete = () => {
         screens.warning.set(false)
         screens.loading.set(true);

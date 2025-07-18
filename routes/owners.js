@@ -9,7 +9,7 @@ const roleAuthorization = require("../middlewares/roleAuthorization")
 
 const router = express.Router();
 
-//router.use(authorization());
+router.use(authorization());
 
 router.get("/get_all", async (req, res) => {
     try {
@@ -22,7 +22,7 @@ router.get("/get_all", async (req, res) => {
 router.get("/get", [checkDataExisting(["name_filter", "surname_filter"])], async (req, res) => {
     const {name_filter, surname_filter} = req.query;
     try {
-        const [result] = await connection.execute("SELECT w.*, d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.nazwa as miejscowosc, l.gmina, l.powiat, l.wojewodztwo, p.typ FROM wlasciciele w INNER JOIN dzialki d on d.ID_wlasciciela=w.ID INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN przeznaczenia_dzialek p on p.ID=d.ID_przeznaczenia WHERE w.imie LIKE ? AND w.nazwisko LIKE ?", [`%${name_filter}`, `%${surname_filter}`]);
+        const [result] = await connection.execute("SELECT w.*, d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.nazwa as miejscowosc, l.gmina, l.powiat, l.wojewodztwo, p.typ FROM wlasciciele w INNER JOIN dzialki d on d.ID_wlasciciela=w.ID INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN przeznaczenia_dzialek p on p.ID=d.ID_przeznaczenia WHERE w.imie LIKE ? AND w.nazwisko LIKE ? ORDER BY w.nazwisko", [`%${name_filter}%`, `%${surname_filter}%`]);
         res.status(200).json({success:true, message:"pobrano włascicieli i ich dzialki",data:result})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

@@ -13,6 +13,7 @@ import MpzpPage from "./pages/MpzpPage";
 
 import LoadingScreen from "./components/screens/LoadingScreen";
 import ErrorScreen from "./components/screens/ErrorScreen";
+import OwnersPage from "./pages/OwnersPage";
 
 const userContext = createContext(null);
 const screenContext = createContext(null);
@@ -63,7 +64,7 @@ export default function App({}) {
                         <Route path="/login" element={<LoginPage/> }/>
                         <Route path="/" element={<MainPage/>}/>
                         <Route path="/lands" element={<LandsPage/>}/>
-                        <Route path="/owners" element={<h1>Hello world</h1>}/>
+                        <Route path="/owners" element={<OwnersPage/>}/>
                         <Route path="/renters" element={<h1>Hello world</h1>}/>
                         <Route path="/areas" element={<h1>Hello world</h1>}/>
                         <Route path="/groundclasses" element={<h1>Hello world</h1>}/>

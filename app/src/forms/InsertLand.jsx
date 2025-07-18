@@ -46,43 +46,27 @@ export default function InsertLand({onClose = () => {}}) {
     })
     const request = useRequest();
     const fetchAllData = async () => {
-        const ownersResult = await request("/api/owners/get_all", {credentials:"include"});
-        if(!ownersResult.error) {
-            setSelectData(prev => ({...prev, owners:ownersResult.data}))
-        }
-        const landTypesResult = await request("/api/land_types/get", {credentials:"include"});
-        if(!landTypesResult.error) {
-            setSelectData(prev => ({...prev, land_types:landTypesResult.data}))
-        }
-        const landPurposesResult = await request("/api/land_purposes/get", {credentials:"include"});
-        if(!landPurposesResult.error) {
-            setSelectData(prev => ({...prev, land_purposes:landPurposesResult.data}))
-        }
-        const generalPlansResult = await request("/api/general_plans/get", {credentials:"include"});
-        if(!generalPlansResult.error) {
-            setSelectData(prev => ({...prev, general_plans:generalPlansResult.data}))
-        }
-        const mpzpResult = await request("/api/mpzp/get", {credentials:"include"});
-        if(!mpzpResult.error) {
-            setSelectData(prev => ({...prev, mpzp:mpzpResult.data}))
-        }
+        screens.loading.set(true);
+        const landSelectData = await request("/api/lands/get_insertion_required_data", {credentials:"include"});
+            if(!landSelectData.error) {
+                setSelectData({...landSelectData.data})
+            }
         screens.loading.set(false);
     }
     
     useEffect(() => {
-        screens.loading.set(true);
         fetchAllData();
     }, []);
 
     const requestInsertOwner = async () => {
         screens.loading.set(true);
         const result = await request("/api/owners/insert", {
-                    method:"POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body:JSON.stringify({...ownerFormData})
-                })
+                method:"POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({...ownerFormData})
+            })
         if(!result.error) {
             await fetchAllData();
             ownerSelectRef.current.value = result.insertID;

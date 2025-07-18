@@ -27,6 +27,10 @@ export default function Land({obj, setEditLandID, EditLand}) {
                     <p>{obj.numer_seryjny_dzialki}</p>
                 </section>
                 <section className="flex flex-col items-center gap-y-3">
+                    <p className="font-bold">Obręb</p>
+                    <p>{obj.numer_seryjny_dzialki.split(".")[1]}</p>
+                </section>
+                <section className="flex flex-col items-center gap-y-3">
                     <p className="font-bold">Numer działki</p>
                     <p>{obj.nr_dzialki}</p>
                 </section>
@@ -42,10 +46,6 @@ export default function Land({obj, setEditLandID, EditLand}) {
                     <p className="font-bold mb-3">Lokalizacja</p>
                     <p>{obj.wojewodztwo}, {obj.powiat}</p>
                     <p>{obj.gmina}, {obj.miejscowosc}</p>
-                </section>
-                <section className="flex flex-col items-center gap-y-3">
-                    <p className="font-bold">Dzierżawiona</p>
-                    <p>{obj.ID_dzierzawy ? "TAK" : "NIE"}</p>
                 </section>
             </section>
             {
@@ -78,6 +78,10 @@ export default function Land({obj, setEditLandID, EditLand}) {
                         </section>
                     </section>
                     <section className="flex justify-around gap-x-5">
+                        <section className="flex flex-col items-center gap-y-3">
+                            <p className="font-bold">Dzierżawiona</p>
+                            <p>{obj.ID_dzierzawy ? "TAK" : "NIE"}</p>
+                        </section>
                         <section className="flex flex-col items-center gap-y-3">
                             <p className="font-bold">Właściciel</p>
                             <p>{obj.w_imie} {obj.w_nazwisko}</p>
