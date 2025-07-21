@@ -1,5 +1,4 @@
 
-import { useContext, useEffect } from "react"
 import {useNavigate} from "react-router-dom"
 
 import NavBar from "../components/NavBar";

@@ -1,11 +1,10 @@
 
-import { useContext } from "react";
 import { useRequest } from "../hooks/useRequest";
-import { screenContext } from "../App";
 import { useForm } from "../hooks/useForm";
+import { useLoadingStore } from "../hooks/useScreensStore";
 
 export default function InsertGeneralPlan({setForm = () => {}, getGeneralPlans = () => {}}) {
-    const screens = useContext(screenContext);
+    const updateLoading = useLoadingStore((state) => state.update)
     const request = useRequest();
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
@@ -14,7 +13,7 @@ export default function InsertGeneralPlan({setForm = () => {}, getGeneralPlans =
     })
 
     const requestInsertGeneralPlan = () => {
-        screens.loading.set(true);
+        updateLoading(true);
         setForm(null);
         request("/api/general_plans/insert", {
                 method:"POST",
@@ -27,7 +26,7 @@ export default function InsertGeneralPlan({setForm = () => {}, getGeneralPlans =
                 if(!result.error) {
                     getGeneralPlans();
                 }
-                screens.loading.set(false);
+                updateLoading(false);
             })
     }
     return (

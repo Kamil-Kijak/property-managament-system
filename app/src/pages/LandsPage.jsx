@@ -1,8 +1,6 @@
 
 import NavBar from "../components/NavBar"
 
-import { screenContext, userContext } from "../App";
-import { useContext } from "react";
 import SearchBar from "../components/SearchBar";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -13,11 +11,13 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import InsertLand from "../forms/InsertLand";
 import Land from "../components/Land";
 
-import WarningScreen from "../components/screens/WarningScreen";
 import EditLand from "../forms/EditLand";
+import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 
 export default function LandsPage({}) {
-    const screens = useContext(screenContext);
+    const loadingUpdate = useLoadingStore((state) => state.update);
+    const warningUpdate = useWarningStore((state) => state.warning);
+    
     const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
     const [searchFilters, setSearchFilters] = useState({
         serial_filter:"",
@@ -33,18 +33,18 @@ export default function LandsPage({}) {
     const request = useRequest();
 
     useEffect(() => {
-        screens.loading.set(true);
+        loadingUpdate(true);
         request("/api/land_purposes/get", {credentials:"include"}).then(result => {
             if(!result.error) {
                 setLandPurposes(result.data)
-                screens.loading.set(false);
             }
+            loadingUpdate(false);
         })
         search()
     }, []);
 
     const search = () => {
-        screens.loading.set(true);
+        loadingUpdate(true);
         const params = new URLSearchParams({
             ...searchFilters,
             province_filter: localizations.province,
@@ -62,45 +62,30 @@ export default function LandsPage({}) {
                 if(!result.error) {
                     setLands(result.data)
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
 
-    const requestDelete = () => {
-        screens.warning.set(false)
-        screens.loading.set(true);
+    const requestDelete = (ID) => {
+        warningUpdate(false);
+        loadingUpdate(true);
         request("/api/lands/delete", {
                 method:"POST",
                 credentials:"include",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_land:editLandID})
+                body:JSON.stringify({ID_land:ID})
             }).then(result => {
                 if(!result.error) {
                     search();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
 
     return(
         <main className="flex justify-between">
-            <WarningScreen
-                title="Uwaga"
-                cancelCallback={() => screens.warning.set(false)}
-                acceptCallback={() => requestDelete()}
-                description={
-                    <>
-                        <p className="text-red-600 font-bold">
-                            Kiedy usuniesz tą działkę utracisz wszystkie dane na temat tej działki
-                        </p>
-                        <p className="text-white font-bold text-lg mt-5">
-                            Czy napewno chcesz usunąć tą działkę?
-                        </p>
-                    </>
-                }
-            />
             <NavBar requiredRoles={[]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative">
                 {
@@ -193,7 +178,7 @@ export default function LandsPage({}) {
                     <section className="my-10">
                        {
                             lands.map((obj, index) => {
-                                return ( <Land index={index} obj={obj} key={index} setEditLandID={setEditLandID} editLand={(ID) => {setForm("edit");setEditLandID(ID)}}/>)
+                                return ( <Land index={index} obj={obj} key={index} requestDelete={requestDelete} editLand={(ID) => {setForm("edit");setEditLandID(ID)}}/>)
                             })
                        }
                     </section>

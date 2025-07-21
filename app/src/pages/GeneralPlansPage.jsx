@@ -1,17 +1,18 @@
 
 
-import { useContext, useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import NavBar from "../components/NavBar"
 import { useRequest } from "../hooks/useRequest";
-import { screenContext } from "../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import WarningScreen from "../components/screens/WarningScreen";
 import { useForm } from "../hooks/useForm";
 import InsertGeneralPlan from "../forms/InsertGeneralPlan";
+import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 
 export default function GeneralPlansPage({}) {
-    const screens = useContext(screenContext)
+    const loadingUpdate = useLoadingStore((state) => state.update);
+    const warningUpdate = useWarningStore((state) => state.update);
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
@@ -25,36 +26,38 @@ export default function GeneralPlansPage({}) {
 
 
     const getGeneralPlans = () => {
-            screens.loading.set(true);
-            request("/api/general_plans/get", {}).then(result => {
-                if(!result.error) {
-                    setgeneralPlans(result.data)
-                    screens.loading.set(false);
-                }
-            })
-        }
-        useEffect(() => {
-            getGeneralPlans();
-        }, [])
-    const requestDelete = () => {
-        screens.warning.set(false)
-        screens.loading.set(true);
+        loadingUpdate(true);
+        request("/api/general_plans/get", {}).then(result => {
+            if(!result.error) {
+                setgeneralPlans(result.data)
+            }
+            loadingUpdate(false);
+        })
+    }
+    
+    useEffect(() => {
+        getGeneralPlans();
+    }, [])
+
+    const requestDelete = (ID) => {
+        warningUpdate(false);
+        loadingUpdate(true);
         request("/api/general_plans/delete", {
                 method:"POST",
                 credentials:"include",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_general_plan:editGeneralPlanID})
+                body:JSON.stringify({ID_general_plan:ID})
             }).then(result => {
                 if(!result.error) {
                     getGeneralPlans();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
     const requestEditGeneralPlan = () => {
-        screens.loading.set(true);
+        loadingUpdate(true);
         setForm(null);
         request("/api/general_plans/update", {
                 method:"POST",
@@ -67,7 +70,7 @@ export default function GeneralPlansPage({}) {
                 if(!result.error) {
                     getGeneralPlans();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
     return (
@@ -107,8 +110,16 @@ export default function GeneralPlansPage({}) {
                                         })
                                     }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                                     <button className="warning-btn" onClick={() => {
-                                        screens.warning.set(true)
-                                        setEditGeneralPlanID(ele.ID);
+                                        warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
+                                            <>
+                                                <p className="text-red-600 font-bold">
+                                                    Usunięcie tego planu ogólnego spowoduje że każda działka która ma ten plan ogólny w systemie zostanie usunięta nieodwracalnie
+                                                    </p>
+                                                <p className="text-white font-bold text-lg mt-5">
+                                                    Czy napewno chcesz usunąć ten plan ogólny?
+                                                </p>
+                                            </>
+                                        )
                                     }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                                 </section>
                             </section>

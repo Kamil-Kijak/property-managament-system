@@ -1,10 +1,11 @@
-import { useContext } from "react";
+
 import { useRequest } from "../hooks/useRequest";
-import { screenContext } from "../App";
 import { useForm } from "../hooks/useForm";
 
+import { useLoadingStore } from "../hooks/useScreensStore";
+
 export default function InsertLandType({setForm = () => {}, getLandTypes = () => {}}) {
-    const screens = useContext(screenContext);
+    const loadingUpdate = useLoadingStore((state) => state.update);
     const request = useRequest();
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
@@ -12,7 +13,7 @@ export default function InsertLandType({setForm = () => {}, getLandTypes = () =>
     })
 
     const requestInsertLandType = () => {
-        screens.loading.set(true);
+        loadingUpdate(true);
         setForm(null);
         request("/api/land_types/insert", {
                 method:"POST",
@@ -25,7 +26,7 @@ export default function InsertLandType({setForm = () => {}, getLandTypes = () =>
                 if(!result.error) {
                     getLandTypes();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
 

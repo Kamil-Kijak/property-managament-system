@@ -1,13 +1,14 @@
 import { faEye, faPen, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
-import { screenContext, userContext } from "../App";
+import {useUserStore} from "../hooks/useUserStore"
+import { useWarningStore } from "../hooks/useScreensStore";
 
-export default function Land({obj, setEditLandID, editLand}) {
-    const user = useContext(userContext);
-    const screens = useContext(screenContext)
+export default function Land({obj, editLand, requestDelete}) {
+
+    const warningUpdate = useWarningStore((state) => state.update)
+    const user = useUserStore((state) => state.user)
     const [showingMore, setShowingMore] = useState(false);
     const showingMoreToggle = useCallback(() => {
         setShowingMore(prev => !prev)
@@ -19,7 +20,16 @@ export default function Land({obj, setEditLandID, editLand}) {
             <section className="flex items-center justify-start gap-x-5">
                 <button className="base-btn" onClick={showingMoreToggle}><FontAwesomeIcon icon={faEye}/> Pokaż {showingMore ? "mniej":"więcej"}</button>
                 <button className="info-btn" onClick={() => editLand(obj.ID)}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
-                {user.value.rola === "ADMIN" && <button className="warning-btn" onClick={() => {screens.warning.set(true);setEditLandID(obj.ID)}}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>}
+                {user.rola === "ADMIN" && <button className="warning-btn" onClick={() => {
+                    warningUpdate(true, "Uwaga", () => requestDelete(obj.ID), () => warningUpdate(false), <>
+                        <p className="text-red-600 font-bold">
+                            Kiedy usuniesz tą działkę utracisz wszystkie dane na temat tej działki
+                        </p>
+                        <p className="text-white font-bold text-lg mt-5">
+                            Czy napewno chcesz usunąć tą działkę?
+                        </p>
+                    </>)
+                    }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>}
             </section>
             <section className="flex justify-around gap-x-5">
                 <section className="flex flex-col items-center gap-y-3">

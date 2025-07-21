@@ -1,14 +1,14 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useLocalizations } from "../hooks/useLocalizations";
-import { useContext, useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState } from "react";
 import { useRequest } from "../hooks/useRequest";
-import { screenContext } from "../App";
 import { useForm } from "../hooks/useForm";
+import { useLoadingStore } from "../hooks/useScreensStore";
 
 export default function EditLand({onClose = () => {}, editLandID = 0}) {
 
-    const screens = useContext(screenContext);
+    const updateLoading = useLoadingStore((state) => state.update)
 
     const ownerSelectRef = useRef(null);
     const ownerInputRefs = useRef({});
@@ -47,7 +47,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
         })
         const request = useRequest();
         const fetchAllData = async () => {
-            screens.loading.set(true);
+            updateLoading(true)
             const landSelectData = await request("/api/lands/get_insertion_required_data", {credentials:"include"});
             if(!landSelectData.error) {
                 setSelectData({...landSelectData.data})
@@ -76,7 +76,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                     case_number:actualLandData.data.nr_aktu
                 });
             }
-            screens.loading.set(false);
+            updateLoading(false);
         }
         
         useEffect(() => {
@@ -84,7 +84,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
         }, []);
 
         const requestInsertOwner = async () => {
-            screens.loading.set(true);
+            updateLoading(true);
             const result = await request("/api/owners/insert", {
                         method:"POST",
                         headers: {
@@ -100,10 +100,11 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                 ownerInputRefs.current["surname"].value = ""
                 ownerInputRefs.current["phone"].value = ""
             }
+            updateLoading(false);
         }
 
         const requestEditLand = async () => {
-            screens.loading.set(true);
+            updateLoading(true);
             const result = await request("/api/lands/update", {
                         method:"POST",
                         headers: {
@@ -114,7 +115,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
             if(!result.error) {
                 onClose();
             }
-            screens.loading.set(false);
+            updateLoading(false);
     }
 
     return (

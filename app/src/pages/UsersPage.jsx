@@ -4,17 +4,19 @@ import { FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faUserTie, faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import NavBar from "../components/NavBar"
 
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRequest } from "../hooks/useRequest";
-import WarningScreen from "../components/screens/WarningScreen";
-import { screenContext, userContext } from "../App";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../hooks/useForm";
 import InsertUser from "../forms/InsertUser";
+import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
+import { useUserStore } from "../hooks/useUserStore";
 
 export default function UsersPage({}) {
-    const screens = useContext(screenContext)
-    const user = useContext(userContext)
+
+    const loadingUpdate = useLoadingStore((state) => state.update);
+    const warningUpdate = useWarningStore((state) => state.update);
+    const user = useUserStore((state) => state.user);
 
 
     const [editUserID, setEditUserID] = useState(null);
@@ -32,12 +34,12 @@ export default function UsersPage({}) {
     )
     
     const getUsers = () => {
-        screens.loading.set(true);
+        loadingUpdate(true);
         request("/api/user/get", {}).then(result => {
             if(!result.error) {
                 setUsers(result.data)
-                screens.loading.set(false);
             }
+            loadingUpdate(false);
         })
     }
     useEffect(() => {
@@ -46,7 +48,7 @@ export default function UsersPage({}) {
 
 
     const requestEditUser = () => {
-        screens.loading.set(true);
+        loadingUpdate(true);
         setForm(null);
         request("/api/user/update", {
                 method:"POST",
@@ -60,30 +62,30 @@ export default function UsersPage({}) {
                     getUsers();
                     checkActualUserDataChange(editUserID);
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
-    const requestDelete = () => {
-        screens.warning.set(false)
-        screens.loading.set(true);
+    const requestDelete = (ID) => {
+        warningUpdate(false);
+        loadingUpdate(true);
         request("/api/user/delete", {
                 method:"POST",
                 credentials:"include",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_user:editUserID})
+                body:JSON.stringify({ID_user:ID})
             }).then(result => {
                 if(!result.error) {
                     getUsers();
-                    checkActualUserDataChange(editUserID);
+                    checkActualUserDataChange(ID);
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
 
     const checkActualUserDataChange = (editedUserID) => {
-        if(editedUserID == user.value.ID) {
+        if(editedUserID == user.ID) {
             request("/api/user/logout", {credentials:"include"}).then(result => {
                 if(!result.error) {
                     navigate("/login")
@@ -94,16 +96,6 @@ export default function UsersPage({}) {
 
     return(
         <main className="flex justify-between">
-            <WarningScreen
-                title="Uwaga"
-                cancelCallback={() => screens.warning.set(false)}
-                acceptCallback={() => requestDelete()}
-                description={
-                    <p className="text-white font-bold text-lg mt-5">
-                        Czy napewno chcesz usunąć tego użytkownika?
-                    </p>
-                }
-            />
             <NavBar requiredRoles={["ADMIN"]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
                 <section className="my-10">
@@ -126,8 +118,11 @@ export default function UsersPage({}) {
                                         })
                                     }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                                     <button className="warning-btn" onClick={() => {
-                                        screens.warning.set(true)
-                                        setEditUserID(ele.ID);
+                                        warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
+                                            <p className="text-white font-bold text-lg mt-5">
+                                                Czy napewno chcesz usunąć tego użytkownika?
+                                            </p>
+                                        )
                                     }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                                 </section>
                             </section>

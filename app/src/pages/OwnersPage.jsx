@@ -1,17 +1,17 @@
 
-import { useContext, useEffect, useState } from "react"
+import {useEffect, useState } from "react"
 import NavBar from "../components/NavBar"
 import SearchBar from "../components/SearchBar";
 import { useRequest } from "../hooks/useRequest";
-import { screenContext } from "../App";
 import Owner from "../components/Owner";
-import WarningScreen from "../components/screens/WarningScreen";
 
 import { useForm } from "../hooks/useForm";
+import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 
 export default function OwnersPage({}) {
 
-    const screens = useContext(screenContext)
+    const loadingUpdate = useLoadingStore((state) => state.update);
+    const warningUpdate = useWarningStore((state) => state.update);
 
     const [searchFilters, setSearchFilters] = useState({
         name_filter:"",
@@ -37,7 +37,7 @@ export default function OwnersPage({}) {
         const params = new URLSearchParams({
             ...searchFilters,
         });
-        screens.loading.set(true);
+        loadingUpdate(true);
         request(`/api/owners/get?${params.toString()}`, {
                 method:"GET",
                 credentials:"include",
@@ -58,7 +58,7 @@ export default function OwnersPage({}) {
                     })
                     setOwners(owners);
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
 
@@ -66,27 +66,27 @@ export default function OwnersPage({}) {
         search();
     }, [])
 
-    const requestDelete = () => {
-        screens.warning.set(false)
-        screens.loading.set(true);
+    const requestDelete = (ID) => {
+        warningUpdate(false);
+        loadingUpdate(true);
         request("/api/owners/delete", {
                 method:"POST",
                 credentials:"include",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_owner:ownerEditID})
+                body:JSON.stringify({ID_owner:ID})
             }).then(result => {
                 if(!result.error) {
                     search();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
 
     const requestEdit = () => {
         setForm("")
-        screens.loading.set(true);
+        loadingUpdate(true);
         request("/api/owners/update", {
                 method:"POST",
                 credentials:"include",
@@ -98,27 +98,12 @@ export default function OwnersPage({}) {
                 if(!result.error) {
                     search();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
 
     return (
         <main className="flex justify-between">
-            <WarningScreen
-                title="Uwaga"
-                cancelCallback={() => screens.warning.set(false)}
-                acceptCallback={() => requestDelete()}
-                description={
-                    <>
-                        <p className="text-red-600 font-bold">
-                            Kiedy usuniesz tego właściciela jednocześnie zostaną usunięte jego działki w systemie
-                        </p>
-                        <p className="text-white font-bold text-lg mt-5">
-                            Czy napewno chcesz usunąć tego własciciela
-                        </p>
-                    </>
-                }
-            />
             <NavBar requiredRoles={[]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative">
                 <SearchBar
@@ -141,7 +126,7 @@ export default function OwnersPage({}) {
                 />
                 <section className="my-10">
                     {
-                        owners.map((obj, index) => <Owner obj={obj} key={index} setOwnerEditID={setOwnerEditID} editOwner={(ID) => {setForm("edit"); setOwnerEditID(ID)}} setEditFormData={setEditFormData}/>)
+                        owners.map((obj, index) => <Owner obj={obj} key={index} requestDelete={requestDelete} editOwner={(ID) => {setForm("edit"); setOwnerEditID(ID)}} setEditFormData={setEditFormData}/>)
                     } 
                 </section>
                 {

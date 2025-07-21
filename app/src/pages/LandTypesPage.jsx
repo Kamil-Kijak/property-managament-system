@@ -1,16 +1,17 @@
 
-import { useContext, useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import NavBar from "../components/NavBar"
 import { useRequest } from "../hooks/useRequest";
-import { screenContext } from "../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import WarningScreen from "../components/screens/WarningScreen";
 import { useForm } from "../hooks/useForm";
 import InsertLandType from "../forms/InsertLandType";
+import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 
 export default function LandTypesPage({}) {
-    const screens = useContext(screenContext)
+    
+    const loadingUpdate = useLoadingStore((state) => state.update);
+    const warningUpdate = useWarningStore((state) => state.update)
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
@@ -23,36 +24,38 @@ export default function LandTypesPage({}) {
 
 
     const getLandTypes = () => {
-            screens.loading.set(true);
-            request("/api/land_types/get", {}).then(result => {
-                if(!result.error) {
-                    setLandTypes(result.data)
-                    screens.loading.set(false);
-                }
-            })
-        }
-        useEffect(() => {
-            getLandTypes();
-        }, [])
-    const requestDelete = () => {
-        screens.warning.set(false)
-        screens.loading.set(true);
+        loadingUpdate(true);
+        request("/api/land_types/get", {}).then(result => {
+            if(!result.error) {
+                setLandTypes(result.data)
+            }
+            loadingUpdate(false);
+        })
+    }
+
+    useEffect(() => {
+        getLandTypes();
+    }, [])
+
+    const requestDelete = (ID) => {
+        warningUpdate(false);
+        loadingUpdate(true);
         request("/api/land_types/delete", {
                 method:"POST",
                 credentials:"include",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_land_type:editLandTypeID})
+                body:JSON.stringify({ID_land_type:ID})
             }).then(result => {
                 if(!result.error) {
                     getLandTypes();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
     const requestEditLandType = () => {
-        screens.loading.set(true);
+        loadingUpdate(true);
         setForm(null);
         request("/api/land_types/update", {
                 method:"POST",
@@ -65,26 +68,11 @@ export default function LandTypesPage({}) {
                 if(!result.error) {
                     getLandTypes();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
     return (
         <main className="flex justify-between">
-            <WarningScreen
-                title="Uwaga"
-                cancelCallback={() => screens.warning.set(false)}
-                acceptCallback={() => requestDelete()}
-                description={
-                    <>
-                         <p className="text-red-600 font-bold">
-                            Usunięcie tego typu działki spowoduje że każda działka która ma ten typ w systemie zostanie usunięta nieodwracalnie
-                            </p>
-                        <p className="text-white font-bold text-lg mt-5">
-                            Czy napewno chcesz usunąć ten typ działki?
-                        </p>
-                    </>
-                }
-            />
             <NavBar requiredRoles={["ADMIN"]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
                 <section className="my-10">
@@ -104,8 +92,16 @@ export default function LandTypesPage({}) {
                                         })
                                     }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                                     <button className="warning-btn" onClick={() => {
-                                        screens.warning.set(true)
-                                        setEditLandTypeID(ele.ID);
+                                        warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
+                                            <>
+                                                <p className="text-red-600 font-bold">
+                                                    Usunięcie tego typu działki spowoduje że każda działka która ma ten typ w systemie zostanie usunięta nieodwracalnie
+                                                    </p>
+                                                <p className="text-white font-bold text-lg mt-5">
+                                                    Czy napewno chcesz usunąć ten typ działki?
+                                                </p>
+                                            </>
+                                        )
                                     }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                                 </section>
                             </section>

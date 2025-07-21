@@ -1,11 +1,11 @@
 
-import { useState, useContext} from "react";
+import { useState} from "react";
 import { useRequest } from "../hooks/useRequest";
 import { useForm } from "../hooks/useForm";
-import { screenContext} from "../App";
+import { useLoadingStore } from "../hooks/useScreensStore";
 
 export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
-    const screens = useContext(screenContext)
+    const updateLoading = useLoadingStore((state) => state.updateLoading);
 
     const [checkingPassword, setCheckingPassword] = useState("");
 
@@ -19,7 +19,7 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
     const request = useRequest();
 
     const requestInsertUser = () => {
-        screens.loading.set(true);
+        updateLoading(true);
         setForm(null);
         request("/api/user/insert", {
                 method:"POST",
@@ -32,7 +32,7 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
                 if(!result.error) {
                     getUsers();
                 }
-                screens.loading.set(false);
+                updateLoading(false);
             })
         }
     return (

@@ -1,11 +1,12 @@
 import { faPen, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
-import { screenContext, userContext } from "../App";
+import {useWarningStore} from "../hooks/useScreensStore"
+import { useUserStore } from "../hooks/useUserStore";
 
-export default function Owner({obj, setOwnerEditID, editOwner, setEditFormData}) {
-    const screens = useContext(screenContext);
-    const user = useContext(userContext);
+export default function Owner({obj, editOwner, requestDelete, setEditFormData}) {
+
+    const warningUpdate = useWarningStore((state) => state.update)
+    const user = useUserStore((state) => state.user);
 
     return (
         <section>
@@ -21,7 +22,19 @@ export default function Owner({obj, setOwnerEditID, editOwner, setEditFormData})
                             phone:obj.telefon
                         })
                         }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
-                    {user.value.rola == "ADMIN" && <button className="warning-btn" onClick={() => {screens.warning.set(true); setOwnerEditID(obj.ID)}}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>}
+                    {user.rola == "ADMIN" && <button className="warning-btn" onClick={() => {
+                        warningUpdate(true, "Uwaga", () => requestDelete(obj.ID), () => warningUpdate(false),
+                        <>
+                            <p className="text-red-600 font-bold">
+                                Kiedy usuniesz tego właściciela jednocześnie zostaną usunięte jego działki w systemie
+                            </p>
+                            <p className="text-white font-bold text-lg mt-5">
+                                Czy napewno chcesz usunąć tego własciciela?
+                            </p>
+                        </>
+                    
+                        )
+                        }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>}
                 </section>
             </section>
             {

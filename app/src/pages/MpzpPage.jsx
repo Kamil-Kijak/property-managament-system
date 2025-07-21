@@ -1,17 +1,18 @@
 
 
-import { useContext, useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import NavBar from "../components/NavBar"
 import { useRequest } from "../hooks/useRequest";
-import { screenContext } from "../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import WarningScreen from "../components/screens/WarningScreen";
 import { useForm } from "../hooks/useForm";
 import InsertMpzp from "../forms/InsertMpzp";
+import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 
 export default function MpzpPage({}) {
-    const screens = useContext(screenContext)
+    
+    const loadingUpdate = useLoadingStore((state) => state.update);
+    const warningUpdate = useWarningStore((state) => state.update);
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
@@ -24,36 +25,36 @@ export default function MpzpPage({}) {
     const [editMpzpID, setEditMpzpID] = useState(null);
 
     const getMpzp = () => {
-            screens.loading.set(true);
-            request("/api/mpzp/get", {}).then(result => {
-                if(!result.error) {
-                    setMpzp(result.data)
-                    screens.loading.set(false);
-                }
-            })
-        }
+        loadingUpdate(true);
+        request("/api/mpzp/get", {}).then(result => {
+            if(!result.error) {
+                setMpzp(result.data)
+            }
+            loadingUpdate(false);
+        })
+    }
     useEffect(() => {
         getMpzp();
     }, [])
-    const requestDelete = () => {
-        screens.warning.set(false)
-        screens.loading.set(true);
+    const requestDelete = (ID) => {
+        warningUpdate(false);
+        loadingUpdate(true);
         request("/api/mpzp/delete", {
                 method:"POST",
                 credentials:"include",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_mpzp:editMpzpID})
+                body:JSON.stringify({ID_mpzp:ID})
             }).then(result => {
                 if(!result.error) {
                     getMpzp();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
     const requestEditMpzp = () => {
-        screens.loading.set(true);
+        loadingUpdate(true);
         setForm(null);
         request("/api/mpzp/update", {
                 method:"POST",
@@ -66,26 +67,11 @@ export default function MpzpPage({}) {
                 if(!result.error) {
                     getMpzp();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
     return (
         <main className="flex justify-between">
-            <WarningScreen
-                title="Uwaga"
-                cancelCallback={() => screens.warning.set(false)}
-                acceptCallback={() => requestDelete()}
-                description={
-                    <>
-                         <p className="text-red-600 font-bold">
-                            Usunięcie tego MPZP spowoduje że każda działka która ma to MPZP w systemie zostanie usunięta nieodwracalnie
-                            </p>
-                        <p className="text-white font-bold text-lg mt-5">
-                            Czy napewno chcesz usunąć to MPZP?
-                        </p>
-                    </>
-                }
-            />
             <NavBar requiredRoles={["ADMIN"]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
                 <section className="my-10">
@@ -106,8 +92,16 @@ export default function MpzpPage({}) {
                                         })
                                     }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                                     <button className="warning-btn" onClick={() => {
-                                        screens.warning.set(true)
-                                        setEditMpzpID(ele.ID);
+                                        warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
+                                            <>
+                                                <p className="text-red-600 font-bold">
+                                                    Usunięcie tego MPZP spowoduje że każda działka która ma to MPZP w systemie zostanie usunięta nieodwracalnie
+                                                    </p>
+                                                <p className="text-white font-bold text-lg mt-5">
+                                                    Czy napewno chcesz usunąć to MPZP?
+                                                </p>
+                                            </>
+                                        )
                                     }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                                 </section>
                             </section>

@@ -1,16 +1,19 @@
-import { useContext, useEffect, useState } from "react"
+import {useEffect, useState } from "react"
 import { useForm } from "../hooks/useForm";
 
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faWarning} from "@fortawesome/free-solid-svg-icons"
 
 import WarningScreen from "../components/screens/WarningScreen";
-import { screenContext, userContext } from "../App";
 import { useNavigate } from "react-router-dom";
 import { useRequest } from "../hooks/useRequest";
+import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 
 
 export default function LoginPage({}) {
+    
+    const loadingUpdate = useLoadingStore((state) => state.update);
+    const warningUpdate = useWarningStore((state) => state.update);
 
     const navigate = useNavigate();
     const requestGetUsers = useRequest("/api/user/get", {});
@@ -21,7 +24,6 @@ export default function LoginPage({}) {
     const [checkingPassword, setCheckingPassword] = useState("");
     const [loginError, setLoginError] = useState(null);
 
-    const screens = useContext(screenContext);
 
     const [registerFormData, registerErrors, setRegisterFormData] = useForm({
         "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Imie musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
@@ -43,24 +45,24 @@ export default function LoginPage({}) {
     
     const registerAdmin = () => {
         // admin register
-        screens.warning.set(false);
-        screens.loading.set(true);
+        warningUpdate(false);
+        loadingUpdate(true);
         request("/api/user/register_admin", {
-                    method:"POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body:JSON.stringify({...registerFormData})
-                }).then(result => {
-                    if(!result.error) {
-                        setAdminCreate(false);
-                    }
-                    screens.loading.set(false);
-                })
+                method:"POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({...registerFormData})
+            }).then(result => {
+                if(!result.error) {
+                    setAdminCreate(false);
+                }
+                loadingUpdate(false);
+            })
     }
     const loginUser = () => {
         if(Object.keys(loginErrors).every(ele => loginErrors[ele] == null)) {
-            screens.loading.set(true);
+            loadingUpdate(true);
             request("/api/user/login", {
                     method:"POST",
                     headers: {
@@ -68,7 +70,7 @@ export default function LoginPage({}) {
                     },
                     body:JSON.stringify({...loginFormData})
                 }).then(result => {
-                    screens.loading.set(false);
+                    loadingUpdate(false);
                     if(result.success) {
                         navigate("/")
                     } else {
@@ -128,7 +130,17 @@ export default function LoginPage({}) {
                             if(Object.keys(registerFormData).length == 3) {
                                 if(Object.keys(registerErrors).every(ele => registerErrors[ele] == null)) {
                                     if(checkingPassword === registerFormData.password) {
-                                        screens.warning.set(true);
+                                        warningUpdate(true, "Przed stworzeniem konta", registerAdmin, () => warningUpdate(false),
+                                            <>
+                                                <p className="text-red-600 font-bold">
+                                                    Kiedy tworzysz konto administratora, nie rozpowrzechniaj jego hasła a samo hasło miej dobrze zabezpieczone
+                                                        i dostępne tylko dla siebie. 
+                                                </p>
+                                                <p className="text-white font-bold text-lg mt-5">
+                                                    Czy chcesz utworzyć konto?
+                                                </p>
+                                            </>
+                                        )
                                     }
                                 }
                             }

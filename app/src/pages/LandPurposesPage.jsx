@@ -1,16 +1,17 @@
 
-import { useContext, useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import NavBar from "../components/NavBar"
 import { useRequest } from "../hooks/useRequest";
-import { screenContext } from "../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import WarningScreen from "../components/screens/WarningScreen";
 import { useForm } from "../hooks/useForm";
 import InsertLandPurpose from "../forms/InsertLandPurpose";
+import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 
 export default function LandPurposesPage({}) {
-    const screens = useContext(screenContext)
+
+    const loadingUpdate = useLoadingStore((state) => state.update);
+    const warningUpdate = useWarningStore((state) => state.update)
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
@@ -23,36 +24,38 @@ export default function LandPurposesPage({}) {
 
 
     const getLandPurposes = () => {
-            screens.loading.set(true);
-            request("/api/land_purposes/get", {}).then(result => {
-                if(!result.error) {
-                    setLandPurposes(result.data)
-                    screens.loading.set(false);
-                }
-            })
-        }
+        loadingUpdate(true);
+        request("/api/land_purposes/get", {}).then(result => {
+            if(!result.error) {
+                setLandPurposes(result.data)
+            }
+            loadingUpdate(true);
+        })
+    }
+
     useEffect(() => {
         getLandPurposes();
     }, [])
-    const requestDelete = () => {
-        screens.warning.set(false)
-        screens.loading.set(true);
+
+    const requestDelete = (ID) => {
+        warningUpdate(false);
+        loadingUpdate(true);
         request("/api/land_purposes/delete", {
                 method:"POST",
                 credentials:"include",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_land_purpose:editLandPurposeID})
+                body:JSON.stringify({ID_land_purpose:ID})
             }).then(result => {
                 if(!result.error) {
                     getLandPurposes();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
     const requestEditLandPurpose = () => {
-        screens.loading.set(true);
+        loadingUpdate(true);
         setForm(null);
         request("/api/land_purposes/update", {
                 method:"POST",
@@ -65,26 +68,11 @@ export default function LandPurposesPage({}) {
                 if(!result.error) {
                     getLandPurposes();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
     return (
         <main className="flex justify-between">
-            <WarningScreen
-                title="Uwaga"
-                cancelCallback={() => screens.warning.set(false)}
-                acceptCallback={() => requestDelete()}
-                description={
-                    <>
-                         <p className="text-red-600 font-bold">
-                            Usunięcie tego przeznaczenia działki spowoduje że każda działka która ma to przeznaczenie w systemie zostanie usunięta nieodwracalnie
-                            </p>
-                        <p className="text-white font-bold text-lg mt-5">
-                            Czy napewno chcesz usunąć to przeznaczenie działki?
-                        </p>
-                    </>
-                }
-            />
             <NavBar requiredRoles={["ADMIN"]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
                 <section className="my-10">
@@ -104,8 +92,16 @@ export default function LandPurposesPage({}) {
                                         })
                                     }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                                     <button className="warning-btn" onClick={() => {
-                                        screens.warning.set(true)
-                                        setEditLandPurposeID(ele.ID);
+                                        warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
+                                            <>
+                                                <p className="text-red-600 font-bold">
+                                                    Usunięcie tego przeznaczenia działki spowoduje że każda działka która ma to przeznaczenie w systemie zostanie usunięta nieodwracalnie
+                                                    </p>
+                                                <p className="text-white font-bold text-lg mt-5">
+                                                    Czy napewno chcesz usunąć to przeznaczenie działki?
+                                                </p>
+                                            </>
+                                        )
                                     }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                                 </section>
                             </section>

@@ -1,17 +1,20 @@
 
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faRightFromBracket, faUsers, faHouse, faFile, faCity, faUserTie, faMoneyBillTransfer, faArrowDown, faMountainSun} from "@fortawesome/free-solid-svg-icons"
+import { faRightFromBracket, faUsers, faHouse, faFile, faCity, faUserTie, faMoneyBillTransfer, faMountainSun} from "@fortawesome/free-solid-svg-icons"
 import { useLocation, useNavigate} from "react-router-dom"
 import { useRequest } from "../hooks/useRequest"
 
-import { screenContext, userContext} from "../App"
-import { useContext, useRef, useState, useEffect} from "react"
+import { useRef, useEffect} from "react"
+import { useUserStore } from "../hooks/useUserStore"
+import { useLoadingStore } from "../hooks/useScreensStore"
 
 
 export default function NavBar({requiredRoles = []}) {
-    const screens = useContext(screenContext);
-    const user = useContext(userContext);
+    const user = useUserStore((state) => state.user);
+    const userUpdate = useUserStore((state) => state.update);
+    const loadingUpdate = useLoadingStore((state) => state.update)
+
     const location = useLocation();
     const scrollContainer = useRef();
 
@@ -21,32 +24,33 @@ export default function NavBar({requiredRoles = []}) {
     useEffect(() => {
         request("/api/user/auth", {credentials:"include"}).then(result => {
             if(result.error) {
-                navigate("/login")
+                navigate("/login");
             } else {
-                user.set(result.user)
+                userUpdate(result.user)
                 if(requiredRoles.length > 0) {
                     if(!requiredRoles.includes(result.user.rola)) {
-                        navigate("/")
+                        navigate("/");
                     }
                 }
             }
-        })
-    }, [])
+        });
+    }, []);
+    
     const logout = () => {
-        screens.loading.set(true);
+        loadingUpdate(true);
         request("/api/user/logout", {credentials:"include"}).then(result => {
             if(!result.error) {
                 navigate("/login")
             }
-            screens.loading.set(false);
+            loadingUpdate(false);
         });
     }
     return (
         <nav className="h-screen min-h-screen border-r-4 border-green-500 flex flex-col items-start w-[220px] relative">
             <section className="flex flex-col items-center text-xl px-5">
                 <h1 className="text-center font-bold my-2">Zalogowano jako</h1>
-                <h1 className="my-1">{user.value.imie} {user.value.nazwisko}</h1>
-                <h1 className="my-1">Rola: {user.value.rola}</h1>
+                <h1 className="my-1">{user.imie} {user.nazwisko}</h1>
+                <h1 className="my-1">Rola: {user.rola}</h1>
                 <button className="base-btn text-md" onClick={logout}>Wyloguj się <FontAwesomeIcon icon={faRightFromBracket}/></button>
                 <div className="bg-green-500 w-full h-1.5 rounded-2xl mt-3"></div>
             </section>
@@ -56,14 +60,14 @@ export default function NavBar({requiredRoles = []}) {
                 <button className={location.pathname == '/renters' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/renters")}><FontAwesomeIcon icon={faUsers}/> Dzierżawcy</button>
                 <button className={location.pathname == '/areas' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/areas")}><FontAwesomeIcon icon={faMoneyBillTransfer}/> Powierzchnie i podatki</button>
                 {
-                    user.value.rola === "KSIĘGOWOŚĆ" || user.value.rola === "ADMIN" &&
+                    user.rola === "KSIĘGOWOŚĆ" || user.rola === "ADMIN" &&
                     <section className="w-full">
                         <div className="bg-green-500 h-1.5 my-3"></div>
                         <button className={location.pathname == '/groundclasses' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/groundclasses")}><FontAwesomeIcon icon={faMountainSun}/> Klasy gruntów</button>
                     </section>
                 }
                 {
-                    user.value.rola === "ADMIN" &&
+                    user.rola === "ADMIN" &&
                     <section className="w-full">
                         <div className="bg-green-500 h-1.5 my-3"></div>
                         <button className={location.pathname == '/users' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/users")}><FontAwesomeIcon icon={faUserTie}/> Użytkownicy</button>

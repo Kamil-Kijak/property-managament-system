@@ -1,10 +1,10 @@
-import { useContext } from "react";
+
 import { useRequest } from "../hooks/useRequest";
-import { screenContext } from "../App";
 import { useForm } from "../hooks/useForm";
+import { useLoadingStore } from "../hooks/useScreensStore";
 
 export default function InsertMpzp({setForm = () => {}, getMpzp = () => {}}) {
-    const screens = useContext(screenContext);
+    const loadingUpdate = useLoadingStore((state) => state.update)
     const request = useRequest();
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
@@ -13,7 +13,7 @@ export default function InsertMpzp({setForm = () => {}, getMpzp = () => {}}) {
     })
 
     const requestInsertMpzp = () => {
-        screens.loading.set(true);
+        loadingUpdate(true)
         setForm(null);
         request("/api/mpzp/insert", {
                 method:"POST",
@@ -26,7 +26,7 @@ export default function InsertMpzp({setForm = () => {}, getMpzp = () => {}}) {
                 if(!result.error) {
                     getMpzp();
                 }
-                screens.loading.set(false);
+                loadingUpdate(false);
             })
     }
 
