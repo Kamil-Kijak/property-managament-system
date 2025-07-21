@@ -5,6 +5,9 @@ import SearchBar from "../components/SearchBar";
 import { useRequest } from "../hooks/useRequest";
 import { screenContext } from "../App";
 import Owner from "../components/Owner";
+import WarningScreen from "../components/screens/WarningScreen";
+
+import { useForm } from "../hooks/useForm";
 
 export default function OwnersPage({}) {
 
@@ -15,9 +18,17 @@ export default function OwnersPage({}) {
         surname_filter:""
     });
 
+    const [editFormData, editErrors, setEditFormData] = useForm({
+        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Imie musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
+        "surname":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nazwisko musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
+        "phone":{regexp:/^[0-9]{1,15}$/, error:"Telefon musi się mieścić w 15 cyfrach"},
+    })
+
     const [form, setForm] = useState("");
 
     const [owners, setOwners] = useState([]);
+
+    const [ownerEditID, setOwnerEditID] = useState();
 
     const request = useRequest();
 
@@ -46,7 +57,6 @@ export default function OwnersPage({}) {
                         owners.find(ele => ele.ID == obj.ID).dzialki.push({...obj});
                     })
                     setOwners(owners);
-                    console.log(owners)
                 }
                 screens.loading.set(false);
             })
@@ -56,35 +66,110 @@ export default function OwnersPage({}) {
         search();
     }, [])
 
+    const requestDelete = () => {
+        screens.warning.set(false)
+        screens.loading.set(true);
+        request("/api/owners/delete", {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({ID_owner:ownerEditID})
+            }).then(result => {
+                if(!result.error) {
+                    search();
+                }
+                screens.loading.set(false);
+            })
+    }
+
+    const requestEdit = () => {
+        setForm("")
+        screens.loading.set(true);
+        request("/api/owners/update", {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({ID_owner:ownerEditID, ...editFormData})
+            }).then(result => {
+                if(!result.error) {
+                    search();
+                }
+                screens.loading.set(false);
+            })
+    }
+
     return (
         <main className="flex justify-between">
+            <WarningScreen
+                title="Uwaga"
+                cancelCallback={() => screens.warning.set(false)}
+                acceptCallback={() => requestDelete()}
+                description={
+                    <>
+                        <p className="text-red-600 font-bold">
+                            Kiedy usuniesz tego właściciela jednocześnie zostaną usunięte jego działki w systemie
+                        </p>
+                        <p className="text-white font-bold text-lg mt-5">
+                            Czy napewno chcesz usunąć tego własciciela
+                        </p>
+                    </>
+                }
+            />
             <NavBar requiredRoles={[]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative">
+                <SearchBar
+                onSearch={search}
+                    elements={
+                        <>
+                            <section>
+                                <h1 className="font-bold">Imie</h1>
+                                <input type="text" placeholder="name..." onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
+                                />
+                            </section>
+                            <section className="ml-2">
+                                <h1 className="font-bold">Nazwisko</h1>
+                                <input type="text" placeholder="surname..." onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
+                                />
+                            </section>
+                        </>
+                    }
+                
+                />
+                <section className="my-10">
+                    {
+                        owners.map((obj, index) => <Owner obj={obj} key={index} setOwnerEditID={setOwnerEditID} editOwner={(ID) => {setForm("edit"); setOwnerEditID(ID)}} setEditFormData={setEditFormData}/>)
+                    } 
+                </section>
                 {
-                    form == "" &&
-                     <>
-                        <SearchBar
-                        onSearch={search}
-                            elements={
-                                <>
-                                    <section>
-                                        <h1 className="font-bold">Imie</h1>
-                                        <input type="text" placeholder="name..." onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
-                                        />
-                                    </section>
-                                    <section className="ml-2">
-                                        <h1 className="font-bold">Nazwisko</h1>
-                                        <input type="text" placeholder="surname..." onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
-                                        />
-                                    </section>
-                                </>
+                    form == "edit" &&
+                    <>
+                        <section className="base-card">
+                        <h1 className="text-2xl font-bold">Edycja właściciela</h1>
+                        <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
+                        <section className="flex flex-col items-start mb-2">
+                            <h1 className="font-bold mb-1">Imie</h1>
+                            <input type="text" placeholder="name..." className="border-2 border-black p-1 rounded-md" value={editFormData.name} onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))}/>
+                        </section>
+                        <section className="flex flex-col items-start mb-2">
+                            <h1 className="font-bold mb-1">Nazwisko</h1>
+                            <input type="text" placeholder="surname..." className="border-2 border-black p-1 rounded-md" value={editFormData.surname} onChange={(e) => setEditFormData(prev => ({...prev, surname:e.target.value}))}/>
+                        </section>
+                        <section className="flex flex-col items-start mb-2">
+                            <h1 className="font-bold mb-1">Telefon</h1>
+                            <input type="phone" placeholder="phone..." className="border-2 border-black p-1 rounded-md" value={editFormData.phone} onChange={(e) => setEditFormData(prev => ({...prev, phone:e.target.value}))} />
+                        </section>
+                        <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
+                        <button className="base-btn" onClick={() => {
+                            if(Object.keys(editFormData).length == 3) {
+                                if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                                    requestEdit();
+                                }
                             }
-                        
-                        />
-                        <section className="my-10">
-                            {
-                                owners.map((obj, index) => <Owner obj={obj} key={index}/>)
-                            } 
+                        }}>Zaktualizuj</button>
                         </section>
                     </>
                 }

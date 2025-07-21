@@ -193,7 +193,7 @@ export default function LandsPage({}) {
                     <section className="my-10">
                        {
                             lands.map((obj, index) => {
-                                return ( <Land index={index} obj={obj} key={index} setEditLandID={setEditLandID} EditLand={(ID) => {setForm("edit");setEditLandID(ID)}}/>)
+                                return ( <Land index={index} obj={obj} key={index} setEditLandID={setEditLandID} editLand={(ID) => {setForm("edit");setEditLandID(ID)}}/>)
                             })
                        }
                     </section>

@@ -5,7 +5,7 @@ import { useCallback } from "react";
 import { useState } from "react";
 import { screenContext, userContext } from "../App";
 
-export default function Land({obj, setEditLandID, EditLand}) {
+export default function Land({obj, setEditLandID, editLand}) {
     const user = useContext(userContext);
     const screens = useContext(screenContext)
     const [showingMore, setShowingMore] = useState(false);
@@ -18,7 +18,7 @@ export default function Land({obj, setEditLandID, EditLand}) {
         <section className="flex flex-col shadow-xl shadow-black/25 p-5 gap-y-6 text-center">
             <section className="flex items-center justify-start gap-x-5">
                 <button className="base-btn" onClick={showingMoreToggle}><FontAwesomeIcon icon={faEye}/> Pokaż {showingMore ? "mniej":"więcej"}</button>
-                <button className="info-btn" onClick={() => EditLand(obj.ID)}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                <button className="info-btn" onClick={() => editLand(obj.ID)}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                 {user.value.rola === "ADMIN" && <button className="warning-btn" onClick={() => {screens.warning.set(true);setEditLandID(obj.ID)}}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>}
             </section>
             <section className="flex justify-around gap-x-5">

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
 import { screenContext, userContext } from "../App";
 
-export default function Owner({obj}) {
+export default function Owner({obj, setOwnerEditID, editOwner, setEditFormData}) {
     const screens = useContext(screenContext);
     const user = useContext(userContext);
 
@@ -13,8 +13,15 @@ export default function Owner({obj}) {
                 <h1 className="text-3xl">{obj.imie} {obj.nazwisko}</h1>
                 <h1 className="text-3xl">tel:{obj.telefon}</h1>
                 <section className="flex gap-x-5">
-                    <button className="info-btn"><FontAwesomeIcon icon={faPen}/> Edytuj</button>
-                    {user.value.rola == "ADMIN" && <button className="warning-btn"><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>}
+                    <button className="info-btn" onClick={() => {
+                        editOwner(obj.ID);
+                        setEditFormData({
+                            name:obj.imie,
+                            surname:obj.nazwisko,
+                            phone:obj.telefon
+                        })
+                        }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                    {user.value.rola == "ADMIN" && <button className="warning-btn" onClick={() => {screens.warning.set(true); setOwnerEditID(obj.ID)}}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>}
                 </section>
             </section>
             {
