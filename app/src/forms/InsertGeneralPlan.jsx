@@ -43,7 +43,7 @@ export default function InsertGeneralPlan({setForm = () => {}, getGeneralPlans =
                     <textarea type="text" placeholder="plan description..." onChange={(e) => setInsertFormData(prev => ({...prev, description:e.target.value}))} className="border-2 border-black p-1 rounded-md resize-none w-full h-[6rem]"></textarea>
                 </section>
             </section>
-            <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
+            <p className="error-text">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
             <button className="base-btn" onClick={() => {
                 if(Object.keys(insertFormData).length == 2) {
                     if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {

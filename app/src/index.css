@@ -21,6 +21,10 @@
     @apply bg-green-500 text-white transition-colors duration-150 ease-in-out p-3 w-full cursor-pointer text-xl font-bold text-start
 }
 
+.error-text {
+    @apply text-red-600 font-bold text-sm break-words w-full max-w-xs flex-none text-center
+}
+
 .scrollbar-hide {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE 10+ */

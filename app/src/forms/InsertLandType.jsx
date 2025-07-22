@@ -40,7 +40,7 @@ export default function InsertLandType({setForm = () => {}, getLandTypes = () =>
                         <input type="text" placeholder="type name..." onChange={(e) => setInsertFormData(prev => ({...prev, name:e.target.value}))} className="border-2 border-black p-1 rounded-md" />
                     </section>
                 </section>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
+                <p className="error-text">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
                 <button className="base-btn" onClick={() => {
                     if(Object.keys(insertFormData).length == 1) {
                         if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {

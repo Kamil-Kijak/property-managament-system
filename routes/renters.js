@@ -23,7 +23,7 @@ router.get("/get_renter", [checkDataExisting(["ID_rent"])], async (req, res) => 
 
 router.get("/get_all", async (req, res) => {
     try {
-        const [result] = await connection.execute("SELECT * FROM dzierzawcy order by nazwisko", [ID_rent]);
+        const [result] = await connection.execute("SELECT * FROM dzierzawcy order by nazwisko");
         res.status(200).json({success:true, message:"pobrano dane dzierżawców", data:result});
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
@@ -44,7 +44,7 @@ router.post("/insert", [checkDataExisting(["name", "surname", "phone"])], async 
     const {name, surname, phone} = req.body;
     try {
         const [result] = await connection.execute("INSERT INTO dzierzawcy() VALUES(NULL, ?, ?, ?)", [name, surname, phone]);
-        res.status(200).json({success:true, message:"utworzono nowego dzierzawcę"});
+        res.status(200).json({success:true, message:"utworzono nowego dzierzawce", insertID:result.insertId});
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }

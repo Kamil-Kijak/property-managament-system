@@ -126,7 +126,7 @@ export default function LandTypesPage({}) {
                                 <input type="text" placeholder="type name..." onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))} value={editFormData.name} className="border-2 border-black p-1 rounded-md" />
                             </section>
                         </section>
-                        <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
+                        <p className="error-text">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(editFormData).length == 1) {
                                 if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {

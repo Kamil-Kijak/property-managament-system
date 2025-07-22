@@ -13,6 +13,7 @@ import Land from "../components/Land";
 
 import EditLand from "../forms/EditLand";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
+import InsertRent from "../forms/InsertRent";
 
 export default function LandsPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
@@ -178,7 +179,14 @@ export default function LandsPage({}) {
                     <section className="my-10">
                        {
                             lands.map((obj, index) => {
-                                return ( <Land index={index} obj={obj} key={index} requestDelete={requestDelete} editLand={(ID) => {setForm("edit");setEditLandID(ID)}}/>)
+                                return (<Land
+                                    index={index}
+                                    obj={obj}
+                                    key={index}
+                                    requestDelete={requestDelete}
+                                    addRent={(ID) => {setForm("addRent");setEditLandID(ID)}}
+                                    editLand={(ID) => {setForm("edit");setEditLandID(ID)}}
+                                    />)
                             })
                        }
                     </section>
@@ -192,6 +200,9 @@ export default function LandsPage({}) {
                 }
                 {
                     form == "edit" && <EditLand onClose={() => {setForm(""); search()}} editLandID={editLandID}/>
+                }
+                {
+                    form == "addRent" && <InsertRent onClose={() => {setForm(""); search()}} landID={editLandID}/>
                 }
             </section>
         </main>

@@ -20,7 +20,7 @@ export default function InsertLand({onClose = () => {}}) {
     const [landFormData, landErrors, setLandFormData] = useForm({
         "land_serial_number":{regexp:/^\d+_\d\.\d{4}\.(?:\d+|\d+\/\d+)$/, error:"Zły format serialu działki"},
         "land_number":{regexp:/^(?:\d+|\d+\/\d+)$/, error:"Zły format numeru działki"},
-        "area":{regexp:/^\d{0,4}\.\d{4}$/, error:"Powierzchnia musi być liczbą z 4 miejscami po przecinku poniżej 10000"},
+        "area":{regexp:/^\d{0,4}\.\d{4}$/, error:"Powierzchnia musi być liczbą z 4 miejscami po przecinku poniżej 10 000"},
         "kw_number":{regexp:/^[A-Za-z]{2}\d[A-Za-z]\/\d{8}\/\d$/, error:"numer księgi wieczystej musi mieć format 2Litery1Cyfra1Litera/8Cyfr/1Cyfra"},
         "ID_owner":{regexp:/.+/, error:"Wybierz właściciela"},
         "ID_type":{regexp:/.+/, error:"Wybierz rodzaj działki"},
@@ -33,7 +33,7 @@ export default function InsertLand({onClose = () => {}}) {
         "purchase_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Podaj date w dobrym formacie"},
         "case_number":{regexp:/^\d+\/\d+$/, error:"Numer aktu musi być w formacie cyfry/cyfry"},
         "seller":{regexp:/^.{1,49}$/, error:"Sprzedawca musi się mieścić w 50 znakach"},
-        "price":{regexp:/^\d+\.\d{2}$/, error:"Cena musi być liczbą z 2 miejscami po przecinku"},
+        "price":{regexp:/^\d{0,6}\.\d{2}$/, error:"Cena musi być liczbą z 2 miejscami po przecinku poniżej 1 000 000"},
     })
 
     const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
@@ -105,7 +105,7 @@ export default function InsertLand({onClose = () => {}}) {
                     <h1 className="font-bold mb-1">Numer seryjny działki (ID)</h1>
                     <input type="text" placeholder="serial number (ID)..." className="border-2 border-black p-1 rounded-md w-[300px]" onChange={(e) => setLandFormData(prev => ({...prev, land_serial_number:e.target.value}))} />
                 </section>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.land_serial_number}</p>
+                <p className="error-text">{landErrors.land_serial_number}</p>
                 <section className="flex justify-center w-full gap-x-5">
                     <section className="flex flex-col items-start my-2">
                         <h1 className="font-bold mb-1">Numer działki</h1>
@@ -116,8 +116,8 @@ export default function InsertLand({onClose = () => {}}) {
                         <input type="number" placeholder="land area (ha)..." className="border-2 border-black p-1 rounded-md" min={0} onChange={(e) => setLandFormData(prev => ({...prev, area:e.target.value}))}/>
                     </section>
                 </section>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.land_number}</p>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.area}</p>
+                <p className="error-text">{landErrors.land_number}</p>
+                <p className="error-text">{landErrors.area}</p>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-5 my-5">
                     <section className="ml-1 w-[150px]">
@@ -192,7 +192,7 @@ export default function InsertLand({onClose = () => {}}) {
                             <h1 className="font-bold mb-1">Telefon</h1>
                             <input ref={(el) => ownerInputRefs.current["phone"] = el} type="phone" placeholder="phone..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setOwnerFormData(prev => ({...prev, phone:e.target.value}))} />
                         </section>
-                        <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{ownerErrors[Object.keys(ownerErrors).find(ele => ownerErrors[ele] != null)]}</p>
+                        <p className="error-text">{ownerErrors[Object.keys(ownerErrors).find(ele => ownerErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(ownerFormData).length == 3) {
                                 if(Object.keys(ownerErrors).every(ele => ownerErrors[ele] == null)) {
@@ -217,7 +217,7 @@ export default function InsertLand({onClose = () => {}}) {
                         </select>
                     </section>
                 </section>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.kw_number}</p>
+                <p className="error-text">{landErrors.kw_number}</p>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-10 my-5 items-center">
                     <section className="ml-1">
@@ -272,7 +272,7 @@ export default function InsertLand({onClose = () => {}}) {
                         </select>
                     </section>
                 </section>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.description}</p>
+                <p className="error-text">{landErrors.description}</p>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-10 my-5 items-center">
                     <section className="flex flex-col items-start my-2">
@@ -289,13 +289,13 @@ export default function InsertLand({onClose = () => {}}) {
                     </section>
                     <section className="flex flex-col items-start my-2">
                         <h1 className="font-bold mb-1">Cena zakupu (PLN)</h1>
-                        <input type="number" placeholder="purhase date (PLN)..." className="border-2 border-black p-1 rounded-md" min={0} onChange={(e) => setLandFormData(prev => ({...prev, price:e.target.value}))} />
+                        <input step={"any"} type="number" placeholder="purchase cost (PLN)..." className="border-2 border-black p-1 rounded-md" min={0} onChange={(e) => setLandFormData(prev => ({...prev, price:e.target.value}))} />
                     </section>
                 </section>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.purchase_date}</p>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.case_number}</p>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.seller}</p>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.price}</p>
+                <p className="error-text">{landErrors.purchase_date}</p>
+                <p className="error-text">{landErrors.case_number}</p>
+                <p className="error-text">{landErrors.seller}</p>
+                <p className="error-text">{landErrors.price}</p>
                 <button className="base-btn text-2xl" onClick={() => {
                     if(Object.keys(landFormData).length == 16) {
                         if(Object.keys(landErrors).every(ele => landErrors[ele] == null)) {

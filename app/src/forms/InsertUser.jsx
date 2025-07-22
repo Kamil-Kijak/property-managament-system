@@ -66,8 +66,8 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
                     </select>
                 </section>
             </section>
-            {checkingPassword !== (insertFormData.password || "") && <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">Hasła nie są takie same</p>}
-            <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
+            {checkingPassword !== (insertFormData.password || "") && <p className="error-text">Hasła nie są takie same</p>}
+            <p className="error-text">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
             <button className="base-btn" onClick={() => {
                 if(Object.keys(insertFormData).length == 4) {
                     if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {

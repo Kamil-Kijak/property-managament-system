@@ -159,7 +159,7 @@ export default function UsersPage({}) {
                                 </select>
                             </section>
                         </section>
-                        <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
+                        <p className="error-text">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(editFormData).length == 3) {
                                 if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {

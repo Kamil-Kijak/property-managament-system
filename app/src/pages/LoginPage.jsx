@@ -124,8 +124,8 @@ export default function LoginPage({}) {
                                 <input type="password" onChange={(e) => setCheckingPassword(e.target.value)} placeholder="repeat password..." className="border-2 border-black p-1 rounded-md" />
                             </section>
                         </section>
-                        {checkingPassword !== (registerFormData.password || "") && <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">Hasła nie są takie same</p>}
-                        <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{registerErrors[Object.keys(registerErrors).find(ele => registerErrors[ele] != null)]}</p>
+                        {checkingPassword !== (registerFormData.password || "") && <p className="error-text">Hasła nie są takie same</p>}
+                        <p className="error-text">{registerErrors[Object.keys(registerErrors).find(ele => registerErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(registerFormData).length == 3) {
                                 if(Object.keys(registerErrors).every(ele => registerErrors[ele] == null)) {
@@ -177,9 +177,9 @@ export default function LoginPage({}) {
                                         <h1 className="font-bold mb-1">Hasło</h1>
                                         <input type="password" onChange={(e) => setLoginFormData(prev => ({...prev, password:e.target.value}))} placeholder="password..." className="border-2 border-black p-2 rounded-md" />
                                     </section>
-                                    <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{loginErrors[Object.keys(loginErrors).find(ele => loginErrors[ele] != null)]}</p>
+                                    <p className="error-text">{loginErrors[Object.keys(loginErrors).find(ele => loginErrors[ele] != null)]}</p>
                                     <button className="base-btn" onClick={loginUser}>Zaloguj</button>
-                                    {loginError && <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{loginError}</p>}
+                                    {loginError && <p className="error-text">{loginError}</p>}
                                 </section>
                             }
                         </section>

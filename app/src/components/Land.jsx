@@ -1,11 +1,11 @@
-import { faEye, faPen, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faPen, faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback } from "react";
 import { useState } from "react";
 import {useUserStore} from "../hooks/useUserStore"
 import { useWarningStore } from "../hooks/useScreensStore";
 
-export default function Land({obj, editLand, requestDelete}) {
+export default function Land({obj, editLand, requestDelete, addRent}) {
 
     const warningUpdate = useWarningStore((state) => state.update)
     const user = useUserStore((state) => state.user)
@@ -19,6 +19,7 @@ export default function Land({obj, editLand, requestDelete}) {
         <section className="flex flex-col shadow-xl shadow-black/25 p-5 gap-y-6 text-center">
             <section className="flex items-center justify-start gap-x-5">
                 <button className="base-btn" onClick={showingMoreToggle}><FontAwesomeIcon icon={faEye}/> Pokaż {showingMore ? "mniej":"więcej"}</button>
+                {!obj.ID_dzierzawy && obj.przeznaczenie == "Dzierżawa" && <button className="base-btn" onClick={() => addRent(obj.ID)}><FontAwesomeIcon icon={faUser}/> Dodaj dzierżawe</button>}
                 <button className="info-btn" onClick={() => editLand(obj.ID)}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                 {user.rola === "ADMIN" && <button className="warning-btn" onClick={() => {
                     warningUpdate(true, "Uwaga", () => requestDelete(obj.ID), () => warningUpdate(false), <>

@@ -57,7 +57,7 @@ export default function NavBar({requiredRoles = []}) {
             <section ref={scrollContainer} className="flex flex-col items-start justify-start mt-5 w-full overflow-y-scroll scrollbar-hide min-h-[70%]">
                 <button className={location.pathname == '/lands' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/lands")}><FontAwesomeIcon icon={faHouse}/> Działki</button>
                 <button className={location.pathname == '/owners' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/owners")}><FontAwesomeIcon icon={faUsers}/> Właściciele działek</button>
-                <button className={location.pathname == '/renters' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/renters")}><FontAwesomeIcon icon={faUsers}/> Dzierżawcy</button>
+                <button className={location.pathname == '/renters' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/renters")}><FontAwesomeIcon icon={faUsers}/> Dzierżawy i Dzierżawcy</button>
                 <button className={location.pathname == '/areas' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/areas")}><FontAwesomeIcon icon={faMoneyBillTransfer}/> Powierzchnie i podatki</button>
                 {
                     user.rola === "KSIĘGOWOŚĆ" || user.rola === "ADMIN" &&

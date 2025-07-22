@@ -148,7 +148,7 @@ export default function GeneralPlansPage({}) {
                                 <textarea type="text" placeholder="purpose name..." onChange={(e) => setEditFormData(prev => ({...prev, description:e.target.value}))} value={editFormData.description} className="border-2 border-black p-1 rounded-md resize-none w-full h-[6rem]"></textarea>
                             </section>
                         </section>
-                        <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
+                        <p className="error-text">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(editFormData).length == 2) {
                                 if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {

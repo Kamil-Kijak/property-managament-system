@@ -130,7 +130,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                     <h1 className="font-bold mb-1">Numer seryjny działki (ID)</h1>
                     <input type="text" placeholder="serial number (ID)..." className="border-2 border-black p-1 rounded-md w-[300px]" value={landFormData.land_serial_number || ""} onChange={(e) => setLandFormData(prev => ({...prev, land_serial_number:e.target.value}))} />
                 </section>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.land_serial_number}</p>
+                <p className="error-text">{landErrors.land_serial_number}</p>
                 <section className="flex justify-center w-full gap-x-5">
                     <section className="flex flex-col items-start my-2">
                         <h1 className="font-bold mb-1">Numer działki</h1>
@@ -141,8 +141,8 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                         <input type="number" placeholder="land area (ha)..." className="border-2 border-black p-1 rounded-md" value={landFormData.area ?? ""} min={0} onChange={(e) => setLandFormData(prev => ({...prev, area:e.target.value}))}/>
                     </section>
                 </section>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.land_number}</p>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.area}</p>
+                <p className="error-text">{landErrors.land_number}</p>
+                <p className="error-text">{landErrors.area}</p>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-5 my-5">
                     <section className="ml-1 w-[150px]">
@@ -217,7 +217,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                             <h1 className="font-bold mb-1">Telefon</h1>
                             <input ref={(el) => ownerInputRefs.current["phone"] = el} type="phone" placeholder="phone..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setOwnerFormData(prev => ({...prev, phone:e.target.value}))} />
                         </section>
-                        <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{ownerErrors[Object.keys(ownerErrors).find(ele => ownerErrors[ele] != null)]}</p>
+                        <p className="error-text">{ownerErrors[Object.keys(ownerErrors).find(ele => ownerErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(ownerFormData).length == 3) {
                                 if(Object.keys(ownerErrors).every(ele => ownerErrors[ele] == null)) {
@@ -242,7 +242,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                         </select>
                     </section>
                 </section>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.kw_number}</p>
+                <p className="error-text">{landErrors.kw_number}</p>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-10 my-5 items-center">
                     <section className="ml-1">
@@ -297,7 +297,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                         </select>
                     </section>
                 </section>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.description}</p>
+                <p className="error-text">{landErrors.description}</p>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-10 my-5 items-center">
                     <section className="flex flex-col items-start my-2">
@@ -314,13 +314,13 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                     </section>
                     <section className="flex flex-col items-start my-2">
                         <h1 className="font-bold mb-1">Cena zakupu (PLN)</h1>
-                        <input type="number" placeholder="purhase date (PLN)..." value={landFormData.price || ""} className="border-2 border-black p-1 rounded-md" min={0} onChange={(e) => setLandFormData(prev => ({...prev, price:e.target.value}))} />
+                        <input type="number" placeholder="purchase cost (PLN)..." value={landFormData.price || ""} className="border-2 border-black p-1 rounded-md" min={0} onChange={(e) => setLandFormData(prev => ({...prev, price:e.target.value}))} />
                     </section>
                 </section>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.purchase_date}</p>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.case_number}</p>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.seller}</p>
-                <p className="text-red-600 font-bold text-md break-words w-full max-w-xs flex-none text-center">{landErrors.price}</p>
+                <p className="error-text">{landErrors.purchase_date}</p>
+                <p className="error-text">{landErrors.case_number}</p>
+                <p className="error-text">{landErrors.seller}</p>
+                <p className="error-text">{landErrors.price}</p>
                 <button className="base-btn text-2xl" onClick={() => {
                     if(Object.keys(landFormData).length == 16) {
                         if(Object.keys(landErrors).every(ele => landErrors[ele] == null)) {
