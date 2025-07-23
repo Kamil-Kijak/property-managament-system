@@ -1,5 +1,5 @@
 
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import NavBar from "../components/NavBar"
 import { useRequest } from "../hooks/useRequest";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,6 +12,8 @@ export default function LandPurposesPage({}) {
 
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update)
+
+    const editSectionRef = useRef(null);
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
@@ -29,7 +31,7 @@ export default function LandPurposesPage({}) {
             if(!result.error) {
                 setLandPurposes(result.data)
             }
-            loadingUpdate(true);
+            loadingUpdate(false);
         })
     }
 
@@ -89,7 +91,8 @@ export default function LandPurposesPage({}) {
                                         setEditLandPurposeID(ele.ID)
                                         setEditFormData({
                                             type:ele.typ
-                                        })
+                                        });
+                                        setTimeout(() => editSectionRef.current.scrollIntoView({behavior:"smooth"}), 0)
                                     }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                                     <button className="warning-btn" onClick={() => {
                                         warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
@@ -117,7 +120,7 @@ export default function LandPurposesPage({}) {
                 }
                 {
                     form == "edit" &&
-                    <section className="base-card my-10">
+                    <section className="base-card my-10" ref={editSectionRef}>
                         <h1 className="text-2xl my-2 text-center">Edycja przeznaczenia działki</h1>
                         <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
                         <section className="py-2 flex-col items-center">

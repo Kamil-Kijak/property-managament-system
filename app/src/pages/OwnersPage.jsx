@@ -1,5 +1,5 @@
 
-import {useEffect, useState } from "react"
+import {useEffect, useRef, useState } from "react"
 import NavBar from "../components/NavBar"
 import SearchBar from "../components/SearchBar";
 import { useRequest } from "../hooks/useRequest";
@@ -12,6 +12,8 @@ export default function OwnersPage({}) {
 
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update);
+
+    const editSectionRef = useRef(null);
 
     const [searchFilters, setSearchFilters] = useState({
         name_filter:"",
@@ -126,12 +128,16 @@ export default function OwnersPage({}) {
                 />
                 <section className="my-10">
                     {
-                        owners.map((obj, index) => <Owner obj={obj} key={index} requestDelete={requestDelete} editOwner={(ID) => {setForm("edit"); setOwnerEditID(ID)}} setEditFormData={setEditFormData}/>)
+                        owners.map((obj, index) => <Owner obj={obj} key={index} requestDelete={requestDelete} editOwner={(ID) => {
+                            setForm("edit");
+                            setOwnerEditID(ID);
+                            setTimeout(() => editSectionRef.current.scrollIntoView({ behavior: 'smooth' }), 0);
+                            }} setEditFormData={setEditFormData}/>)
                     } 
                 </section>
                 {
                     form == "edit" &&
-                    <>
+                    <section ref={editSectionRef}>
                         <section className="base-card">
                         <h1 className="text-2xl font-bold">Edycja właściciela</h1>
                         <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
@@ -156,7 +162,7 @@ export default function OwnersPage({}) {
                             }
                         }}>Zaktualizuj</button>
                         </section>
-                    </>
+                    </section>
                 }
             </section>
         </main>

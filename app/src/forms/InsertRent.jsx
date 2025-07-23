@@ -1,7 +1,6 @@
 
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useLocalizations } from "../hooks/useLocalizations";
 import { useEffect, useRef, useState } from "react";
 import { useRequest } from "../hooks/useRequest";
 import { useForm } from "../hooks/useForm";
@@ -108,42 +107,6 @@ export default function InsertRent({onClose = () => {}, landID}) {
                         <input type="number" className="border-2 border-black p-1 rounded-md" placeholder="day..." min={1} max={31} value={invoiceIssueDate.day} onChange={(e) => setInvoiceIssueDate(prev => ({...prev, day:e.target.value}))}/>
                         <span className="text-3xl">-</span>
                         <input type="number" className="border-2 border-black p-1 rounded-md" placeholder="month..." min={1} max={12} value={invoiceIssueDate.month} onChange={(e) => setInvoiceIssueDate(prev => ({...prev, month:e.target.value}))}/>
-                    </section>
-                </section>
-                <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
-                <section className="flex justify-center w-full gap-x-10 my-5 items-center">
-                    <section className="ml-1 w-[150px]">
-                        <h1 className="font-bold">Dzierżawca</h1>
-                        <select ref={renterSelectRef} className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setRentFormData(prev => ({...prev, ID_renter:e.target.value}))}>
-                            <option value="" className="hidden">Wybierz</option>
-                            {
-                                renters.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwisko} {obj.imie} {obj.telefon}</option>)
-                            }
-                        </select>
-                    </section>
-                    <section className="base-card">
-                        <h1 className="text-2xl font-bold">Tworzenie nowego dzierżawcy</h1>
-                        <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Imie</h1>
-                            <input ref={(el) => renterInputRefs.current["name"] = el} type="text" placeholder="name..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setRenterFormData(prev => ({...prev, name:e.target.value}))} />
-                        </section>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Nazwisko</h1>
-                            <input ref={(el) => renterInputRefs.current["surname"] = el} type="text" placeholder="surname..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setRenterFormData(prev => ({...prev, surname:e.target.value}))}/>
-                        </section>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Telefon</h1>
-                            <input ref={(el) => renterInputRefs.current["phone"] = el} type="phone" placeholder="phone..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setRenterFormData(prev => ({...prev, phone:e.target.value}))}/>
-                        </section>
-                        <p className="error-text">{renterErrors[Object.keys(renterErrors).find(ele => renterErrors[ele] != null)]}</p>
-                        <button className="base-btn" onClick={() => {
-                            if(Object.keys(renterFormData).length == 3) {
-                                if(Object.keys(renterErrors).every(ele => renterErrors[ele] == null)) {
-                                    requestInsertRenter();
-                                }
-                            }
-                        }}>Stwórz dzierżawce</button>
                     </section>
                 </section>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>

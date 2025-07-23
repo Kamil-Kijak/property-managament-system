@@ -1,6 +1,6 @@
 
 
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import NavBar from "../components/NavBar"
 import { useRequest } from "../hooks/useRequest";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,6 +13,8 @@ import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 export default function GeneralPlansPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update);
+
+    const editSectionRef = useRef(null);
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
@@ -108,6 +110,7 @@ export default function GeneralPlansPage({}) {
                                             code:ele.kod,
                                             description:ele.opis
                                         })
+                                        setTimeout(() => editSectionRef.current.scrollIntoView({behavior:"smooth"}), 0)
                                     }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                                     <button className="warning-btn" onClick={() => {
                                         warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
@@ -135,7 +138,7 @@ export default function GeneralPlansPage({}) {
                 }
                 {
                     form == "edit" &&
-                    <section className="base-card my-10">
+                    <section className="base-card my-10" ref={editSectionRef}>
                         <h1 className="text-2xl my-2 text-center">Edycja planu ogólnego</h1>
                         <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
                         <section className="py-2 flex-col items-center">

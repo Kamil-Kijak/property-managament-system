@@ -14,14 +14,15 @@ router.use(authorization());
 
 router.get("/get", [checkDataExisting(["name_filter", "surname_filter", "month_filter", "end_year_filter"])], async (req, res) => {
     const {month_filter, name_filter, surname_filter, end_year_filter} = req.query;
-    let SQL = "SELECT di.*, d.numer_seryjny_dzialki, dz.imie as d_imie, dz.nazwisko as d_nazwisko, dz.telefon as d_telefon, w.imie as w_imie, w.nazwisko as w_nazwisko, w.telefon as w_telefon, m.nazwa as miejscowosc, l.gmina, l.powiat, l.wojewodztwo FROM dzierzawy di INNER JOIN dzierzawcy dz on di.ID_dzierzawcy=dz.ID INNER JOIN dzialki d on d.ID_dzierzawy=di.ID INNER JOIN wlasciciele w on w.ID=d.ID_wlasciciela INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji WHERE dz.imie LIKE ? AND dz.nazwisko LIKE ?";
-    const paramns = [`%${name_filter}`, `%${surname_filter}`];
+    let SQL = "SELECT di.*, d.numer_seryjny_dzialki,d.powierzchnia, dz.imie as d_imie, dz.nazwisko as d_nazwisko, dz.telefon as d_telefon, w.imie as w_imie, w.nazwisko as w_nazwisko, w.telefon as w_telefon, m.nazwa as miejscowosc, l.gmina, l.powiat, l.wojewodztwo FROM dzierzawy di INNER JOIN dzierzawcy dz on di.ID_dzierzawcy=dz.ID INNER JOIN dzialki d on d.ID_dzierzawy=di.ID INNER JOIN wlasciciele w on w.ID=d.ID_wlasciciela INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji WHERE dz.imie LIKE ? AND dz.nazwisko LIKE ?";
+    const paramns = [`%${name_filter}%`, `%${surname_filter}%`];
     if(month_filter != "") {
         SQL += " AND MONTH(di.data_wystawienia_fv_czynszowej) = ?"
         paramns.push(month_filter);
     }
     if(end_year_filter != "") {
         SQL += " AND YEAR(di.data_zakonczenia) = ?"
+        paramns.push(end_year_filter);
     }
     SQL += " ORDER BY dz.nazwisko"
     try {
