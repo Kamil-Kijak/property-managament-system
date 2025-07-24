@@ -5,13 +5,14 @@ import { useEffect, useRef, useState } from "react";
 import { useRequest } from "../hooks/useRequest";
 import { useForm } from "../hooks/useForm";
 import { useLoadingStore } from "../hooks/useScreensStore";
+import SimpleInput from "../components/inputs/SimpleInput";
+import SelectInput from "../components/inputs/SelectInput";
+import SimpleTextArea from "../components/inputs/SimpleTextArea";
 
 
 export default function InsertLand({onClose = () => {}}) {
     const updateLoading = useLoadingStore((state) => state.update)
 
-    const ownerSelectRef = useRef(null);
-    const ownerInputRefs = useRef({});
     const [ownerFormData, ownerErrors, setOwnerFormData] = useForm({
         "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Imie musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
         "surname":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nazwisko musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
@@ -69,11 +70,8 @@ export default function InsertLand({onClose = () => {}}) {
             })
         if(!result.error) {
             await fetchAllData();
-            ownerSelectRef.current.value = result.insertID;
             setOwnerFormData({});
-            ownerInputRefs.current["name"].value = ""
-            ownerInputRefs.current["surname"].value = ""
-            ownerInputRefs.current["phone"].value = ""
+            setLandFormData(prev => ({...prev, ID_owner:result.insertID}))
         }
         updateLoading(false)
     }
@@ -100,98 +98,134 @@ export default function InsertLand({onClose = () => {}}) {
             </section>
             <section className="base-card w-full">
                 <h1 className="text-3xl font-bold">Tworzenie nowej działki</h1>
-                <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
-                <section className="flex flex-col items-start my-2">
-                    <h1 className="font-bold mb-1">Numer seryjny działki (ID)</h1>
-                    <input type="text" placeholder="serial number (ID)..." className="border-2 border-black p-1 rounded-md w-[300px]" onChange={(e) => setLandFormData(prev => ({...prev, land_serial_number:e.target.value}))} />
-                </section>
+                <div className="bg-green-500 w-[50%] h-2 rounded-2xl my-3"></div>
+                <SimpleInput
+                    title="Numer seryjny działki (ID)"
+                    placeholder="serial numer (ID)..."
+                    value={landFormData.land_serial_number}
+                    onChange={(e) => setLandFormData(prev => ({...prev, land_serial_number:e.target.value}))}
+                />
                 <p className="error-text">{landErrors.land_serial_number}</p>
                 <section className="flex justify-center w-full gap-x-5">
-                    <section className="flex flex-col items-start my-2">
-                        <h1 className="font-bold mb-1">Numer działki</h1>
-                        <input type="text" placeholder="land number..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setLandFormData(prev => ({...prev, land_number:e.target.value}))}/>
-                    </section>
-                    <section className="flex flex-col items-start my-2">
-                        <h1 className="font-bold mb-1">Powierzchnia działki (ha)</h1>
-                        <input type="number" placeholder="land area (ha)..." className="border-2 border-black p-1 rounded-md" min={0} onChange={(e) => setLandFormData(prev => ({...prev, area:e.target.value}))}/>
-                    </section>
+                    <SimpleInput
+                        title="Numer działki"
+                        placeholder="land number..."
+                        value={landFormData.land_number}
+                        onChange={(e) => setLandFormData(prev => ({...prev, land_number:e.target.value}))}
+                    />
+                    <SimpleInput
+                        type="number"
+                        step="any"
+                        min={0}
+                        title="Powierzchnia działki (ha)"
+                        placeholder="land area (ha)..."
+                        value={landFormData.area}
+                        onChange={(e) => setLandFormData(prev => ({...prev, area:e.target.value}))}
+                    />
                 </section>
                 <p className="error-text">{landErrors.land_number}</p>
                 <p className="error-text">{landErrors.area}</p>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-5 my-5">
-                    <section className="ml-1 w-[150px]">
-                            <h1 className="font-bold">Województwo</h1>
-                            <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations({district:"", commune:"", town:"", province:e.target.value})}>
-                                <option value="" className="hidden">Wybierz</option>
-                                {
-                                    availableLocalizations.provinces.map((obj) => {
-                                        return <option key={obj} value={obj}>{obj}</option>
-                                    })
-                                }
-                            </select>
-                        </section>
-                        <section className="ml-1 w-[150px]">
-                            <h1 className="font-bold">Powiat</h1>
-                            <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations(prev => ({...prev, district:e.target.value, commune:"", town:"",}))}>
-                                <option value="" className="hidden">Wybierz</option>
-                                {
-                                    availableLocalizations.districts.map((obj) => {
-                                        return <option key={obj} value={obj}>{obj}</option>
-                                    })
-                                }
-                            </select>
-                        </section>
-                        <section className="ml-1 w-[150px]">
-                            <h1 className="font-bold">Gmina</h1>
-                            <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations(prev => ({...prev, commune:e.target.value, town:"",}))}>
-                                <option value="" className="hidden">Wybierz</option>
-                                {
-                                    
-                                    availableLocalizations.communes.map((obj) => {
-                                        return <option key={obj} value={obj}>{obj}</option>
-                                    })
-                                }
-                            </select>
-                        </section>
-                        <section className="ml-1 w-[150px]">
-                            <h1 className="font-bold">Miejscowość</h1>
-                            <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations(prev => ({...prev, town:e.target.value,}))}>
-                                <option value="" className="hidden">Wybierz</option>
-                                {
-                                    availableLocalizations.towns.map((obj) => {
-                                        return <option key={obj} value={obj}>{obj}</option>
-                                    })
-                                }
-                            </select>
-                        </section>
+                    <section className="w-[150px]">
+                        <SelectInput
+                            title="Województwo"
+                            value={localizations.province}
+                            onChange={(e) => setLocalizations({district:"", commune:"", town:"", province:e.target.value})}
+                            options={
+                                <>
+                                    {
+                                        availableLocalizations.provinces.map((obj) => <option key={obj} value={obj}>{obj}</option>)
+                                    }
+                                </>
+                            }
+                        
+                        />
+                    </section>
+                    <section className="w-[150px]">
+                        <SelectInput
+                            title="Powiat"
+                            value={localizations.district}
+                            onChange={(e) => setLocalizations(prev => ({...prev, commune:"", town:"", district:e.target.value}))}
+                            options={
+                                <>
+                                    {
+                                        availableLocalizations.districts.map((obj) => <option key={obj} value={obj}>{obj}</option>)
+                                    }
+                                </>
+                            }
+                        
+                        />
+                    </section>
+                    <section className="w-[150px]">
+                        <SelectInput
+                            title="Gmina"
+                            value={localizations.commune}
+                            onChange={(e) => setLocalizations(prev => ({...prev, town:"", commune:e.target.value}))}
+                            options={
+                                <>
+                                    {
+                                        availableLocalizations.communes.map((obj) => <option key={obj} value={obj}>{obj}</option>)
+                                    }
+                                </>
+                            }
+                        
+                        />
+                    </section>
+                    <section className="w-[150px]">
+                        <SelectInput
+                            title="Miejscowość"
+                            value={localizations.town}
+                            onChange={(e) => setLocalizations(prev => ({...prev, town:e.target.value}))}
+                            options={
+                                <>
+                                    {
+                                        availableLocalizations.towns.map((obj) => <option key={obj} value={obj}>{obj}</option>)
+                                    }
+                                </>
+                            }
+                        
+                        />
+                    </section>
                 </section>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-10 my-5 items-center">
-                    <section className="ml-1 w-[150px]">
-                        <h1 className="font-bold">Właściciel</h1>
-                        <select ref={ownerSelectRef} className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLandFormData(prev => ({...prev, ID_owner:e.target.value}))}>
-                            <option value="" className="hidden">Wybierz</option>
-                            {
-                                selectData.owners.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwisko} {obj.imie} {obj.telefon}</option>)
+                    <section className="w-[150px]">
+                        <SelectInput
+                            title="Właściciel"
+                            value={landFormData.ID_owner}
+                            onChange={(e) => setLandFormData(prev => ({...prev, ID_owner:e.target.value}))}
+                            options={
+                                <>
+                                    {
+                                        selectData.owners.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwisko} {obj.imie} {obj.telefon}</option>)
+                                    }
+                                </>
                             }
-                        </select>
+                        
+                        />
                     </section>
                     <section className="base-card">
                         <h1 className="text-2xl font-bold">Tworzenie nowego właściciela</h1>
                         <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Imie</h1>
-                            <input ref={(el) => ownerInputRefs.current["name"] = el} type="text" placeholder="name..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setOwnerFormData(prev => ({...prev, name:e.target.value}))}/>
-                        </section>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Nazwisko</h1>
-                            <input ref={(el) => ownerInputRefs.current["surname"] = el} type="text" placeholder="surname..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setOwnerFormData(prev => ({...prev, surname:e.target.value}))}/>
-                        </section>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Telefon</h1>
-                            <input ref={(el) => ownerInputRefs.current["phone"] = el} type="phone" placeholder="phone..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setOwnerFormData(prev => ({...prev, phone:e.target.value}))} />
-                        </section>
+                        <SimpleInput
+                            title="Imie"
+                            placeholder="name..."
+                            value={ownerFormData.name}
+                            onChange={(e) => setOwnerFormData(prev => ({...prev, name:e.target.value}))}
+                        />
+                        <SimpleInput
+                            title="Nazwisko"
+                            placeholder="surname..."
+                            value={ownerFormData.surname}
+                            onChange={(e) => setOwnerFormData(prev => ({...prev, surname:e.target.value}))}
+                        />
+                        <SimpleInput
+                            title="Telefon"
+                            placeholder="phone..."
+                            value={ownerFormData.phone}
+                            onChange={(e) => setOwnerFormData(prev => ({...prev, phone:e.target.value}))}
+                        />
                         <p className="error-text">{ownerErrors[Object.keys(ownerErrors).find(ele => ownerErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(ownerFormData).length == 3) {
@@ -204,93 +238,129 @@ export default function InsertLand({onClose = () => {}}) {
                 </section>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-10 my-5 items-center">
-                    <section className="flex flex-col items-start my-2">
-                        <h1 className="font-bold mb-1">Numer księgi wieczystej</h1>
-                        <input type="text" placeholder="land register number..." className="border-2 border-black p-1 rounded-md w-[300px]" onChange={(e) => setLandFormData(prev => ({...prev, kw_number:e.target.value}))} />
-                    </section>
-                    <section className="flex flex-col items-start my-2">
-                        <h1 className="font-bold mb-1">Hipoteka</h1>
-                        <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLandFormData(prev => ({...prev, mortgage:e.target.value}))}>
-                            <option value="" className="hidden">Wybierz</option>
-                            <option value="1">TAK</option>
-                            <option value="0">NIE</option>
-                        </select>
-                    </section>
+                    <SimpleInput
+                        title="Numer księgi wieczystej"
+                        placeholder="land register number..."
+                        value={ownerFormData.kw_number}
+                        onChange={(e) => setLandFormData(prev => ({...prev, kw_number:e.target.value}))}
+                    />
+                    <SelectInput
+                        title="Hipoteka"
+                        onChange={(e) => setLandFormData(prev => ({...prev, mortgage:e.target.value}))}
+                        value={landFormData.mortgage}
+                        options={
+                            <>
+                                <option value="1">TAK</option>
+                                <option value="0">NIE</option>
+                            
+                            </>
+                        }
+                    />
                 </section>
                 <p className="error-text">{landErrors.kw_number}</p>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-10 my-5 items-center">
-                    <section className="ml-1">
-                        <h1 className="font-bold">Rodzaj działki</h1>
-                        <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLandFormData(prev => ({...prev, ID_type:e.target.value}))}>
-                            <option value="" className="hidden">Wybierz</option>
-                            {
-                                selectData.land_types.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwa}</option>)
-                            }
-                        </select>
-                    </section>
-                    <section className="ml-1">
-                        <h1 className="font-bold">Przeznaczenie działki</h1>
-                        <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLandFormData(prev => ({...prev, ID_purpose:e.target.value}))}>
-                            <option value="" className="hidden">Wybierz</option>
-                            {
-                                selectData.land_purposes.map((obj, index) => <option key={index} value={obj.ID}>{obj.typ}</option>)
-                            }
-                        </select>
-                    </section>
-                    <section className="ml-1">
-                        <h1 className="font-bold">Plan ogólny</h1>
-                        <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLandFormData(prev => ({...prev, ID_general_plan:e.target.value}))}>
-                            <option value="" className="hidden">Wybierz</option>
-                            {
-                                selectData.general_plans.map((obj, index) => <option key={index} value={obj.ID}>{obj.kod}</option>)
-                            }
-                        </select>
-                    </section>
-                    <section className="ml-1">
-                        <h1 className="font-bold">MPZP</h1>
-                        <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLandFormData(prev => ({...prev, ID_mpzp:e.target.value}))}>
-                            <option value="" className="hidden">Wybierz</option>
-                            {
-                                selectData.mpzp.map((obj, index) => <option key={index} value={obj.ID}>{obj.kod}</option>)
-                            }
-                        </select>
-                    </section>
+                    <SelectInput
+                        title="Rodzaj działki"
+                        value={landFormData.ID_type}
+                        onChange={(e) => setLandFormData(prev => ({...prev, ID_type:e.target.value}))}
+                        options={
+                            <>
+                                {
+                                    selectData.land_types.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwa}</option>)
+                                }
+                            </>
+                        }
+                    />
+                    <SelectInput
+                        title="Przeznaczenie działki"
+                        value={landFormData.ID_purpose}
+                        onChange={(e) => setLandFormData(prev => ({...prev, ID_purpose:e.target.value}))}
+                        options={
+                            <>
+                                {
+                                    selectData.land_purposes.map((obj, index) => <option key={index} value={obj.ID}>{obj.typ}</option>)
+                                }
+                            </>
+                        }
+                    />
+                    <SelectInput
+                        title="Plan ogólny"
+                        value={landFormData.ID_general_plan}
+                        onChange={(e) => setLandFormData(prev => ({...prev, ID_general_plan:e.target.value}))}
+                        options={
+                            <>
+                                {
+                                    selectData.general_plans.map((obj, index) => <option key={index} value={obj.ID}>{obj.kod}</option>)
+                                }
+                            </>
+                        }
+                    />
+                    <SelectInput
+                        title="MPZP"
+                        value={landFormData.ID_mpzp}
+                        onChange={(e) => setLandFormData(prev => ({...prev, ID_mpzp:e.target.value}))}
+                        options={
+                            <>
+                                {
+                                    selectData.mpzp.map((obj, index) => <option key={index} value={obj.ID}>{obj.kod}</option>)
+                                }
+                            </>
+                        }
+                    />
                 </section>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-10 my-5 items-center">
-                    <section className="flex flex-col items-start my-2">
-                        <h1 className="font-bold mb-1">Opis działki</h1>
-                        <textarea type="text" placeholder="land description..." className="border-2 border-black p-1 rounded-md resize-none w-full h-[7rem]" onChange={(e) => setLandFormData(prev => ({...prev, description:e.target.value}))}></textarea>
-                    </section>
-                    <section className="ml-1">
-                        <h1 className="font-bold">Spółka wodna</h1>
-                        <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLandFormData(prev => ({...prev, water_company:e.target.value}))}>
-                            <option value="" className="hidden">Wybierz</option>
-                            <option value="1">TAK</option>
-                            <option value="0">NIE</option>
-                        </select>
-                    </section>
+                    <SimpleTextArea
+                        title="Opis działki"
+                        placeholder="land description..."
+                        value={landFormData.description}
+                        onChange={(e) => setLandFormData(prev => ({...prev, description:e.target.value}))}
+                    
+                    />
+                    <SelectInput
+                        title="Spółka wodna"
+                        value={landFormData.water_company}
+                        onChange={(e) => setLandFormData(prev => ({...prev, water_company:e.target.value}))}
+                        options={
+                            <>
+                                <option value="1">TAK</option>
+                                <option value="0">NIE</option>
+                            </>
+                        }
+                   />
                 </section>
                 <p className="error-text">{landErrors.description}</p>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-10 my-5 items-center">
-                    <section className="flex flex-col items-start my-2">
-                        <h1 className="font-bold mb-1">Data zakupu</h1>
-                        <input type="date" placeholder="purchase date..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setLandFormData(prev => ({...prev, purchase_date:e.target.value}))} />
-                    </section>
-                    <section className="flex flex-col items-start my-2">
-                        <h1 className="font-bold mb-1">Numer aktu</h1>
-                        <input type="text" placeholder="case number..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setLandFormData(prev => ({...prev, case_number:e.target.value}))} />
-                    </section>
-                    <section className="flex flex-col items-start my-2">
-                        <h1 className="font-bold mb-1">Sprzedawca (od kogo)</h1>
-                        <input type="text" placeholder="seller (from whom)..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setLandFormData(prev => ({...prev, seller:e.target.value}))} />
-                    </section>
-                    <section className="flex flex-col items-start my-2">
-                        <h1 className="font-bold mb-1">Cena zakupu (PLN)</h1>
-                        <input step={"any"} type="number" placeholder="purchase cost (PLN)..." className="border-2 border-black p-1 rounded-md" min={0} onChange={(e) => setLandFormData(prev => ({...prev, price:e.target.value}))} />
-                    </section>
+                    <SimpleInput
+                        type="date"
+                        title="Data zakupu"
+                        placeholder="purchase date..."
+                        value={landFormData.purchase_date}
+                        onChange={(e) => setLandFormData(prev => ({...prev, purchase_date:e.target.value}))}
+                    />
+                    <SimpleInput
+                        title="Numer aktu"
+                        placeholder="case number..."
+                        value={landFormData.case_number}
+                        onChange={(e) => setLandFormData(prev => ({...prev, case_number:e.target.value}))}
+                    />
+                    <SimpleInput
+                        title="Sprzedawca (od kogo)"
+                        placeholder="seller (from whom)..."
+                        value={landFormData.seller}
+                        onChange={(e) => setLandFormData(prev => ({...prev, seller:e.target.value}))}
+                    />
+                    <SimpleInput
+                        type="number"
+                        step="any"
+                        min={0}
+                        title="Cena zakupu (PLN)"
+                        placeholder="purchase cost (PLN)..."
+                        value={landFormData.price}
+                        onChange={(e) => setLandFormData(prev => ({...prev, price:e.target.value}))}
+                    />
                 </section>
                 <p className="error-text">{landErrors.purchase_date}</p>
                 <p className="error-text">{landErrors.case_number}</p>

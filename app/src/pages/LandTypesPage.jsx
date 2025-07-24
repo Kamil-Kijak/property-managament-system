@@ -7,6 +7,7 @@ import {faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "../hooks/useForm";
 import InsertLandType from "../forms/InsertLandType";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
+import SimpleInput from "../components/inputs/SimpleInput";
 
 export default function LandTypesPage({}) {
     
@@ -124,10 +125,12 @@ export default function LandTypesPage({}) {
                         <h1 className="text-2xl my-2 text-center">Edycja rodzaju działki</h1>
                         <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
                         <section className="py-2 flex-col items-center">
-                            <section className="flex flex-col items-start mb-2">
-                                <h1 className="font-bold mb-1">Nazwa rodzaju</h1>
-                                <input type="text" placeholder="type name..." onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))} value={editFormData.name} className="border-2 border-black p-1 rounded-md" />
-                            </section>
+                            <SimpleInput
+                                title="Nazwa rodzaju"
+                                placeholder="type name..."
+                                value={editFormData.name}
+                                onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))}
+                            />
                         </section>
                         <p className="error-text">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {

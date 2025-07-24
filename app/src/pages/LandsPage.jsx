@@ -10,10 +10,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import InsertLand from "../forms/InsertLand";
 import Land from "../components/Land";
-
 import EditLand from "../forms/EditLand";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import InsertRent from "../forms/InsertRent";
+import SearchInput from "../components/inputs/SearchInput"
+import SearchSelectInput from "../components/inputs/SearchSelectInput"
 
 export default function LandsPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
@@ -63,7 +64,6 @@ export default function LandsPage({}) {
             }).then(result => {
                 if(!result.error) {
                     setLands(result.data)
-                    console.log(result.data)
                 }
                 loadingUpdate(false);
             })
@@ -97,88 +97,119 @@ export default function LandsPage({}) {
                     onSearch={search}
                     elements={
                         <>
-                        <section>
-                            <h1 className="font-bold">Numer seryjny</h1>
-                            <input type="text" placeholder="land ID..." className="border-2 border-black rounded-md bg-white px-2 py-1"
-                             onChange={(e) => setSearchFilters(prev => ({...prev, serial_filter:e.target.value}))}/>
-                        </section>
-                        <section className="ml-1">
-                            <h1 className="font-bold">Numer działki</h1>
-                            <input type="text" placeholder="land number..." className="border-2 border-black rounded-md bg-white px-2 py-1"
-                             onChange={(e) => setSearchFilters(prev => ({...prev, land_number_filter:e.target.value}))}/>
-                        </section>
-                        <section className="ml-1 w-[150px]">
-                            <h1 className="font-bold">Województwo</h1>
-                            <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations({district:"", commune:"", town:"", province:e.target.value})}>
-                                <option value="">NaN</option>
-                                {
-                                    availableLocalizations.provinces.map((obj) => {
-                                        return <option key={obj} value={obj}>{obj}</option>
-                                    })
+                        <SearchInput
+                            title="Numer seryjny"
+                            placeholder="land ID..."
+                            value={searchFilters.serial_filter}
+                            onChange={(e) => setSearchFilters(prev => ({...prev, serial_filter:e.target.value}))}
+                        />
+                        <SearchInput
+                            title="Numer działki"
+                            placeholder="land number..."
+                            value={searchFilters.land_number_filter}
+                            onChange={(e) => setSearchFilters(prev => ({...prev, land_number_filter:e.target.value}))}
+                        />
+                        <section className="w-[150px]">
+                            <SearchSelectInput
+                                title="Województwo"
+                                placeholder="NaN"
+                                value={localizations.province}
+                                onChange={(e) => setLocalizations({district:"", commune:"", town:"", province:e.target.value})}
+                                options={
+                                    <>
+                                        {
+                                            availableLocalizations.provinces.map((obj) => <option key={obj} value={obj}>{obj}</option>)
+                                        }
+                                    </>
                                 }
-                            </select>
+                            />
                         </section>
-                        <section className="ml-1 w-[150px]">
-                            <h1 className="font-bold">Powiat</h1>
-                            <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations(prev => ({...prev, district:e.target.value, commune:"", town:"",}))}>
-                                <option value="">NaN</option>
-                                {
-                                    availableLocalizations.districts.map((obj) => {
-                                        return <option key={obj} value={obj}>{obj}</option>
-                                    })
+                        <section className="w-[150px]">
+                            <SearchSelectInput
+                                title="Powiat"
+                                placeholder="NaN"
+                                value={localizations.district}
+                                onChange={(e) => setLocalizations(prev => ({...prev, district:e.target.value, commune:"", town:""}))}
+                                options={
+                                    <>
+                                        {
+                                            availableLocalizations.districts.map((obj) => <option key={obj} value={obj}>{obj}</option>)
+                                        }
+                                    </>
                                 }
-                            </select>
+                            />
                         </section>
-                        <section className="ml-1 w-[150px]">
-                            <h1 className="font-bold">Gmina</h1>
-                            <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations(prev => ({...prev, commune:e.target.value, town:"",}))}>
-                                <option value="">NaN</option>
-                                {
-                                    
-                                    availableLocalizations.communes.map((obj) => {
-                                        return <option key={obj} value={obj}>{obj}</option>
-                                    })
+                        <section className="w-[150px]">
+                            <SearchSelectInput
+                                title="Gmina"
+                                placeholder="NaN"
+                                value={localizations.commune}
+                                onChange={(e) => setLocalizations(prev => ({...prev, commune:e.target.value, town:""}))}
+                                options={
+                                    <>
+                                        {
+                                            availableLocalizations.communes.map((obj) => <option key={obj} value={obj}>{obj}</option>)
+                                        }
+                                    </>
                                 }
-                            </select>
+                            />
                         </section>
-                        <section className="ml-1 w-[150px]">
-                            <h1 className="font-bold">Miejscowość</h1>
-                            <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations(prev => ({...prev, town:e.target.value,}))}>
-                                <option value="" >NaN</option>
-                                {
-                                    availableLocalizations.towns.map((obj) => {
-                                        return <option key={obj} value={obj}>{obj}</option>
-                                    })
+                        <section className="w-[150px]">
+                            <SearchSelectInput
+                                title="Miejscowość"
+                                placeholder="NaN"
+                                value={localizations.town}
+                                onChange={(e) => setLocalizations(prev => ({...prev, town:e.target.value,}))}
+                                options={
+                                    <>
+                                        {
+                                            availableLocalizations.towns.map((obj) => <option key={obj} value={obj}>{obj}</option>)
+                                        }
+                                    </>
                                 }
-                            </select>
+                            />
                         </section>
-                        <section className="ml-1">
-                            <h1 className="font-bold">Przeznaczenie</h1>
-                            <select className="border-2 border-black rounded-md bg-white px-2 py-1" defaultValue={""} onChange={(e) => setSearchFilters(prev => ({...prev, purpose_filter:e.target.value}))}>
-                                <option value="">NaN</option>
-                                {
-                                   landPurposes.map((obj, index) => {
-                                    return <option key={index} value={obj.typ}>{obj.typ}</option>
-                                   })
-                                }
-                            </select>
-                        </section>
-                        <section className="ml-1">
-                            <h1 className="font-bold">Dzierżawiona</h1>
-                            <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setSearchFilters(prev => ({...prev, rent_filter:e.target.value}))}>
-                                <option value="">NaN</option>
-                                <option value="1">TAK</option>
-                                <option value="0">NIE</option>
-                            </select>
-                        </section>
-                        <section className="ml-1 w-[100px]">
-                            <h1 className="font-bold">Powyżej ha</h1>
-                            <input type="number" placeholder="ha..." className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" min={0} onChange={(e) => setSearchFilters(prev => ({...prev, low_area_filter:e.target.value}))}/>
-                        </section>
-                        <section className="ml-1 w-[100px]">
-                            <h1 className="font-bold">Poniżej ha</h1>
-                            <input type="number" placeholder="ha..." className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" min={0} onChange={(e) => setSearchFilters(prev => ({...prev, high_area_filter:e.target.value}))}/>
-                        </section>
+                        <SearchSelectInput
+                            title="Przeznaczenie"
+                            placeholder="NaN"
+                            value={searchFilters.purpose_filter}
+                            onChange={(e) => setSearchFilters(prev => ({...prev, purpose_filter:e.target.value}))}
+                            options={
+                                <>
+                                   {
+                                    landPurposes.map((obj, index) => <option key={index} value={obj.typ}>{obj.typ}</option>)
+                                    }
+                                </>
+                            }
+                        />
+                        <SearchSelectInput
+                            title="Dzierżawiona"
+                            placeholder="NaN"
+                            value={searchFilters.rent_filter}
+                            onChange={(e) => setSearchFilters(prev => ({...prev, rent_filter:e.target.value}))}
+                            options={
+                                <>
+                                    <option value="1">TAK</option>
+                                    <option value="0">NIE</option>
+                                </>
+                            }
+                        />
+                        <SearchInput
+                            type="number"
+                            min={0}
+                            title="Powyżej ha"
+                            placeholder="ha..."
+                            value={searchFilters.low_area_filter}
+                            onChange={(e) => setSearchFilters(prev => ({...prev, low_area_filter:e.target.value}))}
+                        />
+                        <SearchInput
+                            type="number"
+                            min={0}
+                            title="Poniżej ha"
+                            placeholder="ha..."
+                            value={searchFilters.high_area_filter}
+                            onChange={(e) => setSearchFilters(prev => ({...prev, high_area_filter:e.target.value}))}
+                        />
                         </>
                     }
                     

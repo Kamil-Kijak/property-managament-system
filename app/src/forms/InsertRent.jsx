@@ -5,14 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import { useRequest } from "../hooks/useRequest";
 import { useForm } from "../hooks/useForm";
 import { useLoadingStore } from "../hooks/useScreensStore";
+import SimpleInput from "../components/inputs/SimpleInput";
+import SelectInput from "../components/inputs/SelectInput";
 
 export default function InsertRent({onClose = () => {}, landID}) {
 
     const updateLoading = useLoadingStore((state) => state.update);
     const request = useRequest();
-
-    const renterSelectRef = useRef(null);
-    const renterInputRefs = useRef({});
     const today = new Date();
 
     const [renterFormData, renterErrors, setRenterFormData] = useForm({
@@ -58,12 +57,8 @@ export default function InsertRent({onClose = () => {}, landID}) {
             })
         if(!result.error) {
             await fetchAllData();
-            renterSelectRef.current.value = result.insertID;
             setRentFormData(prev => ({...prev, ID_renter:result.insertID}));
             setRenterFormData({});
-            renterInputRefs.current["name"].value = ""
-            renterInputRefs.current["surname"].value = ""
-            renterInputRefs.current["phone"].value = ""
         }
         updateLoading(false);
     }
@@ -93,14 +88,18 @@ export default function InsertRent({onClose = () => {}, landID}) {
                 <h1 className="text-3xl font-bold">Tworzenie nowej dzierżawy</h1>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
                 <section className="flex justify-center w-full gap-x-5">
-                    <section className="flex flex-col items-start my-2">
-                        <h1 className="font-bold mb-1">Data rozpoczęcia</h1>
-                        <input type="date" className="border-2 border-black p-1 rounded-md" onChange={(e) => setRentFormData(prev => ({...prev, start_date:e.target.value}))}/>
-                    </section>
-                    <section className="flex flex-col items-start my-2">
-                        <h1 className="font-bold mb-1">Data zakończenia</h1>
-                        <input type="date" className="border-2 border-black p-1 rounded-md" onChange={(e) => setRentFormData(prev => ({...prev, end_date:e.target.value}))}/>
-                    </section>
+                    <SimpleInput
+                        type="date"
+                        title="Data rozpoczęcia"
+                        value={rentFormData.start_date}
+                        onChange={(e) => setRentFormData(prev => ({...prev, start_date:e.target.value}))}
+                    />
+                    <SimpleInput
+                        type="date"
+                        title="Data zakończenia"
+                        value={rentFormData.end_date}
+                        onChange={(e) => setRentFormData(prev => ({...prev, end_date:e.target.value}))}
+                    />
                 </section>
                 <section className="flex flex-col items-start my-2">
                     <h1 className="font-bold mb-1">Data wystawienia faktury czynszowej</h1>
@@ -112,30 +111,40 @@ export default function InsertRent({onClose = () => {}, landID}) {
                 </section>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl my-3"></div>
                 <section className="flex justify-center w-full gap-x-10 my-5 items-center">
-                    <section className="ml-1 w-[150px]">
-                        <h1 className="font-bold">Dzierżawca</h1>
-                        <select ref={renterSelectRef} className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setRentFormData(prev => ({...prev, ID_renter:e.target.value}))}>
-                            <option value="" className="hidden">Wybierz</option>
+                    <SelectInput
+                        title="Dzierżawca"
+                        value={rentFormData.ID_renter}
+                        onChange={(e) => setRentFormData(prev => ({...prev, ID_renter:e.target.value}))}
+                        options={
+                        <>
                             {
                                 renters.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwisko} {obj.imie} {obj.telefon}</option>)
                             }
-                        </select>
-                    </section>
+                        </>
+                        }
+                    />
                     <section className="base-card">
                         <h1 className="text-2xl font-bold">Tworzenie nowego dzierżawcy</h1>
                         <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Imie</h1>
-                            <input ref={(el) => renterInputRefs.current["name"] = el} type="text" placeholder="name..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setRenterFormData(prev => ({...prev, name:e.target.value}))} />
-                        </section>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Nazwisko</h1>
-                            <input ref={(el) => renterInputRefs.current["surname"] = el} type="text" placeholder="surname..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setRenterFormData(prev => ({...prev, surname:e.target.value}))}/>
-                        </section>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Telefon</h1>
-                            <input ref={(el) => renterInputRefs.current["phone"] = el} type="phone" placeholder="phone..." className="border-2 border-black p-1 rounded-md" onChange={(e) => setRenterFormData(prev => ({...prev, phone:e.target.value}))}/>
-                        </section>
+                        <SimpleInput
+                            title="Imie"
+                            placeholder="name..."
+                            value={renterFormData.name}
+                            onChange={(e) => setRenterFormData(prev => ({...prev, name:e.target.value}))}
+                        />
+                        <SimpleInput
+                            title="Nazwisko"
+                            placeholder="surname..."
+                            value={renterFormData.surname}
+                            onChange={(e) => setRenterFormData(prev => ({...prev, surname:e.target.value}))}
+                        />
+                        <SimpleInput
+                            type="phone"
+                            title="Telefon"
+                            placeholder="phone..."
+                            value={renterFormData.phone}
+                            onChange={(e) => setRenterFormData(prev => ({...prev, phone:e.target.value}))}
+                        />
                         <p className="error-text">{renterErrors[Object.keys(renterErrors).find(ele => renterErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(renterFormData).length == 3) {
@@ -147,10 +156,15 @@ export default function InsertRent({onClose = () => {}, landID}) {
                     </section>
                 </section>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
-                <section className="flex flex-col items-start my-2">
-                    <h1 className="font-bold mb-1">Wysokość czynszu (zł)</h1>
-                    <input step={"any"} type="number" placeholder="rent cost (zł)..." className="border-2 border-black p-1 rounded-md" min={0} onChange={(e) => setRentFormData(prev => ({...prev, rent:e.target.value}))} />
-                </section>
+                <SimpleInput
+                    type="number"
+                    step="any"
+                    min={0}
+                    title="Wysokość czynszu (zł)"
+                    placeholder="rent cost (zł)..."
+                    value={rentFormData.rent}
+                    onChange={(e) => setRentFormData(prev => ({...prev, rent:e.target.value}))}
+                />
                 <p className="error-text">{rentErrors[Object.keys(rentErrors).find(ele => rentErrors[ele] != null)]}</p>
                 <button className="base-btn text-2xl" onClick={() => {
                     if(Object.keys(rentFormData).length == 4) {

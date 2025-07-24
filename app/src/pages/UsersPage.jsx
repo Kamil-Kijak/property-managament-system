@@ -11,6 +11,8 @@ import { useForm } from "../hooks/useForm";
 import InsertUser from "../forms/InsertUser";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import { useUserStore } from "../hooks/useUserStore";
+import SimpleInput from "../components/inputs/SimpleInput"
+import SelectInput from "../components/inputs/SelectInput"
 
 export default function UsersPage({}) {
 
@@ -144,22 +146,31 @@ export default function UsersPage({}) {
                         <h1 className="text-2xl my-2 text-center">Edycja użytkownika</h1>
                         <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
                         <section className="py-2 flex-col items-center">
-                            <section className="flex flex-col items-start mb-2">
-                                <h1 className="font-bold mb-1">Imie</h1>
-                                <input type="text" onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))}  placeholder="name..." className="border-2 border-black p-1 rounded-md" value={editFormData.name} />
-                            </section>
-                            <section className="flex flex-col items-start mb-2">
-                                <h1 className="font-bold mb-1">Nazwisko</h1>
-                                <input type="text" onChange={(e) => setEditFormData(prev => ({...prev, surname:e.target.value}))}  placeholder="surname..." className="border-2 border-black p-1 rounded-md" value={editFormData.surname} />
-                            </section>
-                            <section className="flex flex-col items-start mb-2">
-                                <h1 className="font-bold mb-1">Rola</h1>
-                                <select className="border-2 border-black p-1 rounded-md w-full" defaultValue={editFormData.role} onChange={(e) => setEditFormData(prev => ({...prev, role:e.target.value}))}>
+                            <SimpleInput
+                                title="Imie"
+                                placeholder="name..."
+                                value={editFormData.name}
+                                onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))}
+                            />
+                            <SimpleInput
+                                title="Nazwisko"
+                                placeholder="surname..."
+                                value={editFormData.surname}
+                                onChange={(e) => setEditFormData(prev => ({...prev, surname:e.target.value}))}
+                            />
+                            <SelectInput
+                                title="Rola"
+                                placeholder=""
+                                value={editFormData.role}
+                                onChange={(e) => setEditFormData(prev => ({...prev, role:e.target.value}))}
+                                options={
+                                <>
                                     <option value="ADMIN">Administrator</option>
                                     <option value="SEKRETARIAT">Sekretariat</option>
                                     <option value="Ksiegowosc">Ksiegowosc</option>
-                                </select>
-                            </section>
+                                </>
+                                }
+                                />
                         </section>
                         <p className="error-text">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {

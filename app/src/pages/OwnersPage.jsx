@@ -7,6 +7,8 @@ import Owner from "../components/Owner";
 
 import { useForm } from "../hooks/useForm";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
+import SearchInput from "../components/inputs/SearchInput";
+import SimpleInput from "../components/inputs/SimpleInput";
 
 export default function OwnersPage({}) {
 
@@ -112,16 +114,18 @@ export default function OwnersPage({}) {
                 onSearch={search}
                     elements={
                         <>
-                            <section>
-                                <h1 className="font-bold">Imie</h1>
-                                <input type="text" placeholder="name..." onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
-                                />
-                            </section>
-                            <section className="ml-2">
-                                <h1 className="font-bold">Nazwisko</h1>
-                                <input type="text" placeholder="surname..." onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
-                                />
-                            </section>
+                            <SearchInput
+                                title="Imie"
+                                placeholder="name..."
+                                value={searchFilters.name_filter}
+                                onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value.toUpperCase()}))}
+                            />
+                            <SearchInput
+                                title="Nazwisko"
+                                placeholder="surname..."
+                                value={searchFilters.surname_filter}
+                                onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value.toUpperCase()}))}
+                            />
                         </>
                     }
                 
@@ -141,18 +145,24 @@ export default function OwnersPage({}) {
                         <section className="base-card">
                         <h1 className="text-2xl font-bold">Edycja właściciela</h1>
                         <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Imie</h1>
-                            <input type="text" placeholder="name..." className="border-2 border-black p-1 rounded-md" value={editFormData.name} onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))}/>
-                        </section>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Nazwisko</h1>
-                            <input type="text" placeholder="surname..." className="border-2 border-black p-1 rounded-md" value={editFormData.surname} onChange={(e) => setEditFormData(prev => ({...prev, surname:e.target.value}))}/>
-                        </section>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Telefon</h1>
-                            <input type="phone" placeholder="phone..." className="border-2 border-black p-1 rounded-md" value={editFormData.phone} onChange={(e) => setEditFormData(prev => ({...prev, phone:e.target.value}))} />
-                        </section>
+                        <SimpleInput
+                            title="Imie"
+                            placeholder="name..."
+                            value={editFormData.name}
+                            onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))}
+                        />
+                        <SimpleInput
+                            title="Nazwisko"
+                            placeholder="surname..."
+                            value={editFormData.surname}
+                            onChange={(e) => setEditFormData(prev => ({...prev, surname:e.target.value}))}
+                        />
+                        <SimpleInput
+                            title="Telefon"
+                            placeholder="phone..."
+                            value={editFormData.phone}
+                            onChange={(e) => setEditFormData(prev => ({...prev, phone:e.target.value}))}
+                        />
                         <p className="error-text">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(editFormData).length == 3) {

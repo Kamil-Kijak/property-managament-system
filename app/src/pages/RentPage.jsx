@@ -7,7 +7,10 @@ import { useRequest } from "../hooks/useRequest";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import Renter from "../components/Renter";
 import { useForm } from "../hooks/useForm";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import SelectInput from "../components/inputs/SelectInput"
+import SimpleInput from "../components/inputs/SimpleInput"
+import SearchInput from "../components/inputs/SearchInput";
+import SearchSelectInput from "../components/inputs/SearchSelectInput";
 
 export default function RentPage({}) {
     
@@ -131,30 +134,41 @@ export default function RentPage({}) {
                 onSearch={search}
                     elements={
                         <>
-                            <section>
-                                <h1 className="font-bold">Imie dzierżawcy</h1>
-                                <input type="text" placeholder="renter name..." onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
-                                />
-                            </section>
-                            <section className="ml-2">
-                                <h1 className="font-bold">Nazwisko dzierżawcy</h1>
-                                <input type="text" placeholder="renter surname..." onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
-                                />
-                            </section>
-                            <section className="ml-2">
-                                <h1 className="font-bold">Imie właściciela</h1>
-                                <input type="text" placeholder="owner name..." onChange={(e) => setSearchFilters(prev => ({...prev, owner_name_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
-                                />
-                            </section>
-                            <section className="ml-2">
-                                <h1 className="font-bold">Nazwisko właściciela</h1>
-                                <input type="text" placeholder="owner surname..." onChange={(e) => setSearchFilters(prev => ({...prev, owner_surname_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
-                                />
-                            </section>
-                            <section className="ml-2">
-                                <h1 className="font-bold">Miesiąc wystawienia faktury</h1>
-                                <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-[200px]" onChange={(e) => setSearchFilters(prev => ({...prev, month_filter:e.target.value}))}>
-                                    <option value="" className="hidden">Wybierz</option>
+                            <SearchInput
+                                type="text"
+                                title="Imie dzierżawcy"
+                                placeholder="renter name..."
+                                value={searchFilters.name_filter}
+                                onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value.toUpperCase()}))}
+                            />
+                            <SearchInput
+                                type="text"
+                                title="Nazwisko dzierżawcy"
+                                placeholder="renter surname..."
+                                value={searchFilters.surname_filter}
+                                onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value.toUpperCase()}))}
+                            />
+                            <SearchInput
+                                type="text"
+                                title="Imie właściciela"
+                                placeholder="owner name..."
+                                value={searchFilters.owner_name_filter}
+                                onChange={(e) => setSearchFilters(prev => ({...prev, owner_name_filter:e.target.value.toUpperCase()}))}
+                            />
+                            <SearchInput
+                                type="text"
+                                title="Nazwisko właściciela"
+                                placeholder="owner surname..."
+                                value={searchFilters.owner_surname_filter}
+                                onChange={(e) => setSearchFilters(prev => ({...prev, owner_surname_filter:e.target.value.toUpperCase()}))}
+                            />
+                            <SearchSelectInput
+                                title="Miesiąc wystawienia faktury"
+                                placeholder="Wybierz miesiąc"
+                                value={searchFilters.month_filter}
+                                onChange={(e) => setSearchFilters(prev => ({...prev, month_filter:e.target.value}))}
+                                options={
+                                <>
                                     <option value="1">Styczeń</option>
                                     <option value="2">Luty</option>
                                     <option value="3">Marzec</option>
@@ -167,13 +181,17 @@ export default function RentPage({}) {
                                     <option value="10">Październik</option>
                                     <option value="11">Listopad</option>
                                     <option value="12">Grudzień</option>
-                                </select>
-                            </section>
-                            <section className="ml-2">
-                                <h1 className="font-bold">Dzierżawy przed końcem</h1>
-                                <input type="number" placeholder="end year..." onChange={(e) => setSearchFilters(prev => ({...prev, end_year_filter:e.target.value}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
-                                />
-                            </section>
+                                </>
+                                }
+                            />
+                            <SearchInput
+                                type="number"
+                                min={2000}
+                                title="Dzierżawy przed końcem"
+                                placeholder="rents before end..."
+                                value={searchFilters.end_year_filter}
+                                onChange={(e) => setSearchFilters(prev => ({...prev, end_year_filter:e.target.value}))}
+                            />
                         </>
                     }
                 
@@ -201,18 +219,25 @@ export default function RentPage({}) {
                         <section className="base-card">
                         <h1 className="text-2xl font-bold">Edycja Dzierżawcy</h1>
                         <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Imie</h1>
-                            <input type="text" placeholder="name..." className="border-2 border-black p-1 rounded-md" value={editRenterFormData.name} onChange={(e) => setEditRenterFormData(prev => ({...prev, name:e.target.value}))}/>
-                        </section>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Nazwisko</h1>
-                            <input type="text" placeholder="surname..." className="border-2 border-black p-1 rounded-md" value={editRenterFormData.surname} onChange={(e) => setEditRenterFormData(prev => ({...prev, surname:e.target.value}))}/>
-                        </section>
-                        <section className="flex flex-col items-start mb-2">
-                            <h1 className="font-bold mb-1">Telefon</h1>
-                            <input type="phone" placeholder="phone..." className="border-2 border-black p-1 rounded-md" value={editRenterFormData.phone} onChange={(e) => setEditRenterFormData(prev => ({...prev, phone:e.target.value}))} />
-                        </section>
+                        <SimpleInput
+                            title="Imie"
+                            placeholder="name..."
+                            value={editRenterFormData.name}
+                            onChange={(e) => setEditRenterFormData(prev => ({...prev, name:e.target.value}))}
+                        />
+                        <SimpleInput
+                            title="Nazwisko"
+                            placeholder="surname..."
+                            value={editRenterFormData.surname}
+                            onChange={(e) => setEditRenterFormData(prev => ({...prev, surname:e.target.value}))}
+                        />
+                        <SimpleInput
+                            text="phone"
+                            title="Telefon"
+                            placeholder="phone..."
+                            value={editRenterFormData.phone}
+                            onChange={(e) => setEditRenterFormData(prev => ({...prev, phone:e.target.value}))}
+                        />
                         <p className="error-text">{editRenterErrors[Object.keys(editRenterErrors).find(ele => editRenterErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(editRenterFormData).length == 3) {

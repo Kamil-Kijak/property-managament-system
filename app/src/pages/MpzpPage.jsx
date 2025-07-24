@@ -8,6 +8,8 @@ import {faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "../hooks/useForm";
 import InsertMpzp from "../forms/InsertMpzp";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
+import SimpleInput from "../components/inputs/SimpleInput";
+import SimpleTextArea from "../components/inputs/SimpleTextArea"
 
 export default function MpzpPage({}) {
     
@@ -124,14 +126,18 @@ export default function MpzpPage({}) {
                         <h1 className="text-2xl my-2 text-center">Edycja MPZP</h1>
                         <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
                         <section className="py-2 flex-col items-center">
-                            <section className="flex flex-col items-start mb-2">
-                                <h1 className="font-bold mb-1">Kod MPZP</h1>
-                                <input type="text" placeholder="purpose name..." onChange={(e) => setEditFormData(prev => ({...prev, code:e.target.value}))} value={editFormData.code} className="border-2 border-black p-1 rounded-md" />
-                            </section>
-                            <section className="flex flex-col items-start mb-2">
-                                <h1 className="font-bold mb-1">Opis MPZP</h1>
-                                <textarea type="text" placeholder="purpose name..." onChange={(e) => setEditFormData(prev => ({...prev, description:e.target.value}))} value={editFormData.description} className="border-2 border-black p-1 rounded-md resize-none w-full h-[6rem]"></textarea>
-                            </section>
+                            <SimpleInput
+                                title="Kod MPZP"
+                                placeholder="MPZP code..."
+                                value={editFormData.code}
+                                onChange={(e) => setEditFormData(prev => ({...prev, code:e.target.value}))}
+                            />
+                            <SimpleTextArea
+                                title="Opis MPZP"
+                                placeholder="MPZP description..."
+                                value={editFormData.description}
+                                onChange={(e) => setEditFormData(prev => ({...prev, description:e.target.value}))}
+                            />
                         </section>
                         <p className="error-text">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {

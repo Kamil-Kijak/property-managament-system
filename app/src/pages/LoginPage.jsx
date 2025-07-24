@@ -8,6 +8,8 @@ import WarningScreen from "../components/screens/WarningScreen";
 import { useNavigate } from "react-router-dom";
 import { useRequest } from "../hooks/useRequest";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
+import SelectInput from "../components/inputs/SelectInput";
+import SimpleInput from "../components/inputs/SimpleInput";
 
 
 export default function LoginPage({}) {
@@ -44,7 +46,6 @@ export default function LoginPage({}) {
     }, [adminCreate]);
     
     const registerAdmin = () => {
-        // admin register
         warningUpdate(false);
         loadingUpdate(true);
         request("/api/user/register_admin", {
@@ -107,22 +108,32 @@ export default function LoginPage({}) {
                         <h1 className="text-xl font-bold my-2">SK INVEST</h1>
                         <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
                         <section className="py-2 flex-col items-center">
-                            <section className="flex flex-col items-start mb-2">
-                                <h1 className="font-bold mb-1">Imie</h1>
-                                <input type="text" onChange={(e) => setRegisterFormData(prev => ({...prev, name:e.target.value}))} placeholder="name..." className="border-2 border-black p-1 rounded-md" />
-                            </section>
-                            <section className="flex flex-col items-start mb-2">
-                                <h1 className="font-bold mb-1">Nazwisko</h1>
-                                <input type="text" onChange={(e) => setRegisterFormData(prev => ({...prev, surname:e.target.value}))} placeholder="surname..." className="border-2 border-black p-1 rounded-md" />
-                            </section>
-                            <section className="flex flex-col items-start mb-2">
-                                <h1 className="font-bold mb-1">Hasło</h1>
-                                <input type="password" onChange={(e) => setRegisterFormData(prev => ({...prev, password:e.target.value}))} placeholder="password..." className="border-2 border-black p-1 rounded-md" />
-                            </section>
-                            <section className="flex flex-col items-start mb-2">
-                                <h1 className="font-bold mb-1">Powtórz hasło</h1>
-                                <input type="password" onChange={(e) => setCheckingPassword(e.target.value)} placeholder="repeat password..." className="border-2 border-black p-1 rounded-md" />
-                            </section>
+                            <SimpleInput
+                                title="Imie"
+                                placeholder="name..."
+                                value={loginFormData.name}
+                                onChange={(e) => setLoginFormData(prev => ({...prev, name:e.target.value}))}
+                            />
+                            <SimpleInput
+                                title="Nazwisko"
+                                placeholder="surname..."
+                                value={loginFormData.surname}
+                                onChange={(e) => setLoginFormData(prev => ({...prev, surname:e.target.value}))}
+                            />
+                            <SimpleInput
+                                type="password"
+                                title="Hasło"
+                                placeholder="password..."
+                                value={loginFormData.password}
+                                onChange={(e) => setLoginFormData(prev => ({...prev, password:e.target.value}))}
+                            />
+                            <SimpleInput
+                                type="password"
+                                title="Powtórz hasło"
+                                placeholder="repeat password..."
+                                value={checkingPassword}
+                                onChange={(e) => setCheckingPassword(e.target.value)}
+                            />
                         </section>
                         {checkingPassword !== (registerFormData.password || "") && <p className="error-text">Hasła nie są takie same</p>}
                         <p className="error-text">{registerErrors[Object.keys(registerErrors).find(ele => registerErrors[ele] != null)]}</p>
@@ -154,16 +165,17 @@ export default function LoginPage({}) {
                         <div className="bg-green-500 w-full h-1 rounded-2xl my-3"></div>
                         <section className="py-2">
                             {users.some((ele) => ele.rola == `ADMIN`) ?
-                            <section className="flex flex-col items-start mb-2">
-                                    <h1 className="font-bold mb-1">Użytkownik</h1>
-                                    <select className="border-2 border-black rounded-lg p-2" defaultValue={""}
-                                        onChange={(e) => setLoginFormData(prev => ({...prev, ID_user:e.target.value}))}>
-                                        <option value="" className="hidden">Wybierz użytkownika</option>
-                                        {users.map((ele) => <option key={ele.ID} value={ele.ID}>
-                                            {ele.imie} {ele.nazwisko} {ele.rola}
-                                        </option>)}
-                                    </select>
-                            </section>
+                            <SelectInput
+                                title="Użytkownik"
+                                placeholder="Wybierz użytkownika"
+                                value={loginFormData.ID_user}
+                                onChange={(e) => setLoginFormData(prev => ({...prev, ID_user:e.target.value}))}
+                                options={
+                                <>
+                                    {users.map((ele) => <option key={ele.ID} value={ele.ID}>{ele.imie} {ele.nazwisko} {ele.rola}</option>)}
+                                </>
+                                }
+                             />
                             :
                             <section className="flex flex-col justify-center">
                                 <h1 className="text-red-600 text-xl font-bold py-3"><FontAwesomeIcon icon={faWarning}/> Brak konta ADMIN</h1>
@@ -173,10 +185,13 @@ export default function LoginPage({}) {
                             {
                                 loginFormData.ID_user && loginFormData.ID_user != "" &&
                                 <section className="py-4 flex flex-col items-center">
-                                    <section className="flex flex-col items-start mb-4">
-                                        <h1 className="font-bold mb-1">Hasło</h1>
-                                        <input type="password" onChange={(e) => setLoginFormData(prev => ({...prev, password:e.target.value}))} placeholder="password..." className="border-2 border-black p-2 rounded-md" />
-                                    </section>
+                                    <SimpleInput
+                                        type="password"
+                                        title="Hasło"
+                                        placeholder="password..."
+                                        value={loginFormData.password}
+                                        onChange={(e) => setLoginFormData(prev => ({...prev, password:e.target.value}))}
+                                    />
                                     <p className="error-text">{loginErrors[Object.keys(loginErrors).find(ele => loginErrors[ele] != null)]}</p>
                                     <button className="base-btn" onClick={loginUser}>Zaloguj</button>
                                     {loginError && <p className="error-text">{loginError}</p>}
