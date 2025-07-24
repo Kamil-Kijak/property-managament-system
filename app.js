@@ -5,6 +5,7 @@ const http = require("http");
 const cookieParser = require("cookie-parser")
 const path = require("path");
 const rateLimit = require("express-rate-limit")
+const transporter = require("./util/mailTransporter")
 
 
 // routes variables
@@ -54,6 +55,8 @@ app.use("/api/areas", areasRoutes);
 
 const server = http.createServer(app);
 
+
 server.listen(process.env.PORT || 3000, () => {
     console.log(`serwer nasłuchuje na porcie ${process.env.PORT || 3000}`)
 })
+

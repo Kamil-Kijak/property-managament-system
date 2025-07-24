@@ -22,6 +22,7 @@ export default function LandsPage({}) {
     const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
     const [searchFilters, setSearchFilters] = useState({
         serial_filter:"",
+        land_number_filter:"",
         purpose_filter:"",
         rent_filter:"",
         low_area_filter:"",
@@ -62,6 +63,7 @@ export default function LandsPage({}) {
             }).then(result => {
                 if(!result.error) {
                     setLands(result.data)
+                    console.log(result.data)
                 }
                 loadingUpdate(false);
             })
@@ -100,10 +102,15 @@ export default function LandsPage({}) {
                             <input type="text" placeholder="land ID..." className="border-2 border-black rounded-md bg-white px-2 py-1"
                              onChange={(e) => setSearchFilters(prev => ({...prev, serial_filter:e.target.value}))}/>
                         </section>
+                        <section className="ml-1">
+                            <h1 className="font-bold">Numer działki</h1>
+                            <input type="text" placeholder="land number..." className="border-2 border-black rounded-md bg-white px-2 py-1"
+                             onChange={(e) => setSearchFilters(prev => ({...prev, land_number_filter:e.target.value}))}/>
+                        </section>
                         <section className="ml-1 w-[150px]">
                             <h1 className="font-bold">Województwo</h1>
                             <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations({district:"", commune:"", town:"", province:e.target.value})}>
-                                <option value="" className="hidden">Wybierz</option>
+                                <option value="">NaN</option>
                                 {
                                     availableLocalizations.provinces.map((obj) => {
                                         return <option key={obj} value={obj}>{obj}</option>
@@ -114,7 +121,7 @@ export default function LandsPage({}) {
                         <section className="ml-1 w-[150px]">
                             <h1 className="font-bold">Powiat</h1>
                             <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations(prev => ({...prev, district:e.target.value, commune:"", town:"",}))}>
-                                <option value="" className="hidden">Wybierz</option>
+                                <option value="">NaN</option>
                                 {
                                     availableLocalizations.districts.map((obj) => {
                                         return <option key={obj} value={obj}>{obj}</option>
@@ -125,7 +132,7 @@ export default function LandsPage({}) {
                         <section className="ml-1 w-[150px]">
                             <h1 className="font-bold">Gmina</h1>
                             <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations(prev => ({...prev, commune:e.target.value, town:"",}))}>
-                                <option value="" className="hidden">Wybierz</option>
+                                <option value="">NaN</option>
                                 {
                                     
                                     availableLocalizations.communes.map((obj) => {
@@ -137,7 +144,7 @@ export default function LandsPage({}) {
                         <section className="ml-1 w-[150px]">
                             <h1 className="font-bold">Miejscowość</h1>
                             <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setLocalizations(prev => ({...prev, town:e.target.value,}))}>
-                                <option value="" className="hidden">Wybierz</option>
+                                <option value="" >NaN</option>
                                 {
                                     availableLocalizations.towns.map((obj) => {
                                         return <option key={obj} value={obj}>{obj}</option>
@@ -148,7 +155,7 @@ export default function LandsPage({}) {
                         <section className="ml-1">
                             <h1 className="font-bold">Przeznaczenie</h1>
                             <select className="border-2 border-black rounded-md bg-white px-2 py-1" defaultValue={""} onChange={(e) => setSearchFilters(prev => ({...prev, purpose_filter:e.target.value}))}>
-                                <option value="" className="hidden">Wybierz</option>
+                                <option value="">NaN</option>
                                 {
                                    landPurposes.map((obj, index) => {
                                     return <option key={index} value={obj.typ}>{obj.typ}</option>
@@ -158,8 +165,8 @@ export default function LandsPage({}) {
                         </section>
                         <section className="ml-1">
                             <h1 className="font-bold">Dzierżawiona</h1>
-                            <select className="border-2 border-black rounded-md bg-white px-2 py-1" defaultValue={""} onChange={(e) => setSearchFilters(prev => ({...prev, rent_filter:e.target.value}))}>
-                                <option value="" className="hidden">Wybierz</option>
+                            <select className="border-2 border-black rounded-md bg-white px-2 py-1 w-full" defaultValue={""} onChange={(e) => setSearchFilters(prev => ({...prev, rent_filter:e.target.value}))}>
+                                <option value="">NaN</option>
                                 <option value="1">TAK</option>
                                 <option value="0">NIE</option>
                             </select>

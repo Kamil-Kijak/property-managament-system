@@ -33,6 +33,7 @@ export default function Rent({ele, deleteRent}) {
                     </>)
                     }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                 }
+                <p className="text-xl font-bold">Właściciel: {ele.w_imie} {ele.w_nazwisko} tel:{ele.w_telefon}</p>
             </section>
             <section className="flex justify-around gap-x-10">
                 <section className="flex flex-col items-center gap-y-3">
@@ -40,8 +41,7 @@ export default function Rent({ele, deleteRent}) {
                     <p>{ele.numer_seryjny_dzialki}</p>
                 </section>
                 <section className="flex flex-col items-center gap-y-3">
-                    <p className="font-bold">data rozpoczęcia/zakończenia</p>
-                    <p className="font-bold">Dzierżawy</p>
+                    <p className="font-bold">data rozpoczęcia/zakończenia Dzierżawy</p>
                     <p>{formatDate(ele.data_rozpoczecia)} / {formatDate(ele.data_zakonczenia)}</p>
                 </section>
                 <section className="flex flex-col items-center gap-y-3">
@@ -63,10 +63,6 @@ export default function Rent({ele, deleteRent}) {
                     <section className="flex flex-col items-center gap-y-3">
                         <p className="font-bold">Stawka czynszu za ha</p>
                         <p>{ele.wysokosc_czynszu}zł</p>
-                    </section>
-                    <section className="flex flex-col items-center gap-y-3">
-                        <p className="font-bold">Właściciel</p>
-                        <p>{ele.w_imie} {ele.w_nazwisko} tel:{ele.w_telefon}</p>
                     </section>
                     <section className="flex flex-col items-center">
                         <p className="font-bold mb-3">Lokalizacja</p>

@@ -90,8 +90,8 @@ export default function Land({obj, editLand, requestDelete, addRent}) {
                     </section>
                     <section className="flex justify-around gap-x-5">
                         <section className="flex flex-col items-center gap-y-3">
-                            <p className="font-bold">Dzierżawiona</p>
-                            <p>{obj.ID_dzierzawy ? "TAK" : "NIE"}</p>
+                            <p className="font-bold">Dzierżawca</p>
+                            <p>{obj.ID_dzierzawy ? `${obj.d_nazwisko} ${obj.d_imie}` : "BRAK"}</p>
                         </section>
                         <section className="flex flex-col items-center gap-y-3">
                             <p className="font-bold">Właściciel</p>

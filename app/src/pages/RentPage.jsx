@@ -19,6 +19,8 @@ export default function RentPage({}) {
     const [searchFilters, setSearchFilters] = useState({
         name_filter:"",
         surname_filter:"",
+        owner_name_filter:"",
+        owner_surname_filter:"",
         month_filter:"",
         end_year_filter:""
     });
@@ -60,7 +62,6 @@ export default function RentPage({}) {
                         delete obj.d_telefon;
                         renters.find(ele => ele.ID == obj.ID_dzierzawcy).dzialki.push({...obj});
                     });
-                    console.log(renters);
                     setRenters(renters);
                 }
                 loadingUpdate(false);
@@ -132,12 +133,22 @@ export default function RentPage({}) {
                         <>
                             <section>
                                 <h1 className="font-bold">Imie dzierżawcy</h1>
-                                <input type="text" placeholder="name..." onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
+                                <input type="text" placeholder="renter name..." onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
                                 />
                             </section>
                             <section className="ml-2">
                                 <h1 className="font-bold">Nazwisko dzierżawcy</h1>
-                                <input type="text" placeholder="surname..." onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
+                                <input type="text" placeholder="renter surname..." onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
+                                />
+                            </section>
+                            <section className="ml-2">
+                                <h1 className="font-bold">Imie właściciela</h1>
+                                <input type="text" placeholder="owner name..." onChange={(e) => setSearchFilters(prev => ({...prev, owner_name_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
+                                />
+                            </section>
+                            <section className="ml-2">
+                                <h1 className="font-bold">Nazwisko właściciela</h1>
+                                <input type="text" placeholder="owner surname..." onChange={(e) => setSearchFilters(prev => ({...prev, owner_surname_filter:e.target.value.toUpperCase()}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
                                 />
                             </section>
                             <section className="ml-2">
@@ -159,7 +170,7 @@ export default function RentPage({}) {
                                 </select>
                             </section>
                             <section className="ml-2">
-                                <h1 className="font-bold">Rok zakończenia dzierżawy</h1>
+                                <h1 className="font-bold">Dzierżawy przed końcem</h1>
                                 <input type="number" placeholder="end year..." onChange={(e) => setSearchFilters(prev => ({...prev, end_year_filter:e.target.value}))} className="border-2 border-black rounded-md bg-white px-2 py-1"
                                 />
                             </section>
