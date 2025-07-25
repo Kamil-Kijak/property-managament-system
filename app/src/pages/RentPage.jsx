@@ -10,13 +10,13 @@ import { useForm } from "../hooks/useForm";
 import SimpleInput from "../components/inputs/SimpleInput"
 import SearchInput from "../components/inputs/SearchInput";
 import SearchSelectInput from "../components/inputs/SearchSelectInput";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function RentPage({}) {
     
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update);
-
-    const editSectionRef = useRef(null);
 
     const [searchFilters, setSearchFilters] = useState({
         name_filter:"",
@@ -34,7 +34,7 @@ export default function RentPage({}) {
     })
 
     const [renters, setRenters] = useState([]);
-    const [form, setForm] = useState("");
+    const [form, setForm] = useState(null);
     const [renterEditID, setRenterEditID] = useState(null);
 
     const request = useRequest();
@@ -196,11 +196,10 @@ export default function RentPage({}) {
                 
                 />
                 {
-                    form != "edit_rent" &&
+                    !form &&
                     renters.map((obj, index) => <Renter key={index} obj={obj} deleteRent={requestDeleteRent} deleteRenter={requestDeleteRenter} editRenter={(ID) => {
                         setForm("edit_renter");
                         setRenterEditID(ID);
-                        setTimeout(() => editSectionRef.current.scrollIntoView({ behavior: 'smooth' }), 0);
                         setEditRenterFormData({
                             name:obj.imie,
                             surname:obj.nazwisko,
@@ -214,41 +213,44 @@ export default function RentPage({}) {
                 } */}
                 {
                     form == "edit_renter" &&
-                     <section ref={editSectionRef} className="mt-5">
-                        <section className="base-card">
-                        <h1 className="text-2xl font-bold">Edycja Dzierżawcy</h1>
-                        <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
-                        <SimpleInput
-                            title="Imie"
-                            placeholder="name..."
-                            value={editRenterFormData.name}
-                            onChange={(e) => setEditRenterFormData(prev => ({...prev, name:e.target.value}))}
-                            error={editRenterErrors.name}
-                        />
-                        <SimpleInput
-                            title="Nazwisko"
-                            placeholder="surname..."
-                            value={editRenterFormData.surname}
-                            onChange={(e) => setEditRenterFormData(prev => ({...prev, surname:e.target.value}))}
-                            error={editRenterErrors.surname}
-                        />
-                        <SimpleInput
-                            text="phone"
-                            title="Telefon"
-                            placeholder="phone..."
-                            value={editRenterFormData.phone}
-                            onChange={(e) => setEditRenterFormData(prev => ({...prev, phone:e.target.value}))}
-                            error={editRenterErrors.phone}
-                        />
-                        <button className="base-btn" onClick={() => {
-                            if(Object.keys(editRenterFormData).length == 3) {
-                                if(Object.keys(editRenterErrors).every(ele => editRenterErrors[ele] == null)) {
-                                    requestEdit();
-                                }
-                            }
-                        }}>Zaktualizuj</button>
+                    <>
+                        <section className="my-10">
+                            <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
                         </section>
-                    </section>
+                        <section className="base-card">
+                            <h1 className="text-2xl font-bold">Edycja Dzierżawcy</h1>
+                            <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
+                            <SimpleInput
+                                title="Imie"
+                                placeholder="name..."
+                                value={editRenterFormData.name}
+                                onChange={(e) => setEditRenterFormData(prev => ({...prev, name:e.target.value}))}
+                                error={editRenterErrors.name}
+                            />
+                            <SimpleInput
+                                title="Nazwisko"
+                                placeholder="surname..."
+                                value={editRenterFormData.surname}
+                                onChange={(e) => setEditRenterFormData(prev => ({...prev, surname:e.target.value}))}
+                                error={editRenterErrors.surname}
+                            />
+                            <SimpleInput
+                                text="phone"
+                                title="Telefon"
+                                placeholder="phone..."
+                                value={editRenterFormData.phone}
+                                onChange={(e) => setEditRenterFormData(prev => ({...prev, phone:e.target.value}))}
+                                error={editRenterErrors.phone}
+                            />
+                            <button className="base-btn" onClick={() => {
+                                if(Object.keys(editRenterFormData).length == 3) {
+                                    if(Object.keys(editRenterErrors).every(ele => editRenterErrors[ele] == null)) {
+                                        requestEdit();
+                                    }
+                                }
+                            }}>Zaktualizuj</button>
+                        </section>
+                    </>
                 }
             </section>
         </main>

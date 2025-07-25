@@ -3,7 +3,7 @@ import {useState, useEffect, useRef} from "react";
 import NavBar from "../components/NavBar"
 import { useRequest } from "../hooks/useRequest";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faPlus, faPen, faTrashCan, faXmark} from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "../hooks/useForm";
 import InsertLandPurpose from "../forms/InsertLandPurpose";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
@@ -14,7 +14,6 @@ export default function LandPurposesPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update)
 
-    const editSectionRef = useRef(null);
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
@@ -78,69 +77,77 @@ export default function LandPurposesPage({}) {
         <main className="flex justify-between">
             <NavBar requiredRoles={["ADMIN"]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
-                <section className="my-10">
-                    {landPurposes.map((ele) => {
-                        return (
-                            <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={ele.ID}>
-                                <h1 className="text-4xl text-green-600 font-bold">ID: {ele.ID}</h1>
-                                <section className="flex flex-col items-start justify-center">
-                                    <h1 className="mx-10 text-2xl">{ele.typ}</h1>
-                                </section>
-                                <section className="flex flex-col items-center">
-                                    <button className="info-btn" onClick={() => {
-                                        setForm("edit");
-                                        setEditLandPurposeID(ele.ID)
-                                        setEditFormData({
-                                            type:ele.typ
-                                        });
-                                        setTimeout(() => editSectionRef.current.scrollIntoView({behavior:"smooth"}), 0)
-                                    }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
-                                    <button className="warning-btn" onClick={() => {
-                                        warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
-                                            <>
-                                                <p className="text-red-600 font-bold">
-                                                    Usunięcie tego przeznaczenia działki spowoduje że każda działka która ma to przeznaczenie w systemie zostanie usunięta nieodwracalnie
-                                                    </p>
-                                                <p className="text-white font-bold text-lg mt-5">
-                                                    Czy napewno chcesz usunąć to przeznaczenie działki?
-                                                </p>
-                                            </>
-                                        )
-                                    }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
-                                </section>
-                            </section>
-                        )
-                    })}
-                </section>
-                <button className="base-btn text-2xl" onClick={() => {
-                    setForm("insert")
-                }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowe przeznaczenie działki</button>
+                {
+                    !form &&
+                    <>
+                        <section className="my-10">
+                            {landPurposes.map((ele) => {
+                                return (
+                                    <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={ele.ID}>
+                                        <h1 className="text-4xl text-green-600 font-bold">ID: {ele.ID}</h1>
+                                        <section className="flex flex-col items-start justify-center">
+                                            <h1 className="mx-10 text-2xl">{ele.typ}</h1>
+                                        </section>
+                                        <section className="flex flex-col items-center">
+                                            <button className="info-btn" onClick={() => {
+                                                setForm("edit");
+                                                setEditLandPurposeID(ele.ID)
+                                                setEditFormData({
+                                                    type:ele.typ
+                                                });
+                                            }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                                            <button className="warning-btn" onClick={() => {
+                                                warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
+                                                    <>
+                                                        <p className="text-red-600 font-bold">
+                                                            Usunięcie tego przeznaczenia działki spowoduje że każda działka która ma to przeznaczenie w systemie zostanie usunięta nieodwracalnie
+                                                            </p>
+                                                        <p className="text-white font-bold text-lg mt-5">
+                                                            Czy napewno chcesz usunąć to przeznaczenie działki?
+                                                        </p>
+                                                    </>
+                                                )
+                                            }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
+                                        </section>
+                                    </section>
+                                )
+                            })}
+                        </section>
+                        <button className="base-btn text-2xl" onClick={() => {
+                            setForm("insert")
+                        }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowe przeznaczenie działki</button>
+                    </>
+                }
                 {
                     form == "insert" &&
                     <InsertLandPurpose setForm={setForm} getLandPurposes={getLandPurposes}/>
                 }
                 {
-                    form == "edit" &&
-                    <section className="base-card my-10" ref={editSectionRef}>
-                        <h1 className="text-2xl my-2 text-center">Edycja przeznaczenia działki</h1>
-                        <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
-                        <section className="py-2 flex-col items-center">
-                            <SimpleInput
-                                title="Nazwa przeznaczenia"
-                                placeholder="purpose name..."
-                                value={editFormData.type}
-                                onChange={(e) => setEditFormData(prev => ({...prev, type:e.target.value}))}
-                                error={editErrors.type}
-                            />
+                    form == "edit" && <>
+                        <section className="my-10">
+                            <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
                         </section>
-                        <button className="base-btn" onClick={() => {
-                            if(Object.keys(editFormData).length == 1) {
-                                if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
-                                    requestEditLandPurpose();
-                                }
-                                }
-                        }}>Zaktualizuj</button>
-                    </section>
+                        <section className="base-card">
+                            <h1 className="text-2xl my-2 text-center">Edycja przeznaczenia działki</h1>
+                            <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
+                            <section className="py-2 flex-col items-center">
+                                <SimpleInput
+                                    title="Nazwa przeznaczenia"
+                                    placeholder="purpose name..."
+                                    value={editFormData.type}
+                                    onChange={(e) => setEditFormData(prev => ({...prev, type:e.target.value}))}
+                                    error={editErrors.type}
+                                />
+                            </section>
+                            <button className="base-btn" onClick={() => {
+                                if(Object.keys(editFormData).length == 1) {
+                                    if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                                        requestEditLandPurpose();
+                                    }
+                                    }
+                            }}>Zaktualizuj</button>
+                        </section>
+                    </>
                 }
             </section>
         </main>

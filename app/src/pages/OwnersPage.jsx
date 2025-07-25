@@ -9,13 +9,13 @@ import { useForm } from "../hooks/useForm";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import SearchInput from "../components/inputs/SearchInput";
 import SimpleInput from "../components/inputs/SimpleInput";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function OwnersPage({}) {
 
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update);
-
-    const editSectionRef = useRef(null);
 
     const [searchFilters, setSearchFilters] = useState({
         name_filter:"",
@@ -130,51 +130,56 @@ export default function OwnersPage({}) {
                     }
                 
                 />
-                <section className="my-10">
-                    {
-                        owners.map((obj, index) => <Owner obj={obj} key={index} requestDelete={requestDelete} editOwner={(ID) => {
-                            setForm("edit");
-                            setOwnerEditID(ID);
-                            setTimeout(() => editSectionRef.current.scrollIntoView({ behavior: 'smooth' }), 0);
-                            }} setEditFormData={setEditFormData}/>)
-                    } 
-                </section>
+                {
+                    !form && 
+                    <section className="my-10">
+                        {
+                            owners.map((obj, index) => <Owner obj={obj} key={index} requestDelete={requestDelete} editOwner={(ID) => {
+                                setForm("edit");
+                                setOwnerEditID(ID);
+                                }} setEditFormData={setEditFormData}/>)
+                        } 
+                    </section>
+                }
                 {
                     form == "edit" &&
-                    <section ref={editSectionRef}>
-                        <section className="base-card">
-                        <h1 className="text-2xl font-bold">Edycja właściciela</h1>
-                        <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
-                        <SimpleInput
-                            title="Imie"
-                            placeholder="name..."
-                            value={editFormData.name}
-                            onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))}
-                            error={editErrors.name}
-                        />
-                        <SimpleInput
-                            title="Nazwisko"
-                            placeholder="surname..."
-                            value={editFormData.surname}
-                            onChange={(e) => setEditFormData(prev => ({...prev, surname:e.target.value}))}
-                            error={editErrors.surname}
-                        />
-                        <SimpleInput
-                            title="Telefon"
-                            placeholder="phone..."
-                            value={editFormData.phone}
-                            onChange={(e) => setEditFormData(prev => ({...prev, phone:e.target.value}))}
-                            error={editErrors.phone}
-                        />
-                        <button className="base-btn" onClick={() => {
-                            if(Object.keys(editFormData).length == 3) {
-                                if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
-                                    requestEdit();
-                                }
-                            }
-                        }}>Zaktualizuj</button>
+                    <>
+                        <section className="my-10">
+                            <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
                         </section>
-                    </section>
+                        <section className="base-card">
+                            <h1 className="text-2xl font-bold">Edycja właściciela</h1>
+                            <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
+                            <SimpleInput
+                                title="Imie"
+                                placeholder="name..."
+                                value={editFormData.name}
+                                onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))}
+                                error={editErrors.name}
+                            />
+                            <SimpleInput
+                                title="Nazwisko"
+                                placeholder="surname..."
+                                value={editFormData.surname}
+                                onChange={(e) => setEditFormData(prev => ({...prev, surname:e.target.value}))}
+                                error={editErrors.surname}
+                            />
+                            <SimpleInput
+                                title="Telefon"
+                                placeholder="phone..."
+                                value={editFormData.phone}
+                                onChange={(e) => setEditFormData(prev => ({...prev, phone:e.target.value}))}
+                                error={editErrors.phone}
+                            />
+                            <button className="base-btn" onClick={() => {
+                                if(Object.keys(editFormData).length == 3) {
+                                    if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                                        requestEdit();
+                                    }
+                                }
+                            }}>Zaktualizuj</button>
+                        </section>
+                    </>
                 }
             </section>
         </main>

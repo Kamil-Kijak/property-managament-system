@@ -31,7 +31,7 @@ export default function LandsPage({}) {
     });
     const [landPurposes, setLandPurposes] = useState([]);
     const [lands, setLands] = useState([]);
-    const [form, setForm] = useState("");
+    const [form, setForm] = useState(null);
     const [editLandID, setEditLandID] = useState();
     const request = useRequest();
 
@@ -92,7 +92,7 @@ export default function LandsPage({}) {
             <NavBar requiredRoles={[]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative">
                 {
-                    form == "" && <>
+                    !form && <>
                     <SearchBar
                     onSearch={search}
                     elements={

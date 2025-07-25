@@ -4,7 +4,7 @@ import {useState, useEffect, useRef} from "react";
 import NavBar from "../components/NavBar"
 import { useRequest } from "../hooks/useRequest";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faPlus, faPen, faTrashCan, faXmark} from "@fortawesome/free-solid-svg-icons";
 import WarningScreen from "../components/screens/WarningScreen";
 import { useForm } from "../hooks/useForm";
 import InsertGeneralPlan from "../forms/InsertGeneralPlan";
@@ -16,7 +16,6 @@ export default function GeneralPlansPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update);
 
-    const editSectionRef = useRef(null);
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
@@ -96,77 +95,83 @@ export default function GeneralPlansPage({}) {
             />
             <NavBar requiredRoles={["ADMIN"]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
-                <section className="my-10">
-                    {generalPlans.map((ele) => {
-                        return (
-                            <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={ele.ID}>
-                                <h1 className="text-4xl text-green-600 font-bold">{ele.kod}</h1>
-                                <section className="flex flex-col items-start justify-center">
-                                    <p className="mx-10 text-xl">{ele.opis}</p>
-                                </section>
-                                <section className="flex flex-col items-center">
-                                    <button className="info-btn" onClick={() => {
-                                        setForm("edit");
-                                        setEditGeneralPlanID(ele.ID)
-                                        setEditFormData({
-                                            code:ele.kod,
-                                            description:ele.opis
-                                        })
-                                        setTimeout(() => editSectionRef.current.scrollIntoView({behavior:"smooth"}), 0)
-                                    }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
-                                    <button className="warning-btn" onClick={() => {
-                                        warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
-                                            <>
-                                                <p className="text-red-600 font-bold">
-                                                    Usunięcie tego planu ogólnego spowoduje że każda działka która ma ten plan ogólny w systemie zostanie usunięta nieodwracalnie
+                {!form &&
+                <>
+                    <section className="my-10">
+                        {generalPlans.map((ele) => {
+                            return (
+                                <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={ele.ID}>
+                                    <h1 className="text-4xl text-green-600 font-bold">{ele.kod}</h1>
+                                    <section className="flex flex-col items-start justify-center">
+                                        <p className="mx-10 text-xl">{ele.opis}</p>
+                                    </section>
+                                    <section className="flex flex-col items-center">
+                                        <button className="info-btn" onClick={() => {
+                                            setForm("edit");
+                                            setEditGeneralPlanID(ele.ID)
+                                            setEditFormData({
+                                                code:ele.kod,
+                                                description:ele.opis
+                                            })
+                                        }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                                        <button className="warning-btn" onClick={() => {
+                                            warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
+                                                <>
+                                                    <p className="text-red-600 font-bold">
+                                                        Usunięcie tego planu ogólnego spowoduje że każda działka która ma ten plan ogólny w systemie zostanie usunięta nieodwracalnie
+                                                        </p>
+                                                    <p className="text-white font-bold text-lg mt-5">
+                                                        Czy napewno chcesz usunąć ten plan ogólny?
                                                     </p>
-                                                <p className="text-white font-bold text-lg mt-5">
-                                                    Czy napewno chcesz usunąć ten plan ogólny?
-                                                </p>
-                                            </>
-                                        )
-                                    }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
+                                                </>
+                                            )
+                                        }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
+                                    </section>
                                 </section>
-                            </section>
-                        )
-                    })}
-                </section>
-                <button className="base-btn text-2xl" onClick={() => {
-                    setForm("insert")
-                }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowy plan ogólny</button>
+                            )
+                        })}
+                    </section>
+                    <button className="base-btn text-2xl" onClick={() => {
+                        setForm("insert")
+                    }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowy plan ogólny</button>
+                </>}
                 {
                     form == "insert" &&
                     <InsertGeneralPlan getGeneralPlans={getGeneralPlans} setForm={setForm}/>
                 }
                 {
-                    form == "edit" &&
-                    <section className="base-card my-10" ref={editSectionRef}>
-                        <h1 className="text-2xl my-2 text-center">Edycja planu ogólnego</h1>
-                        <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
-                        <section className="py-2 flex-col items-center">
-                            <SimpleInput
-                                title="Kod planu"
-                                placeholder="plan code..."
-                                value={editFormData.code}
-                                onChange={(e) => setEditFormData(prev => ({...prev, code:e.target.value}))}
-                                error={editErrors.code}
-                            />
-                            <SimpleTextArea
-                                title="Opis planu"
-                                placeholder="plan descrption..."
-                                value={editFormData.description}
-                                onChange={(e) => setEditFormData(prev => ({...prev, description:e.target.value}))}
-                                error={editErrors.description}
-                            />
+                    form == "edit" && <>
+                        <section className="my-10">
+                            <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
                         </section>
-                        <button className="base-btn" onClick={() => {
-                            if(Object.keys(editFormData).length == 2) {
-                                if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
-                                    requestEditGeneralPlan();
-                                }
-                                }
-                        }}>Zaktualizuj</button>
-                    </section>
+                        <section className="base-card">
+                            <h1 className="text-2xl my-2 text-center">Edycja planu ogólnego</h1>
+                            <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
+                            <section className="py-2 flex-col items-center">
+                                <SimpleInput
+                                    title="Kod planu"
+                                    placeholder="plan code..."
+                                    value={editFormData.code}
+                                    onChange={(e) => setEditFormData(prev => ({...prev, code:e.target.value}))}
+                                    error={editErrors.code}
+                                />
+                                <SimpleTextArea
+                                    title="Opis planu"
+                                    placeholder="plan descrption..."
+                                    value={editFormData.description}
+                                    onChange={(e) => setEditFormData(prev => ({...prev, description:e.target.value}))}
+                                    error={editErrors.description}
+                                />
+                            </section>
+                            <button className="base-btn" onClick={() => {
+                                if(Object.keys(editFormData).length == 2) {
+                                    if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                                        requestEditGeneralPlan();
+                                    }
+                                    }
+                            }}>Zaktualizuj</button>
+                        </section>
+                    </>
                 }
             </section>
         </main>

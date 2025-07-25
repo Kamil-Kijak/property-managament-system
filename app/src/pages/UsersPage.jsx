@@ -1,7 +1,7 @@
 
 
 import { FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import { faUserTie, faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import { faUserTie, faPlus, faPen, faTrashCan, faXmark} from "@fortawesome/free-solid-svg-icons";
 import NavBar from "../components/NavBar"
 
 import { useState, useEffect, useRef } from "react";
@@ -20,7 +20,6 @@ export default function UsersPage({}) {
     const warningUpdate = useWarningStore((state) => state.update);
     const user = useUserStore((state) => state.user);
     
-    const editSectionRef = useRef(null);
 
     const [editUserID, setEditUserID] = useState(null);
     const [users, setUsers] = useState([]);
@@ -101,48 +100,54 @@ export default function UsersPage({}) {
         <main className="flex justify-between">
             <NavBar requiredRoles={["ADMIN"]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
-                <section className="my-10">
-                    {users.map((ele) => {
-                        return (
-                            <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={ele.ID}>
-                                <FontAwesomeIcon icon={faUserTie} className="text-6xl text-green-600"/>
-                                <section className="flex flex-col items-start">
-                                    <h1 className="mx-10 text-2xl">{ele.imie + " " + ele.nazwisko}</h1>
-                                    <h1 className="mx-10 text-xl font-bold">{ele.rola}</h1>
-                                </section>
-                                <section className="flex flex-col items-center">
-                                    <button className="info-btn" onClick={() => {
-                                        setForm("edit");
-                                        setEditUserID(ele.ID)
-                                        setEditFormData({
-                                            name:ele.imie,
-                                            surname:ele.nazwisko,
-                                            role:ele.rola
-                                        })
-                                        setTimeout(() => editSectionRef.current.scrollIntoView({behavior:"smooth"}), 0)
-                                    }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
-                                    <button className="warning-btn" onClick={() => {
-                                        warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
-                                            <p className="text-white font-bold text-lg mt-5">
-                                                Czy napewno chcesz usunąć tego użytkownika?
-                                            </p>
-                                        )
-                                    }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
-                                </section>
-                            </section>
-                        )
-                    })}
-                </section>
-                <button className="base-btn text-2xl" onClick={() => {
-                    setForm("insert")
-                }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowego użytkownika</button>
+                {
+                    !form && <>
+                        <section className="my-10">
+                            {users.map((ele) => {
+                                return (
+                                    <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={ele.ID}>
+                                        <FontAwesomeIcon icon={faUserTie} className="text-6xl text-green-600"/>
+                                        <section className="flex flex-col items-start">
+                                            <h1 className="mx-10 text-2xl">{ele.imie + " " + ele.nazwisko}</h1>
+                                            <h1 className="mx-10 text-xl font-bold">{ele.rola}</h1>
+                                        </section>
+                                        <section className="flex flex-col items-center">
+                                            <button className="info-btn" onClick={() => {
+                                                setForm("edit");
+                                                setEditUserID(ele.ID)
+                                                setEditFormData({
+                                                    name:ele.imie,
+                                                    surname:ele.nazwisko,
+                                                    role:ele.rola
+                                                })
+                                            }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                                            <button className="warning-btn" onClick={() => {
+                                                warningUpdate(true, "Uwaga", () => requestDelete(ele.ID), () => warningUpdate(false),
+                                                    <p className="text-white font-bold text-lg mt-5">
+                                                        Czy napewno chcesz usunąć tego użytkownika?
+                                                    </p>
+                                                )
+                                            }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
+                                        </section>
+                                    </section>
+                                )
+                            })}
+                        </section>
+                        <button className="base-btn text-2xl" onClick={() => {
+                            setForm("insert")
+                        }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowego użytkownika</button>
+                    </>
+                }
                 {
                     form == "insert" &&
                     <InsertUser setForm={setForm} getUsers={getUsers}/>
                 }
                 {
-                    form == "edit" &&
-                    <section className="base-card my-10" ref={editSectionRef}>
+                    form == "edit" && <>
+                    <section className="my-10">
+                        <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
+                    </section>
+                    <section className="base-card">
                         <h1 className="text-2xl my-2 text-center">Edycja użytkownika</h1>
                         <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
                         <section className="py-2 flex-col items-center">
@@ -183,6 +188,7 @@ export default function UsersPage({}) {
                             }
                         }>Zaktualizuj</button>
                     </section>
+                </>
                 }
             </section>
         </main>
