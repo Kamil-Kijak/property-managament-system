@@ -20,8 +20,8 @@ export default function MpzpPage({}) {
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
-        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"kod musi zawierać 2 duże litery"},
-        "description":{regexp:/^.{1,49}$/, error:"opis musi się mieścić od 1 do 50 liter"}
+        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"Kod 2 litery"},
+        "description":{regexp:/^.{0,49}$/, error:"Za długi"}
     })
 
     const [mpzp, setMpzp] = useState([]);
@@ -130,16 +130,17 @@ export default function MpzpPage({}) {
                                 title="Kod MPZP"
                                 placeholder="MPZP code..."
                                 value={editFormData.code}
-                                onChange={(e) => setEditFormData(prev => ({...prev, code:e.target.value}))}
+                                onChange={(e) => setEditFormData(prev => ({...prev, code:e.target.value.toUpperCase()}))}
+                                error={editErrors.code}
                             />
                             <SimpleTextArea
                                 title="Opis MPZP"
                                 placeholder="MPZP description..."
                                 value={editFormData.description}
                                 onChange={(e) => setEditFormData(prev => ({...prev, description:e.target.value}))}
+                                error={editErrors.description}
                             />
                         </section>
-                        <p className="error-text">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(editFormData).length == 2) {
                                 if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {

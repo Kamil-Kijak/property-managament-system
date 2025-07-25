@@ -15,16 +15,16 @@ export default function InsertRent({onClose = () => {}, landID}) {
     const today = new Date();
 
     const [renterFormData, renterErrors, setRenterFormData] = useForm({
-        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Imie musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-        "surname":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nazwisko musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-        "phone":{regexp:/^[0-9]{1,15}$/, error:"Telefon musi się mieścić w 15 cyfrach"},
+        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "surname":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "phone":{regexp:/^[0-9]{9}$/, error:"Nie ma 9 cyfr"},
     });
 
     const [rentFormData, rentErrors, setRentFormData] = useForm({
-        "start_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Podaj date w dobrym formacie"},
-        "end_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Podaj date w dobrym formacie"},
-        "rent":{regexp:/^\d{0,5}\.\d{2}$/, error:"Wysokość czynszu musi być liczbą z 2 miejscami po przecinku poniżej 100 000"},
-        "ID_renter":{regexp:/.+/, error:"Wybierze dzierżawce"},
+        "start_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Zły format"},
+        "end_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Zły formt"},
+        "rent":{regexp:/^\d{0,5}\.\d{2}$/, error:"Podaj z 2 po przecinku"},
+        "ID_renter":{regexp:/.+/, error:"Wybierz dzierżawce"},
     })
 
     const [invoiceIssueDate, setInvoiceIssueDate] = useState({
@@ -93,12 +93,14 @@ export default function InsertRent({onClose = () => {}, landID}) {
                         title="Data rozpoczęcia"
                         value={rentFormData.start_date}
                         onChange={(e) => setRentFormData(prev => ({...prev, start_date:e.target.value}))}
+                        error={rentErrors.start_date}
                     />
                     <SimpleInput
                         type="date"
                         title="Data zakończenia"
                         value={rentFormData.end_date}
                         onChange={(e) => setRentFormData(prev => ({...prev, end_date:e.target.value}))}
+                        error={rentErrors.end_date}
                     />
                 </section>
                 <section className="flex flex-col items-start my-2">
@@ -131,12 +133,14 @@ export default function InsertRent({onClose = () => {}, landID}) {
                             placeholder="name..."
                             value={renterFormData.name}
                             onChange={(e) => setRenterFormData(prev => ({...prev, name:e.target.value}))}
+                            error={renterErrors.name}
                         />
                         <SimpleInput
                             title="Nazwisko"
                             placeholder="surname..."
                             value={renterFormData.surname}
                             onChange={(e) => setRenterFormData(prev => ({...prev, surname:e.target.value}))}
+                            error={renterErrors.surname}
                         />
                         <SimpleInput
                             type="phone"
@@ -144,6 +148,7 @@ export default function InsertRent({onClose = () => {}, landID}) {
                             placeholder="phone..."
                             value={renterFormData.phone}
                             onChange={(e) => setRenterFormData(prev => ({...prev, phone:e.target.value}))}
+                            error={renterErrors.phone}
                         />
                         <p className="error-text">{renterErrors[Object.keys(renterErrors).find(ele => renterErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
@@ -164,8 +169,8 @@ export default function InsertRent({onClose = () => {}, landID}) {
                     placeholder="rent cost (zł)..."
                     value={rentFormData.rent}
                     onChange={(e) => setRentFormData(prev => ({...prev, rent:e.target.value}))}
+                    error={renterErrors.rent}
                 />
-                <p className="error-text">{rentErrors[Object.keys(rentErrors).find(ele => rentErrors[ele] != null)]}</p>
                 <button className="base-btn text-2xl" onClick={() => {
                     if(Object.keys(rentFormData).length == 4) {
                         if(Object.keys(rentErrors).every(ele => rentErrors[ele] == null)) {

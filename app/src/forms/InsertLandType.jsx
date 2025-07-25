@@ -10,7 +10,7 @@ export default function InsertLandType({setForm = () => {}, getLandTypes = () =>
     const request = useRequest();
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
-        "name":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{1,49}$/, error:"nazwa musi się mieścić od 1 do 50 liter"}
+        "name":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{1,49}$/, error:"Za krótki/długi"}
     })
 
     const requestInsertLandType = () => {
@@ -41,9 +41,9 @@ export default function InsertLandType({setForm = () => {}, getLandTypes = () =>
                         placeholder="type name..."
                         value={insertFormData.name}
                         onChange={(e) => setInsertFormData(prev => ({...prev, name:e.target.value}))}
+                        error={insertErrors.name}
                     />
                 </section>
-                <p className="error-text">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
                 <button className="base-btn" onClick={() => {
                     if(Object.keys(insertFormData).length == 1) {
                         if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {

@@ -7,7 +7,6 @@ import { useRequest } from "../hooks/useRequest";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import Renter from "../components/Renter";
 import { useForm } from "../hooks/useForm";
-import SelectInput from "../components/inputs/SelectInput"
 import SimpleInput from "../components/inputs/SimpleInput"
 import SearchInput from "../components/inputs/SearchInput";
 import SearchSelectInput from "../components/inputs/SearchSelectInput";
@@ -29,9 +28,9 @@ export default function RentPage({}) {
     });
 
     const [editRenterFormData, editRenterErrors, setEditRenterFormData] = useForm({
-        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Imie musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-        "surname":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nazwisko musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-        "phone":{regexp:/^[0-9]{1,15}$/, error:"Telefon musi się mieścić w 15 cyfrach"},
+        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "surname":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "phone":{regexp:/^[0-9]{9}$/, error:"Nie ma 9 cyfr"},
     })
 
     const [renters, setRenters] = useState([]);
@@ -224,12 +223,14 @@ export default function RentPage({}) {
                             placeholder="name..."
                             value={editRenterFormData.name}
                             onChange={(e) => setEditRenterFormData(prev => ({...prev, name:e.target.value}))}
+                            error={editRenterErrors.name}
                         />
                         <SimpleInput
                             title="Nazwisko"
                             placeholder="surname..."
                             value={editRenterFormData.surname}
                             onChange={(e) => setEditRenterFormData(prev => ({...prev, surname:e.target.value}))}
+                            error={editRenterErrors.surname}
                         />
                         <SimpleInput
                             text="phone"
@@ -237,8 +238,8 @@ export default function RentPage({}) {
                             placeholder="phone..."
                             value={editRenterFormData.phone}
                             onChange={(e) => setEditRenterFormData(prev => ({...prev, phone:e.target.value}))}
+                            error={editRenterErrors.phone}
                         />
-                        <p className="error-text">{editRenterErrors[Object.keys(editRenterErrors).find(ele => editRenterErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(editRenterFormData).length == 3) {
                                 if(Object.keys(editRenterErrors).every(ele => editRenterErrors[ele] == null)) {

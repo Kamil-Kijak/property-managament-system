@@ -28,13 +28,13 @@ export default function LoginPage({}) {
 
 
     const [registerFormData, registerErrors, setRegisterFormData] = useForm({
-        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Imie musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-        "surname":{regexp:/^[A-ZŁĆŚŁŻŹĄĘ][a-ząęłćśóżź]{1,49}$/, error:"Nazwisko musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-        "password":{regexp:/^\w{8,}$/, error:"Hasło powinno mieć minimum 8 znaków"}
+        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "surname":{regexp:/^[A-ZŁĆŚŁŻŹĄĘ][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "password":{regexp:/^.{8,}$/, error:"Hasło za słabe"}
     })
     const [loginFormData, loginErrors, setLoginFormData] = useForm({
         "ID_user":{regexp:/\d/, error:"Podaj użytkownika"},
-        "password":{regexp:/.+/, error:"Wpisz hasło"}
+        "password":{regexp:/.+/, error:"Podaj hasło"}
     })
 
     useEffect(() => {
@@ -112,20 +112,23 @@ export default function LoginPage({}) {
                                 title="Imie"
                                 placeholder="name..."
                                 value={loginFormData.name}
-                                onChange={(e) => setLoginFormData(prev => ({...prev, name:e.target.value}))}
+                                onChange={(e) => setRegisterFormData(prev => ({...prev, name:e.target.value}))}
+                                error={loginErrors.name}
                             />
                             <SimpleInput
                                 title="Nazwisko"
                                 placeholder="surname..."
                                 value={loginFormData.surname}
-                                onChange={(e) => setLoginFormData(prev => ({...prev, surname:e.target.value}))}
+                                onChange={(e) => setRegisterFormData(prev => ({...prev, surname:e.target.value}))}
+                                error={loginErrors.surname}
                             />
                             <SimpleInput
                                 type="password"
                                 title="Hasło"
                                 placeholder="password..."
                                 value={loginFormData.password}
-                                onChange={(e) => setLoginFormData(prev => ({...prev, password:e.target.value}))}
+                                onChange={(e) => setRegisterFormData(prev => ({...prev, password:e.target.value}))}
+                                error={loginErrors.password}
                             />
                             <SimpleInput
                                 type="password"
@@ -133,10 +136,9 @@ export default function LoginPage({}) {
                                 placeholder="repeat password..."
                                 value={checkingPassword}
                                 onChange={(e) => setCheckingPassword(e.target.value)}
+                                error={checkingPassword !== (registerFormData.password || "") && "Hasła nie jednakowe"}
                             />
                         </section>
-                        {checkingPassword !== (registerFormData.password || "") && <p className="error-text">Hasła nie są takie same</p>}
-                        <p className="error-text">{registerErrors[Object.keys(registerErrors).find(ele => registerErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(registerFormData).length == 3) {
                                 if(Object.keys(registerErrors).every(ele => registerErrors[ele] == null)) {
@@ -191,8 +193,9 @@ export default function LoginPage({}) {
                                         placeholder="password..."
                                         value={loginFormData.password}
                                         onChange={(e) => setLoginFormData(prev => ({...prev, password:e.target.value}))}
+                                        error={loginErrors.password}
                                     />
-                                    <p className="error-text">{loginErrors[Object.keys(loginErrors).find(ele => loginErrors[ele] != null)]}</p>
+                                    {/* <p className="error-text">{loginErrors[Object.keys(loginErrors).find(ele => loginErrors[ele] != null)]}</p> */}
                                     <button className="base-btn" onClick={loginUser}>Zaloguj</button>
                                     {loginError && <p className="error-text">{loginError}</p>}
                                 </section>

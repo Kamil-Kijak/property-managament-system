@@ -23,9 +23,9 @@ export default function OwnersPage({}) {
     });
 
     const [editFormData, editErrors, setEditFormData] = useForm({
-        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Imie musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-        "surname":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nazwisko musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-        "phone":{regexp:/^[0-9]{1,15}$/, error:"Telefon musi się mieścić w 15 cyfrach"},
+        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "surname":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "phone":{regexp:/^[0-9]{9}$/, error:"Nie ma 9 cyfr"},
     })
 
     const [form, setForm] = useState("");
@@ -150,20 +150,22 @@ export default function OwnersPage({}) {
                             placeholder="name..."
                             value={editFormData.name}
                             onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))}
+                            error={editErrors.name}
                         />
                         <SimpleInput
                             title="Nazwisko"
                             placeholder="surname..."
                             value={editFormData.surname}
                             onChange={(e) => setEditFormData(prev => ({...prev, surname:e.target.value}))}
+                            error={editErrors.surname}
                         />
                         <SimpleInput
                             title="Telefon"
                             placeholder="phone..."
                             value={editFormData.phone}
                             onChange={(e) => setEditFormData(prev => ({...prev, phone:e.target.value}))}
+                            error={editErrors.phone}
                         />
-                        <p className="error-text">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(editFormData).length == 3) {
                                 if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {

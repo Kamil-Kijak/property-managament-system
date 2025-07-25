@@ -29,10 +29,10 @@ export default function UsersPage({}) {
     const request = useRequest();
     const navigate = useNavigate()
     const [editFormData, editErrors, setEditFormData] = useForm({
-            "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Imie musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-            "surname":{regexp:/^[A-ZŁĆŚŁŻŹĄĘ][a-ząęłćśóżź]{1,49}$/, error:"Nazwisko musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-            "password":{regexp:/^\w{8,}$/, error:"Hasło powinno mieć minimum 8 znaków"},
-            "role":{regexp:/.+/, error:"brak roli"}
+            "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+            "surname":{regexp:/^[A-ZŁĆŚŁŻŹĄĘ][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+            "password":{regexp:/^.{8,}$/, error:"Hasło za słabe"},
+            "role":{regexp:/.+/, error:"Brak roli"}
         }
     )
     
@@ -151,12 +151,14 @@ export default function UsersPage({}) {
                                 placeholder="name..."
                                 value={editFormData.name}
                                 onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))}
+                                error={editErrors.name}
                             />
                             <SimpleInput
                                 title="Nazwisko"
                                 placeholder="surname..."
                                 value={editFormData.surname}
                                 onChange={(e) => setEditFormData(prev => ({...prev, surname:e.target.value}))}
+                                error={editErrors.surname}
                             />
                             <SelectInput
                                 title="Rola"
@@ -172,7 +174,6 @@ export default function UsersPage({}) {
                                 }
                                 />
                         </section>
-                        <p className="error-text">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(editFormData).length == 3) {
                                 if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {

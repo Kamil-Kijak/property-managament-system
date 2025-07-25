@@ -18,7 +18,7 @@ export default function LandPurposesPage({}) {
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
-        "type":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{1,49}$/, error:"nazwa musi się mieścić od 1 do 50 liter"}
+        "type":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{1,49}$/, error:"Za krótkie/długie"}
     })
 
     const [landPurposes, setLandPurposes] = useState([]);
@@ -130,9 +130,9 @@ export default function LandPurposesPage({}) {
                                 placeholder="purpose name..."
                                 value={editFormData.type}
                                 onChange={(e) => setEditFormData(prev => ({...prev, type:e.target.value}))}
+                                error={editErrors.type}
                             />
                         </section>
-                        <p className="error-text">{editErrors[Object.keys(editErrors).find(ele => editErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(editFormData).length == 1) {
                                 if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {

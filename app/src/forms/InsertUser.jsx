@@ -12,10 +12,10 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
     const [checkingPassword, setCheckingPassword] = useState("");
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
-            "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Imie musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-            "surname":{regexp:/^[A-ZŁĆŚŁŻŹĄĘ][a-ząęłćśóżź]{1,49}$/, error:"Nazwisko musi zaczynać się wielką literą i musi się mieścić w 50 znakach"},
-            "password":{regexp:/^\w{8,}$/, error:"Hasło powinno mieć minimum 8 znaków"},
-            "role":{regexp:/.+/, error:"brak roli"}
+            "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+            "surname":{regexp:/^[A-ZŁĆŚŁŻŹĄĘ][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+            "password":{regexp:/^.{8,}$/, error:"Za słabe"},
+            "role":{regexp:/.+/, error:"Wybierz role"}
         }
     )
     const request = useRequest();
@@ -47,24 +47,28 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
                     placeholder="name..."
                     value={insertFormData.name}
                     onChange={(e) => setInsertFormData(prev => ({...prev, name:e.target.value}))}
+                    error={insertErrors.name}
                 />
                 <SimpleInput
                     title="Nazwisko"
                     placeholder="surname..."
                     value={insertFormData.surname}
                     onChange={(e) => setInsertFormData(prev => ({...prev, surname:e.target.value}))}
+                    error={insertErrors.surname}
                 />
                 <SimpleInput
                     title="Hasło"
                     placeholder="password..."
                     value={insertFormData.password}
                     onChange={(e) => setInsertFormData(prev => ({...prev, password:e.target.value}))}
+                    error={insertErrors.password}
                 />
                 <SimpleInput
                     title="Powtórz hasło"
                     placeholder="repeat password..."
                     value={checkingPassword}
                     onChange={(e) => setCheckingPassword(e.target.value)}
+                    error={checkingPassword !== (insertFormData.password || "") && "Hasła nie są jednakowe"}
                 />
                 <SelectInput
                     title="Rola"
@@ -79,8 +83,6 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
                     </>}
                 />
             </section>
-            {checkingPassword !== (insertFormData.password || "") && <p className="error-text">Hasła nie są takie same</p>}
-            <p className="error-text">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
             <button className="base-btn" onClick={() => {
                 if(Object.keys(insertFormData).length == 4) {
                     if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {

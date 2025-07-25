@@ -10,8 +10,8 @@ export default function InsertMpzp({setForm = () => {}, getMpzp = () => {}}) {
     const request = useRequest();
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
-        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"kod musi zawierać 2 duże litery"},
-        "description":{regexp:/^.{1,49}$/, error:"opis musi się mieścić od 1 do 50 liter"}
+        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"Kod 2 litery"},
+        "description":{regexp:/^.{0,49}$/, error:"Za długi"}
     })
 
     const requestInsertMpzp = () => {
@@ -41,16 +41,17 @@ export default function InsertMpzp({setForm = () => {}, getMpzp = () => {}}) {
                     title="Kod MPZP"
                     placeholder="MPZP code..."
                     value={insertFormData.code}
-                    onChange={(e) => setInsertFormData(prev => ({...prev, code:e.target.value}))}
+                    onChange={(e) => setInsertFormData(prev => ({...prev, code:e.target.value.toUpperCase()}))}
+                    error={insertErrors.code}
                 />
                 <SimpleTextArea
                     title="Opis MPZP"
                     placeholder="MPZP description..."
                     value={insertFormData.description}
                     onChange={(e) => setInsertFormData(prev => ({...prev, description:e.target.value}))}
+                    error={insertErrors.description}
                 />
             </section>
-            <p className="error-text">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
             <button className="base-btn" onClick={() => {
                 if(Object.keys(insertFormData).length == 2) {
                     if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {

@@ -10,8 +10,8 @@ export default function InsertGeneralPlan({setForm = () => {}, getGeneralPlans =
     const request = useRequest();
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
-        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"kod musi zawierać 2 duże litery"},
-        "description":{regexp:/^.{1,69}$/, error:"opis musi się mieścić od 1 do 50 liter"}
+        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"Kod 2 litery"},
+        "description":{regexp:/^.{0,70}$/, error:"Za długi"}
     })
 
     const requestInsertGeneralPlan = () => {
@@ -40,13 +40,15 @@ export default function InsertGeneralPlan({setForm = () => {}, getGeneralPlans =
                     title="Kod planu"
                     placeholder="plan code..."
                     value={insertFormData.code}
-                    onChange={(e) => setInsertFormData(prev => ({...prev, code:e.target.value}))}
+                    onChange={(e) => setInsertFormData(prev => ({...prev, code:e.target.value.toUpperCase()}))}
+                    error={insertErrors.code}
                 />
                 <SimpleTextArea
                     title="Opis planu"
                     placeholder="plan description..."
                     value={insertFormData.description}
                     onChange={(e) => setInsertFormData(prev => ({...prev, description:e.target.value}))}
+                    error={insertErrors.description}
                 />
             </section>
             <p className="error-text">{insertErrors[Object.keys(insertErrors).find(ele => insertErrors[ele] != null)]}</p>
