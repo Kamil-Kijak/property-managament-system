@@ -57,7 +57,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
             setLocalizations({town:actualLandData.data.miejscowosc, commune:actualLandData.data.gmina, district:actualLandData.data.powiat, province:actualLandData.data.wojewodztwo})
             const objectsToDelete = ["miejscowosc", "gmina", "powiat", "wojewodztwo"]
             objectsToDelete.forEach(obj => delete actualLandData[obj]);
-            console.log(actualLandData.data.powierzchnia)
+            const purchase_date = new Date(actualLandData.data.data_nabycia)
             setLandFormData({
                 land_serial_number:actualLandData.data.numer_seryjny_dzialki,
                 land_number:actualLandData.data.nr_dzialki,
@@ -71,7 +71,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                 mortgage:actualLandData.data.hipoteka,
                 description:actualLandData.data.opis,
                 water_company:actualLandData.data.spolka_wodna,
-                purchase_date:actualLandData.data.data_nabycia.split('T')[0],
+                purchase_date:purchase_date.toLocaleDateString("sv-SE"),
                 seller:actualLandData.data.sprzedawca,
                 price:actualLandData.data.cena_zakupu,
                 case_number:actualLandData.data.nr_aktu

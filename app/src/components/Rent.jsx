@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useWarningStore } from "../hooks/useScreensStore";
 import { useUserStore } from "../hooks/useUserStore";
 
-export default function Rent({ele, deleteRent}) {
+export default function Rent({ele, deleteRent, editRent}) {
 
     const warningUpdate = useWarningStore((state) => state.update);
     const user = useUserStore((state) => state.user);
@@ -24,7 +24,7 @@ export default function Rent({ele, deleteRent}) {
         <section className="flex flex-col shadow-xl shadow-black/25 p-5 gap-y-6 text-center">
             <section className="flex items-center justify-start gap-x-5">
                 <button className="base-btn" onClick={showingMoreToggle}><FontAwesomeIcon icon={faEye}/> Pokaż {showingMore ? "mniej":"więcej"}</button>
-                <button className="info-btn"><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                <button className="info-btn" onClick={() => editRent(ele.ID)}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                 {user.rola === "ADMIN" && <button className="warning-btn" onClick={() => {
                     warningUpdate(true, "Uwaga", () => deleteRent(ele.ID), () => warningUpdate(false), <>
                         <p className="text-white font-bold text-lg mt-5">

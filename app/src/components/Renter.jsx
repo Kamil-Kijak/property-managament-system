@@ -1,12 +1,11 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faEye, faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import { useCallback, useState} from "react";
+import { faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import { useWarningStore } from "../hooks/useScreensStore";
 import { useUserStore } from "../hooks/useUserStore";
 import Rent from "./Rent";
 
-export default function Renter({obj, deleteRenter, editRenter, deleteRent}) {
+export default function Renter({obj, deleteRenter, editRenter, deleteRent, editRent}) {
 
     const warningUpdate = useWarningStore((state) => state.update);
     const user = useUserStore((state) => state.user)
@@ -32,7 +31,7 @@ export default function Renter({obj, deleteRenter, editRenter, deleteRent}) {
                                         }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>}
                 </section>
             </section>
-            {obj.dzialki.map((ele, index) => <Rent key={index} ele={ele} deleteRent={deleteRent}/>)}
+            {obj.dzialki.map((ele, index) => <Rent key={index} ele={ele} deleteRent={deleteRent} editRent={editRent}/>)}
                 <section className="flex gap-x-20 mt-10 items-center">
                     <h1 className="text-3xl font-bold ml-10">Suma czynszu:{obj.dzialki.reduce((acc, value) => acc + parseFloat((parseFloat(value.wysokosc_czynszu) * parseFloat(value.powierzchnia)).toFixed(2)), 0)}zł</h1>
                 </section>

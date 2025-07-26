@@ -10,7 +10,7 @@ import SelectInput from "../components/inputs/SelectInput";
 
 export default function InsertRent({onClose = () => {}, landID}) {
 
-    const updateLoading = useLoadingStore((state) => state.update);
+    const loadingUpdate = useLoadingStore((state) => state.update);
     const request = useRequest();
     const today = new Date();
 
@@ -34,12 +34,12 @@ export default function InsertRent({onClose = () => {}, landID}) {
     const [renters, setRenters] = useState([]);
 
     const fetchAllData = async () => {
-        updateLoading(true);
+        loadingUpdate(true);
         const rentersResult = await request("/api/renters/get_all", {credentials:"include"});
         if(!rentersResult.error) {
             setRenters(rentersResult.data);
         }
-        updateLoading(false);
+        loadingUpdate(false);
     }
 
     useEffect(() => {
@@ -47,7 +47,7 @@ export default function InsertRent({onClose = () => {}, landID}) {
     }, []);
 
     const requestInsertRenter = async () => {
-        updateLoading(true)
+        loadingUpdate(true)
         const result = await request("/api/renters/insert", {
                 method:"POST",
                 headers: {
@@ -60,11 +60,11 @@ export default function InsertRent({onClose = () => {}, landID}) {
             setRentFormData(prev => ({...prev, ID_renter:result.insertID}));
             setRenterFormData({});
         }
-        updateLoading(false);
+        loadingUpdate(false);
     }
 
     const requestInsertRent = () => {
-        updateLoading(true);
+        loadingUpdate(true);
         request("/api/rents/insert", {
                 method:"POST",
                 headers: {
@@ -75,7 +75,7 @@ export default function InsertRent({onClose = () => {}, landID}) {
                 if(!result.error) {
                     onClose();
                 }
-                updateLoading(false);
+                loadingUpdate(false);
             })
     }
 
@@ -169,7 +169,7 @@ export default function InsertRent({onClose = () => {}, landID}) {
                     placeholder="rent cost (zł)..."
                     value={rentFormData.rent}
                     onChange={(e) => setRentFormData(prev => ({...prev, rent:e.target.value}))}
-                    error={renterErrors.rent}
+                    error={rentErrors.rent}
                 />
                 <button className="base-btn text-2xl" onClick={() => {
                     if(Object.keys(rentFormData).length == 4) {

@@ -110,36 +110,38 @@ export default function OwnersPage({}) {
         <main className="flex justify-between">
             <NavBar requiredRoles={[]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative">
-                <SearchBar
-                onSearch={search}
-                    elements={
-                        <>
-                            <SearchInput
-                                title="Imie"
-                                placeholder="name..."
-                                value={searchFilters.name_filter}
-                                onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value.toUpperCase()}))}
-                            />
-                            <SearchInput
-                                title="Nazwisko"
-                                placeholder="surname..."
-                                value={searchFilters.surname_filter}
-                                onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value.toUpperCase()}))}
-                            />
-                        </>
-                    }
-                
-                />
                 {
                     !form && 
-                    <section className="my-10">
-                        {
-                            owners.map((obj, index) => <Owner obj={obj} key={index} requestDelete={requestDelete} editOwner={(ID) => {
-                                setForm("edit");
-                                setOwnerEditID(ID);
-                                }} setEditFormData={setEditFormData}/>)
-                        } 
-                    </section>
+                    <>
+                        <SearchBar
+                            onSearch={search}
+                                elements={
+                                    <>
+                                        <SearchInput
+                                            title="Imie"
+                                            placeholder="name..."
+                                            value={searchFilters.name_filter}
+                                            onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value}))}
+                                        />
+                                        <SearchInput
+                                            title="Nazwisko"
+                                            placeholder="surname..."
+                                            value={searchFilters.surname_filter}
+                                            onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value}))}
+                                        />
+                                    </>
+                                }
+                            
+                            />
+                            <section className="my-10">
+                                {
+                                    owners.map((obj, index) => <Owner obj={obj} key={index} requestDelete={requestDelete} editOwner={(ID) => {
+                                        setForm("edit");
+                                        setOwnerEditID(ID);
+                                        }} setEditFormData={setEditFormData}/>)
+                                } 
+                            </section>
+                    </>
                 }
                 {
                     form == "edit" &&
