@@ -5,6 +5,9 @@ const useForm = (regexpObjects) => {
     const [errors, setErrors] = useState({})
     useEffect(() => {
         Object.keys(formData).forEach(ele => {
+            if(formData[ele] == "") {
+                delete formData[ele];
+            }
             if(!regexpObjects[ele].regexp.test(formData[ele])) {
                 setErrors(prev => ({...prev, [ele]:regexpObjects[ele].error}))
             } else {

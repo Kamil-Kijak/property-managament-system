@@ -23,7 +23,7 @@ export default function InsertRent({onClose = () => {}, landID}) {
     const [rentFormData, rentErrors, setRentFormData] = useForm({
         "start_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Zły format"},
         "end_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Zły formt"},
-        "rent":{regexp:/^\d{0,5}\.\d{2}$/, error:"Podaj z 2 po przecinku"},
+        "rent":{regexp:/^\d{0,5}\.\d{2}$/, error:"Nie ma 2 po , lub za duża liczba"},
         "ID_renter":{regexp:/.+/, error:"Wybierz dzierżawce"},
     })
 

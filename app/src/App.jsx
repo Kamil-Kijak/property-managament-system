@@ -16,6 +16,7 @@ import ErrorScreen from "./components/screens/ErrorScreen";
 import OwnersPage from "./pages/OwnersPage";
 import WarningScreen from "./components/screens/WarningScreen";
 import RentPage from "./pages/RentPage";
+import GroundClassesPage from "./pages/GroundClassesPage";
 
 
 export default function App({}) {
@@ -40,7 +41,7 @@ export default function App({}) {
                     <Route path="/owners" element={<OwnersPage/>}/>
                     <Route path="/renters" element={<RentPage/>}/>
                     <Route path="/areas" element={<h1>Hello world</h1>}/>
-                    <Route path="/groundclasses" element={<h1>Hello world</h1>}/>
+                    <Route path="/groundclasses" element={<GroundClassesPage/>}/>
                     <Route path="/users" element={<UsersPage/>}/>
                     <Route path="/landtypes" element={<LandTypesPage/>}/>
                     <Route path="/landpurposes" element={<LandPurposesPage/>}/>

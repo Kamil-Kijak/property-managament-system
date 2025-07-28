@@ -3,13 +3,15 @@ import { useRequest } from "../hooks/useRequest";
 import { useForm } from "../hooks/useForm";
 import { useLoadingStore } from "../hooks/useScreensStore";
 import SimpleInput from "../components/inputs/SimpleInput";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function InsertLandPurpose({setForm = () => {}, getLandPurposes = () => {}}) {
     const loadingUpdate = useLoadingStore((state) => state.update)
     const request = useRequest();
     
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
-        "type":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{1,49}$/, error:"Za krótki/długi"}
+        "type":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{0,49}$/, error:"Za długi"}
     })
 
     const requestInsertLandPurpose = () => {
@@ -32,6 +34,10 @@ export default function InsertLandPurpose({setForm = () => {}, getLandPurposes =
     
 
     return (
+        <>
+        <section className="my-4">
+            <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
+        </section>
         <section className="base-card my-10">
             <h1 className="text-2xl my-2 text-center">Tworzenie przeznaczenia działki</h1>
             <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
@@ -44,7 +50,7 @@ export default function InsertLandPurpose({setForm = () => {}, getLandPurposes =
                     error={insertErrors.type}
                 />
             </section>
-            <button className="base-btn" onClick={() => {
+            <button className="base-btn text-2xl" onClick={() => {
                 if(Object.keys(insertFormData).length == 1) {
                     if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
                         requestInsertLandPurpose();
@@ -52,5 +58,6 @@ export default function InsertLandPurpose({setForm = () => {}, getLandPurposes =
                     }
             }}>Stwórz przeznaczenie działki</button>
         </section>
+        </>
     )
 }

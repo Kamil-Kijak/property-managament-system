@@ -27,7 +27,8 @@ export default function LandsPage({}) {
         purpose_filter:"",
         rent_filter:"",
         low_area_filter:"",
-        high_area_filter:""
+        high_area_filter:"",
+        seller_filter:""
     });
     const [landPurposes, setLandPurposes] = useState([]);
     const [lands, setLands] = useState([]);
@@ -209,6 +210,12 @@ export default function LandsPage({}) {
                             placeholder="ha..."
                             value={searchFilters.high_area_filter}
                             onChange={(e) => setSearchFilters(prev => ({...prev, high_area_filter:e.target.value}))}
+                        />
+                        <SearchInput
+                            title="Od kogo"
+                            placeholder="from whom..."
+                            value={searchFilters.seller_filter}
+                            onChange={(e) => setSearchFilters(prev => ({...prev, seller_filter:e.target.value}))}
                         />
                         </>
                     }

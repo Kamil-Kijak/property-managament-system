@@ -21,7 +21,7 @@ export default function InsertLand({onClose = () => {}}) {
     const [landFormData, landErrors, setLandFormData] = useForm({
         "land_serial_number":{regexp:/^\d+_\d\.\d{4}\.(?:\d+|\d+\/\d+)$/, error:"Zły format"},
         "land_number":{regexp:/^(?:\d+|\d+\/\d+)$/, error:"Zły format"},
-        "area":{regexp:/^\d{0,4}\.\d{4}$/, error:"Nie ma 4 cyfr po ,"},
+        "area":{regexp:/^\d{0,4}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
         "kw_number":{regexp:/^[A-Za-z]{2}\d[A-Za-z]\/\d{8}\/\d$/, error:"Zły format"},
         "ID_owner":{regexp:/.+/, error:"Wybierz właściciela"},
         "ID_type":{regexp:/.+/, error:"Wybierz rodzaj działki"},
@@ -33,8 +33,8 @@ export default function InsertLand({onClose = () => {}}) {
         "water_company":{regexp:/.+/, error:"Czy jest spółką wodną"},
         "purchase_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Zły format"},
         "case_number":{regexp:/^\d+\/\d+$/, error:"Zły format"},
-        "seller":{regexp:/^.{1,49}$/, error:"Za krótki/długi"},
-        "price":{regexp:/^\d{0,6}\.\d{2}$/, error:"Nie ma 2 cyfr po ,"},
+        "seller":{regexp:/^.{0,49}$/, error:"Za długi"},
+        "price":{regexp:/^\d{0,6}\.\d{2}$/, error:"Nie ma 2 cyfr po , lub za duża liczba"},
     })
 
     const [availableLocalizations, localizations, setLocalizations] = useLocalizations();

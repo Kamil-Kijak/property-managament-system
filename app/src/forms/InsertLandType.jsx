@@ -4,13 +4,15 @@ import { useForm } from "../hooks/useForm";
 
 import { useLoadingStore } from "../hooks/useScreensStore";
 import SimpleInput from "../components/inputs/SimpleInput";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function InsertLandType({setForm = () => {}, getLandTypes = () => {}}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
     const request = useRequest();
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
-        "name":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{1,49}$/, error:"Za krótki/długi"}
+        "name":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{0,49}$/, error:"Za długi"}
     })
 
     const requestInsertLandType = () => {
@@ -32,25 +34,30 @@ export default function InsertLandType({setForm = () => {}, getLandTypes = () =>
     }
 
     return (
+        <>
+        <section className="my-4">
+            <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
+        </section>
         <section className="base-card my-10">
-                <h1 className="text-2xl my-2 text-center">Tworzenie rodzaju działki</h1>
-                <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
-                <section className="py-2 flex-col items-center">
-                    <SimpleInput
-                        title="Nazwa rodzaju"
-                        placeholder="type name..."
-                        value={insertFormData.name}
-                        onChange={(e) => setInsertFormData(prev => ({...prev, name:e.target.value}))}
-                        error={insertErrors.name}
-                    />
-                </section>
-                <button className="base-btn" onClick={() => {
-                    if(Object.keys(insertFormData).length == 1) {
-                        if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
-                            requestInsertLandType();
-                        }
-                        }
-                }}>Stwórz rodzaj działki</button>
+            <h1 className="text-2xl my-2 text-center">Tworzenie rodzaju działki</h1>
+            <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
+            <section className="py-2 flex-col items-center">
+                <SimpleInput
+                    title="Nazwa rodzaju"
+                    placeholder="type name..."
+                    value={insertFormData.name}
+                    onChange={(e) => setInsertFormData(prev => ({...prev, name:e.target.value}))}
+                    error={insertErrors.name}
+                />
             </section>
+            <button className="base-btn text-2xl" onClick={() => {
+                if(Object.keys(insertFormData).length == 1) {
+                    if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
+                        requestInsertLandType();
+                    }
+                    }
+            }}>Stwórz rodzaj działki</button>
+        </section>
+        </>
     )
 }

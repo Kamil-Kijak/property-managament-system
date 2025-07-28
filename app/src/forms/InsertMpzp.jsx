@@ -4,6 +4,8 @@ import { useForm } from "../hooks/useForm";
 import { useLoadingStore } from "../hooks/useScreensStore";
 import SimpleInput from "../components/inputs/SimpleInput";
 import SimpleTextArea from "../components/inputs/SimpleTextArea";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function InsertMpzp({setForm = () => {}, getMpzp = () => {}}) {
     const loadingUpdate = useLoadingStore((state) => state.update)
@@ -33,6 +35,10 @@ export default function InsertMpzp({setForm = () => {}, getMpzp = () => {}}) {
     }
 
     return (
+        <>
+        <section className="my-4">
+            <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
+        </section>
         <section className="base-card my-10">
             <h1 className="text-2xl my-2 text-center">Tworzenie MPZP</h1>
             <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
@@ -52,7 +58,7 @@ export default function InsertMpzp({setForm = () => {}, getMpzp = () => {}}) {
                     error={insertErrors.description}
                 />
             </section>
-            <button className="base-btn" onClick={() => {
+            <button className="base-btn text-2xl" onClick={() => {
                 if(Object.keys(insertFormData).length == 2) {
                     if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
                         requestInsertMpzp();
@@ -60,5 +66,6 @@ export default function InsertMpzp({setForm = () => {}, getMpzp = () => {}}) {
                     }
             }}>Stwórz MPZP</button>
         </section>
+        </>
     )
 }

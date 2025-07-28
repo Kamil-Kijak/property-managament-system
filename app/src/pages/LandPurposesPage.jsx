@@ -17,7 +17,7 @@ export default function LandPurposesPage({}) {
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
-        "type":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{1,49}$/, error:"Za krótkie/długie"}
+        "type":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{0,49}$/, error:"Za długi"}
     })
 
     const [landPurposes, setLandPurposes] = useState([]);
