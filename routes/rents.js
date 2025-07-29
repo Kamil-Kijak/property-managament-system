@@ -47,7 +47,7 @@ router.post("/insert", [checkDataExisting(["ID_renter", "start_date", "end_date"
 router.post("/update", [checkDataExisting(["ID_rent", "ID_renter", "start_date", "end_date", "rent", "invoice_issue_date"])], async (req, res) => {
     const {ID_rent, ID_renter, start_date, end_date, rent, invoice_issue_date} = req.body;
     try {
-        const [result] = await connection.execute("UPDATE dzierzawy SET ID_dzierzawcy = ?, data_rozpoczecia = ?, data_zakonczenia = ?, wysokosc_czynszu = ?, data_wystawienia_fv_czynszowej = ? WHERE ID = ?",
+        await connection.execute("UPDATE dzierzawy SET ID_dzierzawcy = ?, data_rozpoczecia = ?, data_zakonczenia = ?, wysokosc_czynszu = ?, data_wystawienia_fv_czynszowej = ? WHERE ID = ?",
              [ID_renter, start_date, end_date, rent, invoice_issue_date, ID_rent]);
         res.status(200).json({success:true, message:"zaktualizowano rekord"})
     } catch (err) {
@@ -57,7 +57,7 @@ router.post("/update", [checkDataExisting(["ID_rent", "ID_renter", "start_date",
 router.post("/delete", [roleAuthorization(["ADMIN"], checkDataExisting("ID_rent"))], async (req, res) => {
     const {ID_rent} = req.body;
     try {
-        const [result] = await connection.execute("DELETE FROM dzierzawy WHERE ID = ?", [ID_rent]);
+        await connection.execute("DELETE FROM dzierzawy WHERE ID = ?", [ID_rent]);
         res.status(200).json({success:true, message:"usunięto pomyślnie"});
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
@@ -65,4 +65,4 @@ router.post("/delete", [roleAuthorization(["ADMIN"], checkDataExisting("ID_rent"
 })
 
 
-module.exports =  router;
+module.exports = router;

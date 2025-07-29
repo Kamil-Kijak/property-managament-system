@@ -83,9 +83,19 @@ router.use(roleAuthorization(["ADMIN"]));
 router.post("/update", [checkDataExisting(["ID_user", "name", "surname", "role"])], async (req, res) => {
     const {ID_user, name, surname, role} = req.body
     try {
-        const [result] = await connection.execute("UPDATE uzytkownicy SET imie = ?, nazwisko = ?, rola = ? WHERE ID = ?", [name, surname, role, ID_user])
+        await connection.execute("UPDATE uzytkownicy SET imie = ?, nazwisko = ?, rola = ? WHERE ID = ?", [name, surname, role, ID_user])
         res.status(200).json({success:true, message:"uzytkownik zaktualizowany"})
     } catch(err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+});
+
+router.post("/update_password", [checkDataExisting(["ID_user", "password"])], async (req, res) => {
+    const {ID_user, password} = req.body;
+    try {
+        await connection.execute("UPDATE uzytkownicy SET password = ? WHERE ID = ?", [crypto.createHash("md5").update(password).digest("hex"), ID_user]);
+        res.status(200).json({success:true, message:"Hasło zaktualizowane"})
+    } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 })
@@ -93,7 +103,7 @@ router.post("/update", [checkDataExisting(["ID_user", "name", "surname", "role"]
 router.post("/insert", [checkDataExisting(["name", "surname", "password", "role"])], async (req, res) => {
     const {name, surname, password, role} = req.body
     try {
-        const [result] = await connection.execute("INSERT INTO uzytkownicy VALUES(NULL, ?, ?, ?, ?)",[name, surname, crypto.createHash("md5").update(password).digest("hex"), role])
+        await connection.execute("INSERT INTO uzytkownicy VALUES(NULL, ?, ?, ?, ?)",[name, surname, crypto.createHash("md5").update(password).digest("hex"), role])
         res.status(200).json({success:true, message:"dodano pomyslnie"})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
@@ -102,7 +112,7 @@ router.post("/insert", [checkDataExisting(["name", "surname", "password", "role"
 router.post("/delete", [checkDataExisting(["ID_user"])], async (req, res) => {
     const {ID_user} = req.body;
     try {
-        const [result] = await connection.execute("DELETE FROM uzytkownicy where ID = ?",[ID_user])
+        await connection.execute("DELETE FROM uzytkownicy where ID = ?",[ID_user])
         res.status(200).json({success:true, message:"usunięto pomyślnie"})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

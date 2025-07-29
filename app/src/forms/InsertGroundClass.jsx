@@ -6,7 +6,7 @@ import { useLoadingStore } from "../hooks/useScreensStore";
 import { useRequest } from "../hooks/useRequest";
 
 
-export default function InsertGroundClass({setForm = () => {}, search = () => {}, commune, district, province}) {
+export default function InsertGroundClass({setForm = () => {}, search = () => {}, taxDistrict}) {
 
     const updateLoading = useLoadingStore((state) => state.update)
     const request = useRequest();
@@ -14,7 +14,6 @@ export default function InsertGroundClass({setForm = () => {}, search = () => {}
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
         "ground_class":{regexp:/^.{0,10}$/, error:"Za długi"},
         "converter":{regexp:/^\d{1}\.\d{2}$/, error:"Nie ma 2 cyfr po , lub za duża liczba"},
-        "tax":{regexp:/^\d{1,3}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
     });
 
 
@@ -27,7 +26,7 @@ export default function InsertGroundClass({setForm = () => {}, search = () => {}
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({...insertFormData, commune:commune, district:district, province:province})
+                body:JSON.stringify({...insertFormData, tax_district:taxDistrict})
             }).then(result => {
                 if(!result.error) {
                     search()
@@ -43,7 +42,7 @@ export default function InsertGroundClass({setForm = () => {}, search = () => {}
             </section>
             <section className="base-card">
                 <h1 className="text-2xl my-2 text-center">Tworzenie klasy gruntu dla</h1>
-                <h1 className="text-xl font-bold my-2 text-center">{commune}, {district}, {province}</h1>
+                <h1 className="text-xl font-bold my-2 text-center">okręgu podatkowego nr {taxDistrict}</h1>
                 <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
                 <section className="py-2 flex-col items-center">
                     <SimpleInput
@@ -63,19 +62,9 @@ export default function InsertGroundClass({setForm = () => {}, search = () => {}
                         onChange={(e) => setInsertFormData(prev => ({...prev, converter:e.target.value}))}
                         error={insertErrors.converter}
                     />
-                    <SimpleInput
-                        type="number"
-                        step="any"
-                        min={0}
-                        title="Podatek za ha"
-                        placeholder="tax per ha..."
-                        value={insertFormData.tax}
-                        onChange={(e) => setInsertFormData(prev => ({...prev, tax:e.target.value}))}
-                        error={insertErrors.tax}
-                    />
                 </section>
                 <button className="base-btn text-2xl" onClick={() => {
-                    if(Object.keys(insertFormData).length == 3) {
+                    if(Object.keys(insertFormData).length == 2) {
                         if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
                             requestInsertGroundClass();
                         }

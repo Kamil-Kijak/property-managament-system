@@ -11,6 +11,7 @@ import { faPen, faPlus, faTrashCan, faXmark } from "@fortawesome/free-solid-svg-
 import InsertGroundClass from "../forms/InsertGroundClass";
 import { useForm } from "../hooks/useForm";
 import SimpleInput from "../components/inputs/SimpleInput";
+import SelectInput from "../components/inputs/SelectInput";
 
 
 
@@ -18,7 +19,7 @@ export default function GroundClassesPage({}) {
 
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update)
-    const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
+    const [taxDistrict, setTaxDistrict] = useState(1);
     const request = useRequest();
 
     const [groundClasses, setGroundClasses] = useState([]);
@@ -28,20 +29,16 @@ export default function GroundClassesPage({}) {
     const [editFormData, editErrors, setEditFormData] = useForm({
         "ground_class":{regexp:/^.{0,10}$/, error:"Za długi"},
         "converter":{regexp:/^\d{1}\.\d{2}$/, error:"Nie ma 2 cyfr po , lub za duża liczba"},
-        "tax":{regexp:/^\d{1,3}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
     });
 
     useEffect(() => {
-        if(localizations.commune != "")
-            search()
-    }, [localizations.commune]);
+        search()
+    }, [taxDistrict]);
 
     const search = () => {
         loadingUpdate(true);
         const params = new URLSearchParams({
-            province: localizations.province,
-            district: localizations.district,
-            commune: localizations.commune,
+            tax_district:taxDistrict
         });
         request(`/api/ground_classes/get?${params.toString()}`, {
                 method:"GET",
@@ -103,117 +100,74 @@ export default function GroundClassesPage({}) {
                         <SearchBar
                             onSearch={search}
                             elements={
-                            <>
-                                <section className="w-[150px]">
+                                <>
                                     <SearchSelectInput
-                                        title="Województwo"
-                                        value={localizations.province}
-                                        onChange={(e) => setLocalizations({district:"", commune:"", town:"", province:e.target.value})}
+                                        title="okręg podatkowy"
+                                        placeholder=""
+                                        value={taxDistrict}
+                                        onChange={(e) => setTaxDistrict(e.target.value)}
                                         options={
                                             <>
-                                                {
-                                                    availableLocalizations.provinces.map((obj) => <option key={obj} value={obj}>{obj}</option>)
-                                                }
+                                                <option value="1">I</option>
+                                                <option value="2">II</option>
+                                                <option value="3">III</option>
+                                                <option value="4">IV</option>
                                             </>
                                         }
                                     />
-                                </section>
-                                <section className="w-[150px]">
-                                    <SearchSelectInput
-                                        title="Powiat"
-                                        value={localizations.district}
-                                        onChange={(e) => setLocalizations(prev => ({...prev, district:e.target.value, commune:"", town:""}))}
-                                        options={
-                                            <>
-                                                {
-                                                    availableLocalizations.districts.map((obj) => <option key={obj} value={obj}>{obj}</option>)
-                                                }
-                                            </>
-                                        }
-                                    />
-                                </section>
-                                <section className="w-[150px]">
-                                    <SearchSelectInput
-                                        title="Gmina"
-                                        value={localizations.commune}
-                                        onChange={(e) => setLocalizations(prev => ({...prev, commune:e.target.value, town:""}))}
-                                        options={
-                                            <>
-                                                {
-                                                    availableLocalizations.communes.map((obj) => <option key={obj} value={obj}>{obj}</option>)
-                                                }
-                                            </>
-                                        }
-                                    />
-                                </section>
-                            </>}
+                                </>
+                            }
                         />
                         <section className="my-10">
                             {
                                 groundClasses.map((obj, index) =>
-                                <section key={index} className="base-card">
-                                    <section className="flex items-center">
+                                <section className="base-card" key={index}>
+                                    <section className="flex gap-x-10 items-center">
                                         <h1 className="text-4xl text-green-600 font-bold">{obj.klasa}</h1>
                                         <section className="flex flex-col items-center justify-center">
-                                            <p className="mx-10 text-xl font-bold">Przelicznik</p>
+                                            <h1 className="font-bold text-xl">Przelicznik</h1>
                                             <p className="mx-10 text-xl">{obj.przelicznik}</p>
                                         </section>
-                                        <section className="flex flex-col items-center justify-center">
-                                            <p className="mx-10 text-xl font-bold">Podatek za ha</p>
-                                            <p className="mx-10 text-xl">{obj.podatek_za_hektar}zł</p>
-                                        </section>
-                                        <section className="flex items-center justify-center gap-x-3">
+                                        <section className="flex gap-x-3">
                                             <button className="info-btn" onClick={() => {
-                                                setForm("edit");
-                                                setEditGroundClassID(obj.ID)
+                                                setForm("edit")
                                                 setEditFormData({
                                                     ground_class:obj.klasa,
-                                                    converter:obj.przelicznik,
-                                                    tax:obj.podatek_za_hektar
+                                                    converter:obj.przelicznik
                                                 })
+                                                setEditGroundClassID(obj.ID)
                                             }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
-                                            <button className="warning-btn" onClick={() => {
+                                            <button className="warning-btn" onClick={() => 
                                                 warningUpdate(true, "Uwaga", () => requestDelete(obj.ID), () => warningUpdate(false),
-                                                    <>
-                                                        <p className="text-red-600 font-bold">
-                                                            Usunięcie tej klasy spowoduje że każda wyznaczona powierzchnia działek tej klasy zostanie usunięta
-                                                            </p>
-                                                        <p className="text-white font-bold text-lg mt-5">
-                                                            Czy napewno chcesz usunąć tą klase?
-                                                        </p>
-                                                    </>
-                                                )
-                                            }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
+                                                <>
+                                                    <p className="text-red-600 font-bold">
+                                                        Usunięcie tej klasy gruntu spowoduje że wszystkie wyznaczone powierzchnie tej klasy zostaną usunięte
+                                                    </p>
+                                                    <p className="text-white font-bold text-lg mt-5">
+                                                        Czy napewno chcesz usunąć tą klase gruntu?
+                                                    </p>
+                                                </>
+                                            )
+                                            }><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                                         </section>
                                     </section>
-                                </section>)
+                                </section>
+                                )
                             }
-                        </section>
-                        {
-                            localizations.commune != "" ?
-                            <section className="flex flex-col items-center">
+                            <section className="flex flex-col gap-y-2 items-center my-10">
                                 <button className="base-btn text-2xl" onClick={() => setForm("insert")}><FontAwesomeIcon icon={faPlus}/> Dodaj nową klase gruntu</button>
-                                <h1 className="text-xl font-bold">Dla {localizations.commune}, {localizations.district}, {localizations.province}</h1>
+                                <h1 className="text-2xl font-bold">Dla okręgu podatkowego nr {taxDistrict}</h1>
                             </section>
-                            :
-                            <h1 className="text-3xl">Wybierz odpowiednią gmine żeby pokazać jej klasy gruntów</h1>
-                        }
-                    </> 
+                        </section>
+                    </>
                 }
                 {
-                    form == "insert" && 
-                    <InsertGroundClass 
-                        setForm={setForm} 
-                        search={search} 
-                        commune={localizations.commune} 
-                        district={localizations.district} 
-                        province={localizations.province}
-                    />
+                    form == "insert" && <InsertGroundClass setForm={setForm} search={search} taxDistrict={taxDistrict}/>
                 }
                 {
-                    form == "edit" &&
+                    form == "edit" && 
                     <>
-                        <section className="my-4">
+                        <section className="my-10">
                             <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
                         </section>
                         <section className="base-card">
@@ -237,19 +191,9 @@ export default function GroundClassesPage({}) {
                                     onChange={(e) => setEditFormData(prev => ({...prev, converter:e.target.value}))}
                                     error={editErrors.converter}
                                 />
-                                <SimpleInput
-                                    type="number"
-                                    step="any"
-                                    min={0}
-                                    title="Podatek za ha"
-                                    placeholder="tax per ha..."
-                                    value={editFormData.tax}
-                                    onChange={(e) => setEditFormData(prev => ({...prev, tax:e.target.value}))}
-                                    error={editErrors.tax}
-                                />
                             </section>
-                            <button className="base-btn text-2xl" onClick={() => {
-                                if(Object.keys(editFormData).length == 3) {
+                            <button className="base-btn" onClick={() => {
+                                if(Object.keys(editFormData).length == 2) {
                                     if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
                                         requestEdit();
                                     }

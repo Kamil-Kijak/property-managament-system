@@ -111,24 +111,24 @@ export default function LoginPage({}) {
                             <SimpleInput
                                 title="Imie"
                                 placeholder="name..."
-                                value={loginFormData.name}
+                                value={registerFormData.name}
                                 onChange={(e) => setRegisterFormData(prev => ({...prev, name:e.target.value}))}
-                                error={loginErrors.name}
+                                error={registerErrors.name}
                             />
                             <SimpleInput
                                 title="Nazwisko"
                                 placeholder="surname..."
-                                value={loginFormData.surname}
+                                value={registerFormData.surname}
                                 onChange={(e) => setRegisterFormData(prev => ({...prev, surname:e.target.value}))}
-                                error={loginErrors.surname}
+                                error={registerErrors.surname}
                             />
                             <SimpleInput
                                 type="password"
                                 title="Hasło"
                                 placeholder="password..."
-                                value={loginFormData.password}
+                                value={registerFormData.password}
                                 onChange={(e) => setRegisterFormData(prev => ({...prev, password:e.target.value}))}
-                                error={loginErrors.password}
+                                error={registerErrors.password}
                             />
                             <SimpleInput
                                 type="password"

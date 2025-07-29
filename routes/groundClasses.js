@@ -13,38 +13,31 @@ router.use(authorization());
 router.use(roleAuthorization(["ADMIN"]));
 
 
-router.get("/get", [checkDataExisting(["commune", "district", "province"])], async (req, res) => {
-    const {commune, district, province} = req.query;
+router.get("/get", [checkDataExisting(["tax_district"])], async (req, res) => {
+    const {tax_district} = req.query;
     try {
-        const [result] = await connection.execute("SELECT k.* FROM klasy_gruntu k INNER JOIN lokalizacje l on k.ID_lokalizacji=l.ID WHERE l.gmina = ? AND l.powiat = ? AND l.wojewodztwo = ?", [commune, district, province]);
-        res.status(200).json({success:true, message:`pobrano klasy gruntu dla ${commune}, ${district}, ${province}`, data:result})
+        const [result] = await connection.execute("SELECT k.klasa, k.przelicznik, k.ID FROM klasy_gruntu k WHERE k.okreg_podatkowy = ?", [tax_district]);
+        res.status(200).json({success:true, message:`pobrano klasy gruntu dla okręgu ${tax_district}`, data:result})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 })
 
-router.post("/update", [checkDataExisting(["ID_ground_class", "ground_class", "converter", "tax"])], async (req, res) => {
-    const {ID_ground_class, ground_class, tax, converter} = req.body;
+router.post("/update", [checkDataExisting(["ID_ground_class", "ground_class", "converter"])], async (req, res) => {
+    const {ID_ground_class, ground_class, converter} = req.body;
     try {
-        const [result] = await connection.execute("UPDATE klasy_gruntu SET klasa = ?, podatek_za_hektar = ?, przelicznik = ? where ID = ?", [ground_class, tax, converter, ID_ground_class]);
+        await connection.execute("UPDATE klasy_gruntu SET klasa = ?, przelicznik = ? where ID = ?", [ground_class, converter, ID_ground_class]);
         res.status(200).json({success:true, message:"rekord został zaktualizowany"})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 });
 
-router.post("/insert", [checkDataExisting(["ground_class", "commune", "district", "province", "converter", "tax"])], async (req, res) => {
-    const {ground_class, commune, district, province, converter, tax} = req.body;
-    let localizationID;
+
+router.post("/insert", [checkDataExisting(["ground_class", "converter", "tax_district"])], async (req, res) => {
+    const {ground_class, converter, tax_district} = req.body;
     try {
-        const [result] = await connection.execute("SELECT ID FROM lokalizacje where gmina = ? AND powiat = ? AND wojewodztwo = ? limit 1", [commune, district, province]);
-        if(result.length > 0) {
-            localizationID = result[0].ID;
-        } else {
-            const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?)", [province, district, commune]);
-            localizationID = result.insertId;
-        }
-        await connection.execute("INSERT INTO klasy_gruntu() VALUES(NULL, ?, ?, ?, ?)", [ground_class, localizationID, converter, tax]);
+        await connection.execute("INSERT INTO klasy_gruntu() VALUES(NULL, ?, ?, ?)", [ground_class, converter, tax_district]);
         res.status(200).json({success:true, message:"wstawiono nowy rekord"})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

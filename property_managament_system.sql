@@ -1,3 +1,11 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost
+-- Generation Time: Lip 29, 2025 at 10:05 AM
+-- Wersja serwera: 8.0.39
+-- Wersja PHP: 8.2.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -21,15 +29,15 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `dzialki` (
   `ID` int NOT NULL,
-  `numer_seryjny_dzialki` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `nr_dzialki` varchar(7) COLLATE utf8mb4_general_ci NOT NULL,
+  `numer_seryjny_dzialki` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nr_dzialki` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `powierzchnia` decimal(8,4) NOT NULL,
   `ID_miejscowosci` int NOT NULL,
   `ID_wlasciciela` int NOT NULL,
-  `nr_kw` varchar(15) COLLATE utf8mb4_general_ci NOT NULL,
+  `nr_kw` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `hipoteka` tinyint(1) NOT NULL,
   `ID_rodzaju` int NOT NULL,
-  `opis` text COLLATE utf8mb4_general_ci,
+  `opis` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `ID_przeznaczenia` int NOT NULL,
   `ID_mpzp` int NOT NULL,
   `ID_planu_ogolnego` int NOT NULL,
@@ -46,9 +54,9 @@ CREATE TABLE `dzialki` (
 
 CREATE TABLE `dzierzawcy` (
   `ID` int NOT NULL,
-  `imie` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `nazwisko` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `telefon` varchar(15) COLLATE utf8mb4_general_ci NOT NULL
+  `imie` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nazwisko` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `telefon` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -74,10 +82,9 @@ CREATE TABLE `dzierzawy` (
 
 CREATE TABLE `klasy_gruntu` (
   `ID` int NOT NULL,
-  `klasa` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
-  `ID_lokalizacji` int NOT NULL,
+  `klasa` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `przelicznik` decimal(3,2) NOT NULL,
-  `podatek_za_hektar` decimal(7,4) NOT NULL
+  `okreg_podatkowy` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -88,9 +95,11 @@ CREATE TABLE `klasy_gruntu` (
 
 CREATE TABLE `lokalizacje` (
   `ID` int NOT NULL,
-  `wojewodztwo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `powiat` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `gmina` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
+  `wojewodztwo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `powiat` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `gmina` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `podatek` decimal(8,4) DEFAULT NULL,
+  `okreg_podatkowy` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -102,7 +111,7 @@ CREATE TABLE `lokalizacje` (
 CREATE TABLE `miejscowosci` (
   `ID` int NOT NULL,
   `ID_lokalizacji` int NOT NULL,
-  `nazwa` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
+  `nazwa` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -113,8 +122,8 @@ CREATE TABLE `miejscowosci` (
 
 CREATE TABLE `mpzp` (
   `ID` int NOT NULL,
-  `kod` varchar(2) COLLATE utf8mb4_general_ci NOT NULL,
-  `opis` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
+  `kod` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `opis` varchar(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -126,7 +135,7 @@ CREATE TABLE `mpzp` (
 CREATE TABLE `nabycia` (
   `ID` int NOT NULL,
   `data_nabycia` date NOT NULL,
-  `nr_aktu` varchar(21) COLLATE utf8mb4_general_ci NOT NULL,
+  `nr_aktu` varchar(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `sprzedawca` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `cena_zakupu` decimal(8,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -139,8 +148,8 @@ CREATE TABLE `nabycia` (
 
 CREATE TABLE `plany_ogolne` (
   `ID` int NOT NULL,
-  `kod` varchar(2) COLLATE utf8mb4_general_ci NOT NULL,
-  `opis` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
+  `kod` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `opis` varchar(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -164,7 +173,7 @@ CREATE TABLE `powierzchnie_dzialek` (
 
 CREATE TABLE `przeznaczenia_dzialek` (
   `ID` int NOT NULL,
-  `typ` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
+  `typ` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -175,7 +184,7 @@ CREATE TABLE `przeznaczenia_dzialek` (
 
 CREATE TABLE `rodzaje_dzialek` (
   `ID` int NOT NULL,
-  `nazwa` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
+  `nazwa` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -186,10 +195,10 @@ CREATE TABLE `rodzaje_dzialek` (
 
 CREATE TABLE `uzytkownicy` (
   `ID` int NOT NULL,
-  `imie` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `nazwisko` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `haslo` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
-  `rola` enum('ADMIN','SEKRETARIAT','KSIEGOWOSC') COLLATE utf8mb4_general_ci DEFAULT NULL
+  `imie` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nazwisko` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `haslo` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `rola` enum('ADMIN','SEKRETARIAT','KSIEGOWOSC') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -200,9 +209,9 @@ CREATE TABLE `uzytkownicy` (
 
 CREATE TABLE `wlasciciele` (
   `ID` int NOT NULL,
-  `imie` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `nazwisko` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `telefon` varchar(15) COLLATE utf8mb4_general_ci NOT NULL
+  `imie` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nazwisko` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `telefon` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -241,9 +250,7 @@ ALTER TABLE `dzierzawy`
 -- Indeksy dla tabeli `klasy_gruntu`
 --
 ALTER TABLE `klasy_gruntu`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `klasa` (`klasa`),
-  ADD KEY `ID_lokalizacji` (`ID_lokalizacji`);
+  ADD PRIMARY KEY (`ID`);
 
 --
 -- Indeksy dla tabeli `lokalizacje`
@@ -418,12 +425,6 @@ ALTER TABLE `dzialki`
 --
 ALTER TABLE `dzierzawy`
   ADD CONSTRAINT `dzierzawy_ibfk_1` FOREIGN KEY (`ID_dzierzawcy`) REFERENCES `dzierzawcy` (`ID`) ON DELETE CASCADE;
-
---
--- Constraints for table `klasy_gruntu`
---
-ALTER TABLE `klasy_gruntu`
-  ADD CONSTRAINT `klasy_gruntu_ibfk_1` FOREIGN KEY (`ID_lokalizacji`) REFERENCES `lokalizacje` (`ID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `miejscowosci`
