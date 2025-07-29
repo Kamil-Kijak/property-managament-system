@@ -21,6 +21,7 @@ const landsRoutes = require("./routes/lands");
 const rentsRoutes = require("./routes/rents");
 const rentersRoutes = require("./routes/renters");
 const areasRoutes = require("./routes/Areas");
+const districtsRoutes = require("./routes/districts")
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use("/api/lands", landsRoutes);
 app.use("/api/rents", rentsRoutes);
 app.use("/api/renters", rentersRoutes);
 app.use("/api/areas", areasRoutes);
+app.use("/api/districts", districtsRoutes)
 
 const server = http.createServer(app);
 

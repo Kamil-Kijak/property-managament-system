@@ -1,7 +1,7 @@
 
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faRightFromBracket, faUsers, faHouse, faFile, faCity, faUserTie, faMoneyBillTransfer, faMountainSun} from "@fortawesome/free-solid-svg-icons"
+import { faRightFromBracket, faUsers, faHouse, faFile, faCity, faUserTie, faMoneyBillTransfer, faMountainSun, faLocationDot} from "@fortawesome/free-solid-svg-icons"
 import { useLocation, useNavigate} from "react-router-dom"
 import { useRequest } from "../hooks/useRequest"
 
@@ -64,6 +64,7 @@ export default function NavBar({requiredRoles = []}) {
                     <section className="w-full">
                         <div className="bg-green-500 h-1.5 my-3"></div>
                         <button className={location.pathname == '/groundclasses' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/groundclasses")}><FontAwesomeIcon icon={faMountainSun}/> Klasy gruntów</button>
+                        <button className={location.pathname == '/districts' ? `active-nav-btn` :`nav-btn`} onClick={() => navigate("/districts")}><FontAwesomeIcon icon={faLocationDot}/> gminy i okręgi podatkowe</button>
                     </section>
                 }
                 {
