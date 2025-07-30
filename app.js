@@ -1,11 +1,13 @@
 require("dotenv").config();
 
+const fs = require("fs")
 const express = require("express")
 const http = require("http");
 const cookieParser = require("cookie-parser")
 const path = require("path");
 const rateLimit = require("express-rate-limit")
 const transporter = require("./util/mailTransporter")
+const cron = require("node-cron")
 
 
 // routes variables
@@ -21,7 +23,8 @@ const landsRoutes = require("./routes/lands");
 const rentsRoutes = require("./routes/rents");
 const rentersRoutes = require("./routes/renters");
 const areasRoutes = require("./routes/Areas");
-const districtsRoutes = require("./routes/districts")
+const districtsRoutes = require("./routes/districts");
+const { exec } = require("child_process");
 
 const app = express();
 
@@ -55,10 +58,31 @@ app.use("/api/renters", rentersRoutes);
 app.use("/api/areas", areasRoutes);
 app.use("/api/districts", districtsRoutes)
 
+// cron task
+cron.schedule("0 12 * * 1", () => {
+  // backup
+  const today = new Date()
+  const backupDir = process.env.BACKUP_DIR || './backups';
+  if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir);
+  const fileName = `${process.env.DB_NAME || "database"}-${today.toLocaleDateString("sv-SE")}`
+  const filePath = path.join(backupDir, fileName);
+  const dumpCommand = `mysqldump -h ${process.env.DB_HOST || "localhost"} -u ${process.env.DB_USER || "root"} -p${process.env.DB_PASSWORD || ""} ${process.env.DB_NAME || "database"} > ${filePath}`;
+  exec(dumpCommand, (err, stdout, stderr) => {
+    if(err) {
+      console.log("bład podczas tworzenie backup", err.message)
+    } else {
+      console.log("backup zapisany w", filePath);
+    }
+  })
+  const weekNumber = Math.floor((new Date().getTime() / (1000 * 60 * 60 * 24 * 7)));
+})
+
+
+
 const server = http.createServer(app);
 
 
 server.listen(process.env.PORT || 3000, () => {
-    console.log(`serwer nasłuchuje na porcie ${process.env.PORT || 3000}`)
+  console.log(`serwer nasłuchuje na porcie ${process.env.PORT || 3000}`)
 })
 

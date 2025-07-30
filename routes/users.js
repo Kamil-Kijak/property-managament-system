@@ -22,10 +22,6 @@ router.get("/get", async (req, res) => {
     }
 });
 
-router.get("/auth", [authorization()], (req, res) => {
-    res.status(200).json({success:true, message:"Zweryfikowano poprawnie", user:req.user})
-})
-
 router.post("/register_admin", [checkDataExisting(["name", "surname", "password"])], async (req, res) => {
     const {name, surname, password} = req.body;
     try {
@@ -78,6 +74,12 @@ router.get("/logout", (req, res) => {
 })
 
 router.use(authorization());
+
+
+router.get("/auth", async (req, res) => {
+    res.status(200).json({success:true, message:"Zweryfikowano poprawnie", user:req.user})
+})
+
 router.use(roleAuthorization(["ADMIN"]));
 
 router.post("/update", [checkDataExisting(["ID_user", "name", "surname", "role"])], async (req, res) => {
@@ -93,7 +95,7 @@ router.post("/update", [checkDataExisting(["ID_user", "name", "surname", "role"]
 router.post("/update_password", [checkDataExisting(["ID_user", "password"])], async (req, res) => {
     const {ID_user, password} = req.body;
     try {
-        await connection.execute("UPDATE uzytkownicy SET password = ? WHERE ID = ?", [crypto.createHash("md5").update(password).digest("hex"), ID_user]);
+        await connection.execute("UPDATE uzytkownicy SET haslo = ? WHERE ID = ?", [crypto.createHash("md5").update(password).digest("hex"), ID_user]);
         res.status(200).json({success:true, message:"Hasło zaktualizowane"})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

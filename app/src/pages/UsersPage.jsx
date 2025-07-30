@@ -1,7 +1,7 @@
 
 
 import { FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import { faUserTie, faPlus, faPen, faTrashCan, faXmark} from "@fortawesome/free-solid-svg-icons";
+import { faUserTie, faPlus, faPen, faTrashCan, faXmark, faLock} from "@fortawesome/free-solid-svg-icons";
 import NavBar from "../components/NavBar"
 
 import { useState, useEffect, useRef } from "react";
@@ -32,8 +32,13 @@ export default function UsersPage({}) {
             "surname":{regexp:/^[A-ZŁĆŚŁŻŹĄĘ][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
             "password":{regexp:/^.{8,}$/, error:"Hasło za słabe"},
             "role":{regexp:/.+/, error:"Brak roli"}
-        }
-    )
+    })
+
+    const [passwordFormData, passwordErrors, setPasswordFormData] = useForm({
+        "password":{regexp:/^.{8,}$/, error:"Hasło za słabe"}
+    })
+
+    const [checkingPassword, setCheckingPassword] = useState("");
     
     const getUsers = () => {
         loadingUpdate(true);
@@ -86,6 +91,24 @@ export default function UsersPage({}) {
             })
     }
 
+    const requestUpdatePassword = () => {
+        loadingUpdate(true);
+        request("/api/user/update_password",  {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({ID_user:editUserID, ...passwordFormData})
+            }).then(result => {
+                if(!result.error) {
+                    getUsers();
+                    checkActualUserDataChange(editUserID);
+                }
+                loadingUpdate(false);
+            })
+    }
+
     const checkActualUserDataChange = (editedUserID) => {
         if(editedUserID == user.ID) {
             request("/api/user/logout", {credentials:"include"}).then(result => {
@@ -112,6 +135,12 @@ export default function UsersPage({}) {
                                             <h1 className="mx-10 text-xl font-bold">{ele.rola}</h1>
                                         </section>
                                         <section className="flex flex-col items-center">
+                                            <button className="base-btn" onClick={() => {
+                                                setForm("change_password");
+                                                setEditUserID(ele.ID)
+                                                setPasswordFormData({});
+                                                
+                                            }}><FontAwesomeIcon icon={faLock}/> Zmień hasło</button>
                                             <button className="info-btn" onClick={() => {
                                                 setForm("edit");
                                                 setEditUserID(ele.ID)
@@ -189,6 +218,47 @@ export default function UsersPage({}) {
                         }>Zaktualizuj</button>
                     </section>
                 </>
+                }
+                {
+                    form == "change_password" &&
+                    <>
+                        <section className="my-10">
+                            <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
+                        </section>
+                        <section className="base-card">
+                            <h1 className="text-2xl my-2 text-center">Zmiana hasła</h1>
+                            <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
+                            <section className="py-2 flex-col items-center">
+                                <SimpleInput
+                                    type="password"
+                                    title="Hasło"
+                                    placeholder="password..."
+                                    value={passwordFormData.password}
+                                    onChange={(e) => setPasswordFormData(prev => ({...prev, password:e.target.value}))}
+                                    error={passwordErrors.password}
+                                />
+                                <SimpleInput
+                                    type="password"
+                                    title="Powtórz hasło"
+                                    placeholder="repeat password..."
+                                    value={checkingPassword}
+                                    onChange={(e) => setCheckingPassword(e.target.value)}
+                                    error={checkingPassword !== (passwordFormData.password || "") && "Hasła nie są takie same"}
+                                />
+                            </section>
+                            <button className="base-btn" onClick={() => {
+                                if(Object.keys(passwordFormData).length == 1) {
+                                    if(Object.keys(passwordErrors).every(ele => passwordErrors[ele] == null)) {
+                                        if(checkingPassword == (passwordFormData.password || "")) {
+                                            requestUpdatePassword();
+                                        }
+                                    }
+                                    }
+                                }
+                            }>Ustaw hasło</button>
+                        </section>
+                    
+                    </>
                 }
             </section>
         </main>

@@ -18,6 +18,7 @@ import WarningScreen from "./components/screens/WarningScreen";
 import RentPage from "./pages/RentPage";
 import GroundClassesPage from "./pages/GroundClassesPage";
 import DistrictsPage from "./pages/DistrictsPage";
+import AreasPage from "./pages/AreasPage";
 
 
 export default function App({}) {
@@ -41,7 +42,7 @@ export default function App({}) {
                     <Route path="/lands" element={<LandsPage/>}/>
                     <Route path="/owners" element={<OwnersPage/>}/>
                     <Route path="/renters" element={<RentPage/>}/>
-                    <Route path="/areas" element={<h1>Hello world</h1>}/>
+                    <Route path="/areas" element={<AreasPage/>}/>
                     <Route path="/groundclasses" element={<GroundClassesPage/>}/>
                     <Route path="/districts" element={<DistrictsPage/>}/>
                     <Route path="/users" element={<UsersPage/>}/>

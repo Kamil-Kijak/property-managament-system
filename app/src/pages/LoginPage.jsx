@@ -167,17 +167,19 @@ export default function LoginPage({}) {
                         <div className="bg-green-500 w-full h-1 rounded-2xl my-3"></div>
                         <section className="py-2">
                             {users.some((ele) => ele.rola == `ADMIN`) ?
-                            <SelectInput
-                                title="Użytkownik"
-                                placeholder="Wybierz użytkownika"
-                                value={loginFormData.ID_user}
-                                onChange={(e) => setLoginFormData(prev => ({...prev, ID_user:e.target.value}))}
-                                options={
-                                <>
-                                    {users.map((ele) => <option key={ele.ID} value={ele.ID}>{ele.imie} {ele.nazwisko} {ele.rola}</option>)}
-                                </>
-                                }
-                             />
+                            <section className="w-[200px]">
+                                <SelectInput
+                                    title="Użytkownik"
+                                    placeholder="Wybierz użytkownika"
+                                    value={loginFormData.ID_user}
+                                    onChange={(e) => setLoginFormData(prev => ({...prev, ID_user:e.target.value}))}
+                                    options={
+                                    <>
+                                        {users.map((ele) => <option key={ele.ID} value={ele.ID}>{ele.imie} {ele.nazwisko} {ele.rola}</option>)}
+                                    </>
+                                    }
+                                 />
+                            </section>
                             :
                             <section className="flex flex-col justify-center">
                                 <h1 className="text-red-600 text-xl font-bold py-3"><FontAwesomeIcon icon={faWarning}/> Brak konta ADMIN</h1>
@@ -193,11 +195,9 @@ export default function LoginPage({}) {
                                         placeholder="password..."
                                         value={loginFormData.password}
                                         onChange={(e) => setLoginFormData(prev => ({...prev, password:e.target.value}))}
-                                        error={loginErrors.password}
+                                        error={loginError}
                                     />
-                                    {/* <p className="error-text">{loginErrors[Object.keys(loginErrors).find(ele => loginErrors[ele] != null)]}</p> */}
                                     <button className="base-btn" onClick={loginUser}>Zaloguj</button>
-                                    {loginError && <p className="error-text">{loginError}</p>}
                                 </section>
                             }
                         </section>

@@ -7,7 +7,7 @@ import SimpleInput from "../components/inputs/SimpleInput";
 import SelectInput from "../components/inputs/SelectInput"
 
 export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
-    const updateLoading = useLoadingStore((state) => state.updateLoading);
+    const updateLoading = useLoadingStore((state) => state.update);
 
     const [checkingPassword, setCheckingPassword] = useState("");
 
