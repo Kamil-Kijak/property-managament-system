@@ -150,7 +150,6 @@ export default function InsertRent({onClose = () => {}, landID}) {
                             onChange={(e) => setRenterFormData(prev => ({...prev, phone:e.target.value}))}
                             error={renterErrors.phone}
                         />
-                        <p className="error-text">{renterErrors[Object.keys(renterErrors).find(ele => renterErrors[ele] != null)]}</p>
                         <button className="base-btn" onClick={() => {
                             if(Object.keys(renterFormData).length == 3) {
                                 if(Object.keys(renterErrors).every(ele => renterErrors[ele] == null)) {

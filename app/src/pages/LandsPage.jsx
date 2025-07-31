@@ -32,6 +32,7 @@ export default function LandsPage({}) {
     });
     const [landPurposes, setLandPurposes] = useState([]);
     const [lands, setLands] = useState([]);
+    const [landFiles, setLandFiles] = useState([]);
     const [form, setForm] = useState(null);
     const [editLandID, setEditLandID] = useState();
     const request = useRequest();
@@ -65,6 +66,7 @@ export default function LandsPage({}) {
             }).then(result => {
                 if(!result.error) {
                     setLands(result.data)
+                    setLandFiles(result.files);
                 }
                 loadingUpdate(false);
             })
@@ -231,6 +233,8 @@ export default function LandsPage({}) {
                                     requestDelete={requestDelete}
                                     addRent={(ID) => {setForm("addRent");setEditLandID(ID)}}
                                     editLand={(ID) => {setForm("edit");setEditLandID(ID)}}
+                                    file={landFiles.find((ele) => obj.numer_seryjny_dzialki == ele.replace("-", "/").substring(0, ele.lastIndexOf(".")))}
+                                    setLandFiles={setLandFiles}
                                     />)
                             })
                        }

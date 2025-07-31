@@ -1,6 +1,8 @@
 
 const express = require("express");
-const connection = require("../util/mysqlConnection")
+const connection = require("../util/mysqlConnection");
+const fs = require("fs");
+const path = require("path");
 
 const checkDataExisting = require("../middlewares/checkDataExisting")
 const authorization = require("../middlewares/authorization")
@@ -83,7 +85,11 @@ router.get("/get", [checkDataExisting(["serial_filter", "land_number_filter", "p
     // SQL += " LIMIT 200"
     try {
         const [result] = await connection.execute(SQL, paramns);
-        res.status(200).json({success:true, message:"Przefiltrowano rekordy dzialek", data:result});
+        let files = [];
+        if(!(files = fs.readdirSync(path.join(__dirname, "../land_files")))) {
+            files = [];
+        }
+        res.status(200).json({success:true, message:"Przefiltrowano rekordy dzialek", data:result, files:files});
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }

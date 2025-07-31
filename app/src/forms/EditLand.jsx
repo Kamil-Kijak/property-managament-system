@@ -273,7 +273,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                     />
                     <SelectInput
                         title="Hipoteka"
-                        value={landFormData.mortgage}
+                        value={landFormData.mortgage || "0"}
                         onChange={(e) => setLandFormData(prev => ({...prev, mortgage:e.target.value}))}
                         options={
                             <>
@@ -345,7 +345,7 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                     />
                     <SelectInput
                         title="Spółka wodna"
-                        value={landFormData.water_company}
+                        value={landFormData.water_company || "0"}
                         onChange={(e) => setLandFormData(prev => ({...prev, water_company:e.target.value}))}
                         options={
                             <>

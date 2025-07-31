@@ -19,6 +19,7 @@ import RentPage from "./pages/RentPage";
 import GroundClassesPage from "./pages/GroundClassesPage";
 import DistrictsPage from "./pages/DistrictsPage";
 import AreasPage from "./pages/AreasPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 
 export default function App({}) {
@@ -50,6 +51,7 @@ export default function App({}) {
                     <Route path="/landpurposes" element={<LandPurposesPage/>}/>
                     <Route path="/generalplans" element={<GeneralPlansPage/>}/>
                     <Route path="/mpzp" element={<MpzpPage/>}/>
+                    <Route path="*" element={<NotFoundPage/>}/>
                 </Routes>
             </BrowserRouter>
         </>

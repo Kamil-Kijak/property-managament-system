@@ -1,11 +1,13 @@
-import { faEye, faPen, faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faFile, faFileArrowDown, faPen, faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback } from "react";
 import { useState } from "react";
 import {useUserStore} from "../hooks/useUserStore"
 import { useWarningStore } from "../hooks/useScreensStore";
+import { useRef } from "react";
+import { useRequest } from "../hooks/useRequest";
 
-export default function Land({obj, editLand, requestDelete, addRent}) {
+export default function Land({obj, editLand, requestDelete, addRent, file = null, setLandFiles = () => {}}) {
 
     const warningUpdate = useWarningStore((state) => state.update)
     const user = useUserStore((state) => state.user)
@@ -13,24 +15,55 @@ export default function Land({obj, editLand, requestDelete, addRent}) {
     const showingMoreToggle = useCallback(() => {
         setShowingMore(prev => !prev)
     }, []);
+    const request = useRequest();
+
+    const inputFileRef = useRef(null);
+
+    const selectFile = () => {
+        inputFileRef.current.click();
+    }
+    const uploadFile = (e, serial) => {
+        const documentFile = e.target.files[0];
+        const formData = new FormData();
+        formData.append("file", documentFile);
+        request(`/api/files/upload/${serial.replace("/", "-")}`, {
+            method: 'POST',
+            credentials:"include",
+            body: formData
+        }).then(result => {
+            if(!result.error) {
+                console.log("Poprawno wgrano plik")
+            }
+        })
+        setLandFiles(prev => [...prev, `${serial.replace("/", "-")}.png`])
+    }
 
 
     return (
         <section className="flex flex-col shadow-xl shadow-black/25 p-5 gap-y-6 text-center">
-            <section className="flex items-center justify-start gap-x-5">
-                <button className="base-btn" onClick={showingMoreToggle}><FontAwesomeIcon icon={faEye}/> Pokaż {showingMore ? "mniej":"więcej"}</button>
-                {!obj.ID_dzierzawy && obj.przeznaczenie == "Dzierżawa" && <button className="base-btn" onClick={() => addRent(obj.ID)}><FontAwesomeIcon icon={faUser}/> Dodaj dzierżawe</button>}
-                <button className="info-btn" onClick={() => editLand(obj.ID)}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
-                {user.rola === "ADMIN" && <button className="warning-btn" onClick={() => {
-                    warningUpdate(true, "Uwaga", () => requestDelete(obj.ID), () => warningUpdate(false), <>
-                        <p className="text-red-600 font-bold">
-                            Kiedy usuniesz tą działkę utracisz wszystkie dane na temat tej działki
-                        </p>
-                        <p className="text-white font-bold text-lg mt-5">
-                            Czy napewno chcesz usunąć tą działkę?
-                        </p>
-                    </>)
-                    }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>}
+            <section className="flex items-center justify-between">
+                <section className="flex items-center justify-start gap-x-5">
+                    <button className="base-btn" onClick={showingMoreToggle}><FontAwesomeIcon icon={faEye}/> Pokaż {showingMore ? "mniej":"więcej"}</button>
+                    {!obj.ID_dzierzawy && obj.przeznaczenie == "Dzierżawa" && <button className="base-btn" onClick={() => addRent(obj.ID)}><FontAwesomeIcon icon={faUser}/> Dodaj dzierżawe</button>}
+                    <button className="info-btn" onClick={() => editLand(obj.ID)}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                    {user.rola === "ADMIN" && <button className="warning-btn" onClick={() => {
+                        warningUpdate(true, "Uwaga", () => requestDelete(obj.ID), () => warningUpdate(false), <>
+                            <p className="text-red-600 font-bold">
+                                Kiedy usuniesz tą działkę utracisz wszystkie dane na temat tej działki
+                            </p>
+                            <p className="text-white font-bold text-lg mt-5">
+                                Czy napewno chcesz usunąć tą działkę?
+                            </p>
+                        </>)
+                        }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>}
+                </section>
+                <section className="flex items-center justify-start gap-x-5">
+                    {
+                        file && <a href={`/api/files/file/${file.substring(0, file.lastIndexOf("."))}`} className="pdf-btn"><FontAwesomeIcon icon={faFile}/> Plik</a>
+                    }
+                    <button className="pdf-btn" onClick={selectFile}><FontAwesomeIcon icon={faFileArrowDown}/> Wgraj plik</button>
+                    <input ref={inputFileRef} type="file" className="hidden" accept="image/png,image/jpg,application/pdf" id="file" onChange={(e) => uploadFile(e, obj.numer_seryjny_dzialki)} />
+                </section>
             </section>
             <section className="flex justify-around gap-x-5">
                 <section className="flex flex-col items-center gap-y-3">
