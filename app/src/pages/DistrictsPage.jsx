@@ -21,7 +21,8 @@ export default function DistrictsPage({}) {
 
     const [editFormData, editErrors, setEditFormData] = useForm({
         "tax_district":{regexp:/\d+/, error:"Wybierz okręg"},
-        "tax":{regexp:/^\d{1,4}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
+        "agricultural_tax":{regexp:/^\d{1,4}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
+        "forest_tax":{regexp:/^\d{1,4}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
     });
 
     const [form, setForm] = useState(null);
@@ -32,7 +33,8 @@ export default function DistrictsPage({}) {
 
     const [searchFilters, setSearchFilters] = useState({
         tax_district:"",
-        have_tax:""
+        agricultural_tax:"",
+        forest_tax:""
     })
     
 
@@ -105,9 +107,21 @@ export default function DistrictsPage({}) {
                                     />
                                     <SearchSelectInput
                                         placeholder="NaN"
-                                        title="gmina posiada podatek"
-                                        onChange={(e) => setSearchFilters(prev => ({...prev, have_tax:e.target.value}))}
-                                        value={searchFilters.have_tax}
+                                        title="Ma stawke podatku rolnego"
+                                        onChange={(e) => setSearchFilters(prev => ({...prev, agricultural_tax:e.target.value}))}
+                                        value={searchFilters.agricultural_tax}
+                                        options={
+                                            <>
+                                                <option value="0">NIE</option>
+                                                <option value="1">TAK</option>
+                                            </>
+                                        }
+                                    />
+                                    <SearchSelectInput
+                                        placeholder="NaN"
+                                        title="Ma stawke podatku leśnego"
+                                        onChange={(e) => setSearchFilters(prev => ({...prev, forest_tax:e.target.value}))}
+                                        value={searchFilters.forest_tax}
                                         options={
                                             <>
                                                 <option value="0">NIE</option>
@@ -184,14 +198,19 @@ export default function DistrictsPage({}) {
                                             </section>
                                             <section className="flex flex-col items-center justify-center">
                                                 <h1 className="font-bold text-md">Stawka podatku rolnego</h1>
-                                                <p className="mx-10 text-md">{!obj.podatek ? "BRAK" : obj.podatek + "zł"}</p>
+                                                <p className="mx-10 text-md">{!obj.podatek_rolny ? "BRAK" : obj.podatek_rolny + "zł"}</p>
+                                            </section>
+                                            <section className="flex flex-col items-center justify-center">
+                                                <h1 className="font-bold text-md">Stawka podatku leśnego</h1>
+                                                <p className="mx-10 text-md">{!obj.podatek_lesny ? "BRAK" : obj.podatek_lesny + "zł"}</p>
                                             </section>
                                             <section className="flex gap-x-3">
                                                 <button className="info-btn" onClick={() => {
                                                     setForm("edit")
                                                     setEditFormData({
                                                         tax_district:obj.okreg_podatkowy,
-                                                        tax:obj.podatek || "153.7000"
+                                                        agricultural_tax:obj.podatek_rolny || "153.7000",
+                                                        forest_tax:obj.podatek_lesny || "153.7000"
                                                     })
                                                     setEditDistrictID(obj.ID)
                                                 }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
@@ -236,13 +255,23 @@ export default function DistrictsPage({}) {
                                     title="Podatek rolny"
                                     step="any"
                                     placeholder="agricultural tax.."
-                                    value={editFormData.tax}
-                                    onChange={(e) => setEditFormData(prev => ({...prev, tax:e.target.value}))}
-                                    error={editErrors.tax}
+                                    value={editFormData.agricultural_tax}
+                                    onChange={(e) => setEditFormData(prev => ({...prev, agricultural_tax:e.target.value}))}
+                                    error={editErrors.agricultural_tax}
+                                />
+                                <SimpleInput
+                                    type="number"
+                                    min="0"
+                                    title="Podatek leśny"
+                                    step="any"
+                                    placeholder="agricultural tax.."
+                                    value={editFormData.forest_tax}
+                                    onChange={(e) => setEditFormData(prev => ({...prev, forest_tax:e.target.value}))}
+                                    error={editErrors.forest_tax}
                                 />
                             </section>
                             <button className="base-btn" onClick={() => {
-                                if(Object.keys(editFormData).length == 2) {
+                                if(Object.keys(editFormData).length == 3) {
                                     if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
                                         requestEdit();
                                     }

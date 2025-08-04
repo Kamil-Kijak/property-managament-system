@@ -27,6 +27,7 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
 
     useEffect(() => {
         if(areas.length == 0) {
+            loadingUpdate(true)
             const params = new URLSearchParams({
                 ID_land:obj.ID
             })
@@ -34,6 +35,7 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                 if(!result.error) {
                     setAreas(result.data);
                 }
+                loadingUpdate(false)
             })
         }
     }, [showingGroundAreas])
@@ -62,7 +64,7 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
 
     return (
         <section className="flex flex-col shadow-xl shadow-black/25 p-5 gap-y-6 text-center">
-            <section className="flex items-center justify-between">
+            <section className="flex items-center justify-between gap-x-3">
                 <section className="flex items-center justify-start gap-x-5">
                     <button className="base-btn" onClick={showingMoreToggle}><FontAwesomeIcon icon={faEye}/> Pokaż {showingMore ? "mniej":"więcej"}</button>
                     <button className="base-btn" onClick={showingGroundAreasToggle}><FontAwesomeIcon icon={faMountainSun}/> {showingGroundAreas ? "ukryj":"pokaż"} Powierzchnie</button>
@@ -79,7 +81,7 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                         </>)
                         }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>}
                 </section>
-                <section className="flex items-center justify-start gap-x-5">
+                <section className="flex items-center justify-start gap-x-3">
                     {
                         file && <a target="_blank" href={`/api/files/file/${file.substring(0, file.lastIndexOf("."))}`} className="pdf-btn"><FontAwesomeIcon icon={faFile}/> Plik</a>
                     }

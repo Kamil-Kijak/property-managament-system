@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Lip 29, 2025 at 10:05 AM
+-- Generation Time: Aug 04, 2025 at 03:53 PM
 -- Wersja serwera: 8.0.39
 -- Wersja PHP: 8.2.26
 
@@ -84,7 +84,8 @@ CREATE TABLE `klasy_gruntu` (
   `ID` int NOT NULL,
   `klasa` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `przelicznik` decimal(3,2) NOT NULL,
-  `okreg_podatkowy` int NOT NULL
+  `okreg_podatkowy` int NOT NULL,
+  `podatek` enum('rolny','leśny') COLLATE utf8mb4_general_ci DEFAULT 'rolny'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -98,7 +99,8 @@ CREATE TABLE `lokalizacje` (
   `wojewodztwo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `powiat` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `gmina` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `podatek` decimal(8,4) DEFAULT NULL,
+  `podatek_rolny` decimal(8,4) DEFAULT NULL,
+  `podatek_lesny` decimal(8,4) DEFAULT NULL,
   `okreg_podatkowy` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -162,7 +164,8 @@ CREATE TABLE `powierzchnie_dzialek` (
   `ID` int NOT NULL,
   `ID_dzialki` int NOT NULL,
   `ID_klasy` int NOT NULL,
-  `powierzchnia` decimal(8,4) NOT NULL
+  `powierzchnia` decimal(8,4) NOT NULL,
+  `zwolniona_powierzchnia` decimal(8,4) NOT NULL DEFAULT '0.0000'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -389,13 +392,13 @@ ALTER TABLE `przeznaczenia_dzialek`
 -- AUTO_INCREMENT for table `rodzaje_dzialek`
 --
 ALTER TABLE `rodzaje_dzialek`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `uzytkownicy`
 --
 ALTER TABLE `uzytkownicy`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `wlasciciele`

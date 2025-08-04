@@ -120,7 +120,7 @@ router.post("/insert", [checkDataExisting(["land_serial_number", "land_number", 
             if(result.length > 0) {
                 IDLocalization = result[0].ID;
             } else {
-                const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?, NULL, NULL)", [province, district, commune]);
+                const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?, NULL, NULL, NULL)", [province, district, commune]);
                 IDLocalization = result.insertId;
             }
             const [result2] = await connection.execute("INSERT INTO miejscowosci() VALUES(NULL, ?, ?)", [IDLocalization, town]);
@@ -150,7 +150,7 @@ router.post("/update", [checkDataExisting(["ID_land", "land_serial_number", "lan
             if(result.length > 0) {
                 IDLocalization = result[0].ID;
             } else {
-                const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?, NULL, NULL)", [province, district, commune]);
+                const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?, NULL, NULL, NULL)", [province, district, commune]);
                 IDLocalization = result.insertId;
             }
             const [result2] = await connection.execute("INSERT INTO miejscowosci() VALUES(NULL, ?, ?)", [IDLocalization, town]);

@@ -4,6 +4,7 @@ import SimpleInput from "../components/inputs/SimpleInput";
 import { useForm } from "../hooks/useForm";
 import { useLoadingStore } from "../hooks/useScreensStore";
 import { useRequest } from "../hooks/useRequest";
+import SelectInput from "../components/inputs/SelectInput";
 
 
 export default function InsertGroundClass({setForm = () => {}, search = () => {}, taxDistrict}) {
@@ -14,6 +15,7 @@ export default function InsertGroundClass({setForm = () => {}, search = () => {}
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
         "ground_class":{regexp:/^.{0,10}$/, error:"Za długi"},
         "converter":{regexp:/^\d{1}\.\d{2}$/, error:"Nie ma 2 cyfr po , lub za duża liczba"},
+        "tax":{regexp:/.+/, error:"Wybierz rodzaj podatku"}
     });
 
 
@@ -62,9 +64,20 @@ export default function InsertGroundClass({setForm = () => {}, search = () => {}
                         onChange={(e) => setInsertFormData(prev => ({...prev, converter:e.target.value}))}
                         error={insertErrors.converter}
                     />
+                    <SelectInput
+                        title="Rodzaj podatku klasy"
+                        value={insertFormData.tax}
+                        onChange={(e) => setInsertFormData(prev => ({...prev, tax:e.target.value}))}
+                        options={
+                                <>
+                                    <option value="rolny">Rolny</option>
+                                    <option value="leśny">Leśny</option>
+                                </>
+                            }
+                    />
                 </section>
                 <button className="base-btn text-2xl" onClick={() => {
-                    if(Object.keys(insertFormData).length == 2) {
+                    if(Object.keys(insertFormData).length == 3) {
                         if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
                             requestInsertGroundClass();
                         }

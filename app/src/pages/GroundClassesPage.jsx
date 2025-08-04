@@ -29,6 +29,7 @@ export default function GroundClassesPage({}) {
     const [editFormData, editErrors, setEditFormData] = useForm({
         "ground_class":{regexp:/^.{0,10}$/, error:"Za długi"},
         "converter":{regexp:/^\d{1}\.\d{2}$/, error:"Nie ma 2 cyfr po , lub za duża liczba"},
+        "tax":{regexp:/.+/, error:"Wybierz rodzaj podatku"},
     });
 
     useEffect(() => {
@@ -129,12 +130,17 @@ export default function GroundClassesPage({}) {
                                             <h1 className="font-bold text-xl">Przelicznik</h1>
                                             <p className="mx-10 text-xl">{obj.przelicznik}</p>
                                         </section>
+                                        <section className="flex flex-col items-center justify-center">
+                                            <h1 className="font-bold text-xl">Rodzaj podatku klasy</h1>
+                                            <p className="mx-10 text-xl">{obj.podatek}</p>
+                                        </section>
                                         <section className="flex gap-x-3">
                                             <button className="info-btn" onClick={() => {
                                                 setForm("edit")
                                                 setEditFormData({
                                                     ground_class:obj.klasa,
-                                                    converter:obj.przelicznik
+                                                    converter:obj.przelicznik,
+                                                    tax:obj.podatek
                                                 })
                                                 setEditGroundClassID(obj.ID)
                                             }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
@@ -192,9 +198,20 @@ export default function GroundClassesPage({}) {
                                     onChange={(e) => setEditFormData(prev => ({...prev, converter:e.target.value}))}
                                     error={editErrors.converter}
                                 />
+                                <SelectInput
+                                    title="Rodzaj podatku klasy"
+                                    value={editFormData.tax}
+                                    onChange={(e) => setEditFormData(prev => ({...prev, tax:e.target.value}))}
+                                    options={
+                                            <>
+                                                <option value="rolny">Rolny</option>
+                                                <option value="leśny">Leśny</option>
+                                            </>
+                                        }
+                                />
                             </section>
                             <button className="base-btn" onClick={() => {
-                                if(Object.keys(editFormData).length == 2) {
+                                if(Object.keys(editFormData).length == 3) {
                                     if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
                                         requestEdit();
                                     }

@@ -150,28 +150,30 @@ cron.schedule("0 12 * * 1", () => {
       if(err) {
         console.error('Błąd podczas odczytu folderu:', err);
       }
-      let oldestFile = null;
-      let oldestTime = Date.now();
-      files.forEach((file) => {
-        const filePath = path.join(backupDir, file);
-        const stats = fs.statSync(filePath)
-        if (stats.isFile() && stats.mtimeMs < oldestTime) {
-          oldestTime = stats.mtimeMs;
-          oldestFile = filePath;
-        }
-      })
-      if(oldestFile) {
-        fs.unlink(oldestFile, err => {
-          if(err) {
-            console.error('Błąd podczas usuwania pliku', err);
+      if(files.length > 2) {
+        let oldestFile = null;
+        let oldestTime = Date.now();
+        files.forEach((file) => {
+          const filePath = path.join(backupDir, file);
+          const stats = fs.statSync(filePath)
+          if (stats.isFile() && stats.mtimeMs < oldestTime) {
+            oldestTime = stats.mtimeMs;
+            oldestFile = filePath;
           }
         })
+        if(oldestFile) {
+          fs.unlink(oldestFile, err => {
+            if(err) {
+              console.error('Błąd podczas usuwania pliku', err);
+            }
+          })
+        }
       }
     })
     if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir);
     const fileName = `${process.env.DB_NAME || "database"}-${today.toLocaleDateString("sv-SE")}`
     const filePath = path.join(backupDir, fileName);
-    const dumpCommand = `mysqldump -h ${process.env.DB_HOST || "localhost"} -u ${process.env.DB_USER || "root"} -p${process.env.DB_PASSWORD || ""} ${process.env.DB_NAME || "database"} > ${filePath}`;
+    const dumpCommand = `mysqldump -h ${process.env.DB_HOST || "localhost"} -u ${process.env.DB_USER || "root"} -p${process.env.DB_PASSWORD || ""} ${process.env.DB_NAME || "database"} > ${filePath}.sql`;
     exec(dumpCommand, (err, stdout, stderr) => {
       if(err) {
         console.log("bład podczas tworzenie backup", err.message)
