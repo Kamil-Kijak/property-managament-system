@@ -34,7 +34,7 @@ router.post("/insert", [checkDataExisting(["ID_land", "ID_ground_class", "area"]
 router.post("/update", [checkDataExisting(["ID_area", "ID_ground_class", "area"])], async (req, res) => {
     const {ID_area, ID_ground_class, area} = req.body;
     try {
-        const [result] = await connection.execute("UPDATE powierzchnie_dzialek SET ID_klasy = ?, powierzchnia = ? WHERE ID = ?", [ID_ground_class, area, ID_area]);
+        await connection.execute("UPDATE powierzchnie_dzialek SET ID_klasy = ?, powierzchnia = ? WHERE ID = ?", [ID_ground_class, area, ID_area]);
         res.status(200).json({success:true, message:"zaktualizowano rekord"})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
@@ -43,7 +43,7 @@ router.post("/update", [checkDataExisting(["ID_area", "ID_ground_class", "area"]
 router.post("/delete", [checkDataExisting(["ID_area"])], async (req, res) => {
     const {ID_area} = req.body;
     try {
-        const [result] = await connection.execute("DELETE FROM powierzchnie_dzialek WHERE ID = ?", [ID_area]);
+        await connection.execute("DELETE FROM powierzchnie_dzialek WHERE ID = ?", [ID_area]);
         res.status(200).json({success:true, message:"usunięto pomyślnie"})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

@@ -118,7 +118,8 @@ export default function GroundClassesPage({}) {
                                 </>
                             }
                         />
-                        <section className="my-10">
+                        <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {groundClasses.length}</h1>
+                        <section className="my-5">
                             {
                                 groundClasses.map((obj, index) =>
                                 <section className="base-card" key={index}>

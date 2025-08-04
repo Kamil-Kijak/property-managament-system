@@ -260,6 +260,7 @@ export default function RentPage({}) {
                             </>
                         }
                         />
+                        <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {renters.length}</h1>
                         {
                             renters.map((obj, index) => <Renter key={index} obj={obj} deleteRent={requestDeleteRent} deleteRenter={requestDeleteRenter} editRenter={(ID) => {
                                 setForm("edit_renter");

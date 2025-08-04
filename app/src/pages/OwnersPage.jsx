@@ -10,7 +10,7 @@ import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import SearchInput from "../components/inputs/SearchInput";
 import SimpleInput from "../components/inputs/SimpleInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPrint, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function OwnersPage({}) {
 
@@ -118,13 +118,13 @@ export default function OwnersPage({}) {
                                 elements={
                                     <>
                                         <SearchInput
-                                            title="Imie"
+                                            title="Imie właściciela"
                                             placeholder="name..."
                                             value={searchFilters.name_filter}
                                             onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value}))}
                                         />
                                         <SearchInput
-                                            title="Nazwisko"
+                                            title="Nazwisko właściciela"
                                             placeholder="surname..."
                                             value={searchFilters.surname_filter}
                                             onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value}))}
@@ -133,7 +133,8 @@ export default function OwnersPage({}) {
                                 }
                             
                             />
-                            <section className="my-10">
+                            <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {owners.length}</h1>
+                            <section className="my-5">
                                 {
                                     owners.map((obj, index) => <Owner obj={obj} key={index} requestDelete={requestDelete} editOwner={(ID) => {
                                         setForm("edit");

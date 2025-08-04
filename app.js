@@ -74,7 +74,6 @@ app.use((req, res) => {
                 </section>
             </section>
         </main>`
-      
       )
 })
 

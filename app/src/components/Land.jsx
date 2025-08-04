@@ -1,21 +1,42 @@
-import { faEye, faFile, faFileArrowDown, faPen, faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faFile, faFileArrowDown, faMountainSun, faPen, faPlug, faPlus, faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback } from "react";
 import { useState } from "react";
 import {useUserStore} from "../hooks/useUserStore"
-import { useWarningStore } from "../hooks/useScreensStore";
+import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import { useRef } from "react";
 import { useRequest } from "../hooks/useRequest";
+import { useEffect } from "react";
 
 export default function Land({obj, editLand, requestDelete, addRent, file = null, setLandFiles = () => {}}) {
 
     const warningUpdate = useWarningStore((state) => state.update)
+    const loadingUpdate = useLoadingStore((state) => state.update)
     const user = useUserStore((state) => state.user)
     const [showingMore, setShowingMore] = useState(false);
+    const [showingGroundAreas, setShowingGroundAreas] = useState(false);
+    const [areas, setAreas] = useState([]);
+    const request = useRequest();
     const showingMoreToggle = useCallback(() => {
         setShowingMore(prev => !prev)
     }, []);
-    const request = useRequest();
+
+    const showingGroundAreasToggle = useCallback(() => {
+        setShowingGroundAreas(prev => !prev);
+    }, [])
+
+    useEffect(() => {
+        if(areas.length == 0) {
+            const params = new URLSearchParams({
+                ID_land:obj.ID
+            })
+            request(`/api/areas/get?${params.toString()}`).then(result => {
+                if(!result.error) {
+                    setAreas(result.data);
+                }
+            })
+        }
+    }, [showingGroundAreas])
 
     const inputFileRef = useRef(null);
 
@@ -44,6 +65,7 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
             <section className="flex items-center justify-between">
                 <section className="flex items-center justify-start gap-x-5">
                     <button className="base-btn" onClick={showingMoreToggle}><FontAwesomeIcon icon={faEye}/> Pokaż {showingMore ? "mniej":"więcej"}</button>
+                    <button className="base-btn" onClick={showingGroundAreasToggle}><FontAwesomeIcon icon={faMountainSun}/> {showingGroundAreas ? "ukryj":"pokaż"} Powierzchnie</button>
                     {!obj.ID_dzierzawy && obj.przeznaczenie == "Dzierżawa" && <button className="base-btn" onClick={() => addRent(obj.ID)}><FontAwesomeIcon icon={faUser}/> Dodaj dzierżawe</button>}
                     <button className="info-btn" onClick={() => editLand(obj.ID)}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                     {user.rola === "ADMIN" && <button className="warning-btn" onClick={() => {
@@ -59,12 +81,34 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                 </section>
                 <section className="flex items-center justify-start gap-x-5">
                     {
-                        file && <a href={`/api/files/file/${file.substring(0, file.lastIndexOf("."))}`} className="pdf-btn"><FontAwesomeIcon icon={faFile}/> Plik</a>
+                        file && <a target="_blank" href={`/api/files/file/${file.substring(0, file.lastIndexOf("."))}`} className="pdf-btn"><FontAwesomeIcon icon={faFile}/> Plik</a>
                     }
                     <button className="pdf-btn" onClick={selectFile}><FontAwesomeIcon icon={faFileArrowDown}/> Wgraj plik</button>
                     <input ref={inputFileRef} type="file" className="hidden" accept="image/png,image/jpg,application/pdf" id="file" onChange={(e) => uploadFile(e, obj.numer_seryjny_dzialki)} />
                 </section>
             </section>
+            {
+                showingGroundAreas &&
+                <>
+                    <section className="flex justify-around gap-x-5">
+                        {
+                            areas.map((obj, index) =>
+                            <section className="flex gap-x-2">
+                                <h1 className="font-bold text-green-500">{obj.klasa}</h1>
+                                <p>{obj.przelicznik}ha</p>
+                                <p>{obj.powierzchnia}ha</p>
+                            </section>)
+                        }
+                        {
+                            areas.length == 0 && <h1 className="font-bold text-2xl">Brak powierzchni klas gruntów</h1>
+                        }
+                        
+                    </section>
+                    <section className="flex flex-col justify-center items-center">
+                        <button className="base-btn text-xl"><FontAwesomeIcon icon={faPlus}/> Dodaj nową powierzchnie</button>
+                    </section>
+                </>
+            }
             <section className="flex justify-around gap-x-5">
                 <section className="flex flex-col items-center gap-y-3">
                     <p className="font-bold">ID działki</p>
@@ -147,9 +191,12 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                             <p>{obj.cena_zakupu}zł</p>
                         </section>
                     </section>
-                    <section className="flex flex-col items-center gap-y-3 px-10">
-                        <p className="font-bold">Opis</p>
-                        <p>{obj.opis} </p>
+                    <section className="flex justify-around gap-x-5">
+                        
+                        <section className="flex flex-col items-center gap-y-3 px-10">
+                            <p className="font-bold">Opis</p>
+                            <p>{obj.opis} </p>
+                        </section>
                     </section>
                 
                 </>

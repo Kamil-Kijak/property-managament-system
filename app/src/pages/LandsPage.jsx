@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { useRequest } from "../hooks/useRequest";
 import {useLocalizations} from "../hooks/useLocalizations"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faPrint } from "@fortawesome/free-solid-svg-icons";
 import InsertLand from "../forms/InsertLand";
 import Land from "../components/Land";
 import EditLand from "../forms/EditLand";
@@ -66,6 +66,7 @@ export default function LandsPage({}) {
             }).then(result => {
                 if(!result.error) {
                     setLands(result.data)
+                    console.log(result)
                     setLandFiles(result.files);
                 }
                 loadingUpdate(false);
@@ -223,7 +224,11 @@ export default function LandsPage({}) {
                     }
                     
                     />
-                    <section className="my-10">
+                    <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {lands.length}</h1>
+                    <section className="my-1">
+                        <button className="base-btn text-xl"><FontAwesomeIcon icon={faPrint}/> Drukuj aktualne działki</button>
+                    </section>
+                    <section className="my-2">
                        {
                             lands.map((obj, index) => {
                                 return (<Land
