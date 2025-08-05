@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { useRequest } from "../hooks/useRequest";
 import {useLocalizations} from "../hooks/useLocalizations"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPrint } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faPrint, faXmark } from "@fortawesome/free-solid-svg-icons";
 import InsertLand from "../forms/InsertLand";
 import Land from "../components/Land";
 import EditLand from "../forms/EditLand";
@@ -15,6 +15,10 @@ import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import InsertRent from "../forms/InsertRent";
 import SearchInput from "../components/inputs/SearchInput"
 import SearchSelectInput from "../components/inputs/SearchSelectInput"
+import AddArea from "../forms/AddArea";
+import { useForm } from "../hooks/useForm";
+import SimpleInput from "../components/inputs/SimpleInput";
+import SelectInput from "../components/inputs/SelectInput";
 
 export default function LandsPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
@@ -30,11 +34,19 @@ export default function LandsPage({}) {
         high_area_filter:"",
         seller_filter:""
     });
+    const [editAreaFormData, editAreaErrors, setEditAreaFormData] = useForm({
+        "ID_ground_class":{regexp:/.+/, error:"Wybierz klase gruntu"},
+        "area":{regexp:/^\d{0,4}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
+        "released_area":{regexp:/^(\d{0,4}\.\d{4}|0)$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
+    })
+
     const [landPurposes, setLandPurposes] = useState([]);
     const [lands, setLands] = useState([]);
     const [landFiles, setLandFiles] = useState([]);
     const [form, setForm] = useState(null);
     const [editLandID, setEditLandID] = useState();
+    const [editAreaID, setEditAreaID] = useState();
+    const [groundClasses, setGroundClasses] = useState([]);
     const request = useRequest();
 
     useEffect(() => {
@@ -47,6 +59,21 @@ export default function LandsPage({}) {
         })
         search()
     }, []);
+
+    useEffect(() => {
+        if(form == "editArea") {
+            loadingUpdate(true);
+            const params = new URLSearchParams({
+                ID_land:editLandID
+            })
+            request(`/api/ground_classes/get_land_classes?${params.toString()}`).then(result => {
+                if(!result.error) {
+                    setGroundClasses(result.data);
+                }
+                loadingUpdate(false);
+            })
+        }
+    }, [form])
 
     const search = () => {
         loadingUpdate(true);
@@ -66,13 +93,11 @@ export default function LandsPage({}) {
             }).then(result => {
                 if(!result.error) {
                     setLands(result.data)
-                    console.log(result)
                     setLandFiles(result.files);
                 }
                 loadingUpdate(false);
             })
     }
-
     const requestDelete = (ID) => {
         warningUpdate(false);
         loadingUpdate(true);
@@ -86,6 +111,23 @@ export default function LandsPage({}) {
             }).then(result => {
                 if(!result.error) {
                     search();
+                }
+                loadingUpdate(false);
+            })
+    }
+    const requestEditArea = () => {
+        loadingUpdate(true);
+        request("/api/areas/update", {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({ID_area:editAreaID, ...editAreaFormData})
+            }).then(result => {
+                if(!result.error) {
+                    search();
+                    setForm(null);
                 }
                 loadingUpdate(false);
             })
@@ -230,16 +272,17 @@ export default function LandsPage({}) {
                     </section>
                     <section className="my-2">
                        {
-                            lands.map((obj, index) => {
+                            lands.map((obj) => {
                                 return (<Land
-                                    index={index}
                                     obj={obj}
-                                    key={index}
+                                    key={obj.ID}
                                     requestDelete={requestDelete}
                                     addRent={(ID) => {setForm("addRent");setEditLandID(ID)}}
                                     editLand={(ID) => {setForm("edit");setEditLandID(ID)}}
                                     file={landFiles.find((ele) => obj.numer_seryjny_dzialki == ele.replace("-", "/").substring(0, ele.lastIndexOf(".")))}
                                     setLandFiles={setLandFiles}
+                                    addArea={(ID) => {setForm("addArea");setEditLandID(ID)}}
+                                    editArea={(ID, landID, data) => {setForm("editArea"); setEditAreaID(ID); setEditLandID(landID); setEditAreaFormData(data)}}
                                     />)
                             })
                        }
@@ -250,13 +293,73 @@ export default function LandsPage({}) {
                     </>
                 }
                 {
-                    form == "insert" && <InsertLand onClose={() => {setForm(""); search()}}/>
+                    form == "insert" && <InsertLand onClose={() => {setForm(null); search()}}/>
                 }
                 {
-                    form == "edit" && <EditLand onClose={() => {setForm(""); search()}} editLandID={editLandID}/>
+                    form == "edit" && <EditLand onClose={() => {setForm(null); search()}} editLandID={editLandID}/>
                 }
                 {
-                    form == "addRent" && <InsertRent onClose={() => {setForm(""); search()}} landID={editLandID}/>
+                    form == "addRent" && <InsertRent onClose={() => {setForm(null); search()}} landID={editLandID}/>
+                }
+                {
+                    form == "addArea" && <AddArea onClose={() => {setForm(null); search()}} landID={editLandID}/>
+                }
+                {
+                    form == "editArea" &&
+                    <>
+                    <section className="my-4">
+                        <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
+                    </section>
+                        <section className="base-card w-full">
+                            <h1 className="text-3xl font-bold">Edycja powierzchni</h1>
+                            <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
+                            <section className="flex justify-center w-full gap-x-5">
+                                <section className="w-[150px]">
+                                    <SelectInput
+                                        title="Klasa gruntu"
+                                        value={editAreaFormData.ID_ground_class}
+                                        onChange={(e) => setEditAreaFormData(prev => ({...prev, ID_ground_class:e.target.value}))}
+                                        options={
+                                            <>
+                                                {
+                                                    groundClasses.map((ele, index) => <option key={index} value={ele.ID}>{ele.klasa} {ele.przelicznik}</option>)
+                                                }
+                                            </>
+                                        }
+                                    />
+                                </section>
+                            </section>
+                            <section className="flex justify-center w-full gap-x-5">
+                                <SimpleInput
+                                    type="number"
+                                    min={0}
+                                    step="any"
+                                    title="Powierzchnia"
+                                    placeholder="area..."
+                                    value={editAreaFormData.area}
+                                    onChange={(e) => setEditAreaFormData(prev => ({...prev, area:e.target.value}))}
+                                    error={editAreaErrors.area}
+                                />
+                                <SimpleInput
+                                    type="number"
+                                    min={0}
+                                    step="any"
+                                    title="Zwolnione ha. przeliczeniowe"
+                                    placeholder="released area..."
+                                    value={editAreaFormData.released_area}
+                                    onChange={(e) => setEditAreaFormData(prev => ({...prev, released_area:e.target.value}))}
+                                    error={editAreaErrors.released_area}
+                                />
+                            </section>
+                            <button className="base-btn text-2xl" onClick={() => {
+                                if(Object.keys(editAreaFormData).length == 3) {
+                                    if(Object.keys(editAreaErrors).every(ele => editAreaErrors[ele] == null)) {
+                                        requestEditArea();
+                                    }
+                                    }
+                            }}>Zaktualizuj</button>
+                        </section>
+                    </>
                 }
             </section>
         </main>

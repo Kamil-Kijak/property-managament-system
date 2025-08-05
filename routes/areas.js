@@ -14,12 +14,12 @@ router.use(authorization());
 router.get("/get", [checkDataExisting(["ID_land"])], async (req, res) => {
     const {ID_land} = req.query;
     try {
-        const [result] = await connection.execute("SELECT pd.powierzchnia, pd.zwolniona_powierzchnia, k.klasa, k.przelicznik FROM powierzchnie_dzialek pd INNER JOIN klasy_gruntu k ON pd.ID_klasy=k.ID", [ID_land]);
+        const [result] = await connection.execute("SELECT pd.ID, pd.powierzchnia, pd.zwolniona_powierzchnia, k.ID as ID_ground_class, k.klasa, k.przelicznik, k.podatek, l.podatek_lesny, l.podatek_rolny FROM powierzchnie_dzialek pd INNER JOIN klasy_gruntu k ON pd.ID_klasy=k.ID INNER JOIN lokalizacje l on k.okreg_podatkowy=l.okreg_podatkowy WHERE pd.ID_dzialki = ?", [ID_land]);
         res.status(200).json({success:true, message:`pobrano powierzchnie dzialki ${ID_land}`, data:result})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
-})
+});
 
 router.post("/insert", [checkDataExisting(["ID_land", "ID_ground_class", "area", "released_area"])], async (req, res) => {
     const {ID_land, ID_ground_class, area, released_area} = req.body;

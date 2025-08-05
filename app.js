@@ -24,7 +24,7 @@ const ownersRoutes = require("./routes/owners")
 const landsRoutes = require("./routes/lands");
 const rentsRoutes = require("./routes/rents");
 const rentersRoutes = require("./routes/renters");
-const areasRoutes = require("./routes/Areas");
+const areasRoutes = require("./routes/areas");
 const districtsRoutes = require("./routes/districts");
 const filesRoutes = require("./routes/files")
 const { exec } = require("child_process");
@@ -122,7 +122,7 @@ const generate = async () => {
           </tbody>
           </table>
           ` : ""}
-          <p>Wiadomość generowana automatycznie. Prosze na nią nie odpowiadać</p>
+          <p>Wiadomość generowana automatycznie. Proszę na nią nie odpowiadać</p>
           `
         }
         transporter.sendMail(mailOptions, (error, info) => {

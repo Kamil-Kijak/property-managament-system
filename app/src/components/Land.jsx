@@ -8,7 +8,7 @@ import { useRef } from "react";
 import { useRequest } from "../hooks/useRequest";
 import { useEffect } from "react";
 
-export default function Land({obj, editLand, requestDelete, addRent, file = null, setLandFiles = () => {}}) {
+export default function Land({obj, editLand, requestDelete, addRent, file = null, setLandFiles = () => {}, addArea, editArea}) {
 
     const warningUpdate = useWarningStore((state) => state.update)
     const loadingUpdate = useLoadingStore((state) => state.update)
@@ -61,6 +61,24 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
         setLandFiles(prev => [...prev, `${serial.replace("/", "-")}.png`])
     }
 
+    const requestDeleteArea = (ID) => {
+        warningUpdate(false);
+        loadingUpdate(true);
+        request("/api/areas/delete", {
+            method: 'POST',
+            credentials:"include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ID_area:ID})
+        }).then(result => {
+            if(!result.error) {
+                setAreas(prev => prev.filter((value) => value.ID !== ID));
+            }
+            loadingUpdate(false);
+        })
+    }
+
 
     return (
         <section className="flex flex-col shadow-xl shadow-black/25 p-5 gap-y-6 text-center">
@@ -92,13 +110,53 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
             {
                 showingGroundAreas &&
                 <>
-                    <section className="flex justify-around gap-x-5">
+                    <section className="flex flex-col justify-center items-center gap-y-3">
                         {
-                            areas.map((obj, index) =>
-                            <section className="flex gap-x-2">
-                                <h1 className="font-bold text-green-500">{obj.klasa}</h1>
-                                <p>{obj.przelicznik}ha</p>
-                                <p>{obj.powierzchnia}ha</p>
+                            
+                            areas.map((ele) =>
+                            <section className="flex gap-x-5" key={ele.ID}>
+                                <section className="flex flex-col items-center justify-center gap-y-3">
+                                    <h1 className="font-bold text-sm">Klasa</h1>
+                                    <h1 className="font-bold text-xl text-green-500">{ele.klasa}</h1>
+                                </section>
+                                <section className="flex flex-col items-center justify-center gap-y-3">
+                                    <h1 className="font-bold text-sm">Przelicznik</h1>
+                                    <p className="text-xl">{ele.przelicznik}</p>
+                                </section>
+                                <section className="flex flex-col items-center justify-center gap-y-3">
+                                    <h1 className="font-bold text-sm">ha. fizyczne</h1>
+                                    <p className="text-xl">{ele.powierzchnia}ha</p>
+                                </section>
+                                <section className="flex flex-col items-center justify-center gap-y-3">
+                                    <h1 className="font-bold text-sm">ha. przeliczeniowe</h1>
+                                    <p className="text-xl">{(ele.powierzchnia * ele.przelicznik).toFixed(4)}ha</p>
+                                </section>
+                                <section className="flex flex-col items-center justify-center gap-y-3">
+                                    <h1 className="font-bold text-sm">ha. zwolnione</h1>
+                                    <p className="text-xl">{ele.zwolniona_powierzchnia}ha</p>
+                                </section>
+                                <section className="flex flex-col items-center justify-center gap-y-3">
+                                    <h1 className="font-bold text-sm">stawka</h1>
+                                    <p className="text-xl">{ele.podatek == "rolny" ? ele.podatek_rolny : ele.podatek_lesny}zł</p>
+                                </section>
+                                <section className="flex flex-col items-center justify-center gap-y-3">
+                                    <h1 className="font-bold text-sm">podatek</h1>
+                                    <p className="text-xl">{((Number((ele.przelicznik * ele.powierzchnia).toFixed(4)) - ele.zwolniona_powierzchnia) * (ele.podatek == "rolny" ? ele.podatek_rolny : ele.podatek_lesny)).toFixed(4)}zł</p>
+                                </section>
+                                <section className="flex flex-col items-center justify-center">
+                                    <button className="warning-btn" onClick={() => {
+                                        warningUpdate(true, "Uwaga", () => requestDeleteArea(ele.ID), () => warningUpdate(false), <>
+                                            <p className="text-white font-bold text-lg mt-5">
+                                                Czy napewno chcesz usunąć tą powierzchnie?
+                                            </p>
+                                        </>)
+                                    }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
+                                    <button className="info-btn" onClick={() => editArea(ele.ID, obj.ID, {
+                                        ID_ground_class:ele.ID_ground_class,
+                                        area:ele.powierzchnia,
+                                        released_area:ele.zwolniona_powierzchnia
+                                    })}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                                </section>
                             </section>)
                         }
                         {
@@ -106,8 +164,27 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                         }
                         
                     </section>
+                    <div className="bg-green-500 w-full h-2 rounded-2xl mt-3"></div>
+                    <section className="flex gap-x-5 items-center justify-around">
+                        <section className="flex flex-col items-center justify-center gap-y-3">
+                            <h1 className="font-bold text-sm">suma ha. fizyczne</h1>
+                            <h1 className="text-xl">{areas.reduce((acc, obj) =>acc + Number(obj.powierzchnia), 0)}ha</h1>
+                        </section>
+                        <section className="flex flex-col items-center justify-center gap-y-3">
+                            <h1 className="font-bold text-sm">suma ha. przeliczeniowe</h1>
+                            <h1 className="text-xl">{(areas.reduce((acc, obj) =>acc + Number(Math.round(obj.powierzchnia * obj.przelicznik * 10000) / 10000), 0)).toFixed(4)}ha</h1>
+                        </section>
+                        <section className="flex flex-col items-center justify-center gap-y-3">
+                            <h1 className="font-bold text-sm">suma ha. zwolnione</h1>
+                            <h1 className="text-xl">{areas.reduce((acc, obj) =>acc + Number(obj.zwolniona_powierzchnia), 0)}ha</h1>
+                        </section>
+                        <section className="flex flex-col items-center justify-center gap-y-3">
+                            <h1 className="font-bold text-sm">suma podatek</h1>
+                            <h1 className="text-xl">{areas.reduce((acc, obj) =>acc + Math.round((Number((obj.przelicznik * obj.powierzchnia).toFixed(4)) - obj.zwolniona_powierzchnia) * (obj.podatek == "rolny" ? obj.podatek_rolny : obj.podatek_lesny) * 10000) / 10000, 0)}zł</h1>
+                        </section>
+                    </section>
                     <section className="flex flex-col justify-center items-center">
-                        <button className="base-btn text-xl"><FontAwesomeIcon icon={faPlus}/> Dodaj nową powierzchnie</button>
+                        <button className="base-btn text-xl" onClick={() => addArea(obj.ID)}><FontAwesomeIcon icon={faPlus}/> Dodaj nową powierzchnie</button>
                     </section>
                 </>
             }
@@ -194,7 +271,6 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                         </section>
                     </section>
                     <section className="flex justify-around gap-x-5">
-                        
                         <section className="flex flex-col items-center gap-y-3 px-10">
                             <p className="font-bold">Opis</p>
                             <p>{obj.opis} </p>

@@ -10,7 +10,6 @@ const roleAuthorization = require("../middlewares/roleAuthorization")
 const router = express.Router();
 
 router.use(authorization());
-router.use(roleAuthorization(["ADMIN"]));
 
 
 router.get("/get", [checkDataExisting(["tax_district"])], async (req, res) => {
@@ -21,7 +20,19 @@ router.get("/get", [checkDataExisting(["tax_district"])], async (req, res) => {
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
+});
+
+router.get("/get_land_classes", [checkDataExisting(["ID_land"])], async (req, res) => {
+    const {ID_land} = req.query;
+    try {
+        const [result] = await connection.execute("SELECT k.ID, k.klasa, k.przelicznik FROM klasy_gruntu k INNER JOIN lokalizacje l on k.okreg_podatkowy=l.okreg_podatkowy INNER JOIN miejscowosci m on m.ID_lokalizacji=l.ID INNER JOIN dzialki d on d.ID_miejscowosci=m.ID WHERE d.ID = ?", [ID_land]);
+        res.status(200).json({success:true, message:`pobrano klasy gruntu dla dzialki ${ID_land}`, data:result})
+    } catch (err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
 })
+
+router.use(roleAuthorization(["ADMIN"]));
 
 router.post("/update", [checkDataExisting(["ID_ground_class", "ground_class", "converter", "tax"])], async (req, res) => {
     const {ID_ground_class, ground_class, converter, tax} = req.body;
