@@ -4,7 +4,7 @@ import { useForm } from "../hooks/useForm";
 import { useLoadingStore } from "../hooks/useScreensStore";
 import SimpleInput from "../components/inputs/SimpleInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function InsertLandPurpose({setForm = () => {}, getLandPurposes = () => {}}) {
     const loadingUpdate = useLoadingStore((state) => state.update)
@@ -31,8 +31,16 @@ export default function InsertLandPurpose({setForm = () => {}, getLandPurposes =
                 loadingUpdate(false);
             })
     }
-    
 
+    const validateForm = () => {
+        if(Object.keys(insertFormData).length == 1) {
+            if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     return (
         <>
         <section className="my-4">
@@ -50,13 +58,11 @@ export default function InsertLandPurpose({setForm = () => {}, getLandPurposes =
                     error={insertErrors.type}
                 />
             </section>
-            <button className="base-btn text-2xl" onClick={() => {
-                if(Object.keys(insertFormData).length == 1) {
-                    if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
-                        requestInsertLandPurpose();
-                    }
-                    }
-            }}>Stwórz przeznaczenie działki</button>
+            <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                if(validateForm()) {
+                    requestInsertLandPurpose();
+                }
+            }}><FontAwesomeIcon icon={faPlus}/> Dodaj przeznaczenie działki</button>
         </section>
         </>
     )

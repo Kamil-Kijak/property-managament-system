@@ -10,11 +10,13 @@ import InsertMpzp from "../forms/InsertMpzp";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import SimpleInput from "../components/inputs/SimpleInput";
 import SimpleTextArea from "../components/inputs/SimpleTextArea"
+import { useMpzpStore } from "../hooks/useResultStores";
 
 export default function MpzpPage({}) {
     
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update);
+    const {mpzp, updateMpzp, updateID, editID} = useMpzpStore();
 
     const request = useRequest();
 
@@ -22,16 +24,13 @@ export default function MpzpPage({}) {
         "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"Kod 2 litery"},
         "description":{regexp:/^.{0,49}$/, error:"Za długi"}
     })
-
-    const [mpzp, setMpzp] = useState([]);
     const [form, setForm] = useState(null);
-    const [editMpzpID, setEditMpzpID] = useState(null);
 
     const getMpzp = () => {
         loadingUpdate(true);
         request("/api/mpzp/get", {}).then(result => {
             if(!result.error) {
-                setMpzp(result.data)
+                updateMpzp(result.data)
             }
             loadingUpdate(false);
         })
@@ -51,7 +50,7 @@ export default function MpzpPage({}) {
                 body:JSON.stringify({ID_mpzp:ID})
             }).then(result => {
                 if(!result.error) {
-                    getMpzp();
+                    updateMpzp(mpzp.filter((obj) => obj.ID != ID));
                 }
                 loadingUpdate(false);
             })
@@ -65,13 +64,22 @@ export default function MpzpPage({}) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_mpzp:editMpzpID, ...editFormData})
+                body:JSON.stringify({ID_mpzp:editID, ...editFormData})
             }).then(result => {
                 if(!result.error) {
                     getMpzp();
                 }
                 loadingUpdate(false);
             })
+    }
+
+    const valitdateForm = () => {
+        if(Object.keys(editFormData).length == 2) {
+            if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
     }
     return (
         <main className="flex justify-between">
@@ -91,7 +99,7 @@ export default function MpzpPage({}) {
                                         <section className="flex flex-col items-center">
                                             <button className="info-btn" onClick={() => {
                                                 setForm("edit");
-                                                setEditMpzpID(ele.ID)
+                                                updateID(ele.ID)
                                                 setEditFormData({
                                                     code:ele.kod,
                                                     description:ele.opis
@@ -148,12 +156,10 @@ export default function MpzpPage({}) {
                                     error={editErrors.description}
                                 />
                             </section>
-                            <button className="base-btn" onClick={() => {
-                                if(Object.keys(editFormData).length == 2) {
-                                    if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
-                                        requestEditMpzp();
-                                    }
-                                    }
+                            <button className={valitdateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                if(valitdateForm()) {
+                                    requestEditMpzp();
+                                }
                             }}>Zaktualizuj</button>
                         </section>
                     </>

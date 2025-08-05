@@ -1,4 +1,4 @@
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SimpleInput from "../components/inputs/SimpleInput";
 import { useForm } from "../hooks/useForm";
@@ -35,6 +35,15 @@ export default function InsertGroundClass({setForm = () => {}, search = () => {}
                 }
                 updateLoading(false);
             })
+    }
+
+    const validateForm = () => {
+        if(Object.keys(insertFormData).length == 3) {
+            if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     return (
@@ -76,13 +85,11 @@ export default function InsertGroundClass({setForm = () => {}, search = () => {}
                             }
                     />
                 </section>
-                <button className="base-btn text-2xl" onClick={() => {
-                    if(Object.keys(insertFormData).length == 3) {
-                        if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
-                            requestInsertGroundClass();
-                        }
-                        }
-                }}>Stwórz klase gruntu</button>
+                <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                    if(validateForm()) {
+                        requestInsertGroundClass();
+                    }
+                }}><FontAwesomeIcon icon={faPlus}/> Dodaj klase gruntu</button>
             </section>
         </>
     )

@@ -1,4 +1,4 @@
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SelectInput from "../components/inputs/SelectInput";
 import { useForm } from "../hooks/useForm";
@@ -53,7 +53,16 @@ export default function AddArea({onClose = () => {}, landID}) {
 
     useEffect(() => {
         getGroundClasses();
-    }, [])
+    }, []);
+
+    const validateForm = () => {
+        if(Object.keys(insertAreaFormData).length == 3) {
+            if(Object.keys(insertAreaErrors).every(ele => insertAreaErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     return (
         <>
@@ -101,13 +110,11 @@ export default function AddArea({onClose = () => {}, landID}) {
                         error={insertAreaErrors.released_area}
                     />
                 </section>
-                <button className="base-btn text-2xl" onClick={() => {
-                    if(Object.keys(insertAreaFormData).length == 3) {
-                        if(Object.keys(insertAreaErrors).every(ele => insertAreaErrors[ele] == null)) {
-                            requestInsertArea()
-                        }
-                        }
-                }}>Dodaj nową powierzchnie</button>
+                <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                    if(validateForm()) {
+                        requestInsertArea()
+                    }
+                }}><FontAwesomeIcon icon={faPlus}/> Dodaj nową powierzchnie</button>
             </section>
         </>
     )

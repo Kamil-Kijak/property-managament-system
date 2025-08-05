@@ -5,7 +5,7 @@ import { useLoadingStore } from "../hooks/useScreensStore";
 import SimpleInput from "../components/inputs/SimpleInput";
 import SimpleTextArea from "../components/inputs/SimpleTextArea";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function InsertGeneralPlan({setForm = () => {}, getGeneralPlans = () => {}}) {
     const updateLoading = useLoadingStore((state) => state.update)
@@ -33,6 +33,15 @@ export default function InsertGeneralPlan({setForm = () => {}, getGeneralPlans =
                 updateLoading(false);
             })
     }
+    const validateForm = () => {
+        if(Object.keys(insertFormData).length == 2) {
+            if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     return (
         <>
             <section className="my-4">
@@ -57,13 +66,11 @@ export default function InsertGeneralPlan({setForm = () => {}, getGeneralPlans =
                         error={insertErrors.description}
                     />
                 </section>
-                <button className="base-btn text-2xl" onClick={() => {
-                    if(Object.keys(insertFormData).length == 2) {
-                        if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
-                            requestInsertGeneralPlan();
-                        }
-                        }
-                }}>Stwórz plan ogólny</button>
+                <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                    if(validateForm()) {
+                        requestInsertGeneralPlan();
+                    }
+                }}><FontAwesomeIcon icon={faPlus}/> Dodaj plan ogólny</button>
             </section>
         </>
     )

@@ -10,33 +10,29 @@ import { faPen, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "../hooks/useForm";
 import SelectInput from "../components/inputs/SelectInput";
 import SimpleInput from "../components/inputs/SimpleInput";
+import { useDistrictsStore } from "../hooks/useResultStores";
 
 
 export default function DistrictsPage({}) {
 
     const loadingUpdate = useLoadingStore((state) => state.update);
+    const {districts, updateDistricts, updateID, editID} = useDistrictsStore();
 
     const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
-
 
     const [editFormData, editErrors, setEditFormData] = useForm({
         "tax_district":{regexp:/\d+/, error:"Wybierz okręg"},
         "agricultural_tax":{regexp:/^\d{1,4}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
         "forest_tax":{regexp:/^\d{1,4}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
     });
-
     const [form, setForm] = useState(null);
-    const [editDistrictID, setEditDistrictID] = useState(null);
-    const [districts, setDistricts] = useState([]);
     const request = useRequest();
-
 
     const [searchFilters, setSearchFilters] = useState({
         tax_district:"",
         agricultural_tax:"",
         forest_tax:""
     })
-    
 
     const search = () => {
         loadingUpdate(true);
@@ -52,7 +48,7 @@ export default function DistrictsPage({}) {
                 },
             }).then(result => {
                 if(!result.error) {
-                    setDistricts(result.data);
+                    updateDistricts(result.data);
                 }
                 loadingUpdate(false);
             })
@@ -71,13 +67,22 @@ export default function DistrictsPage({}) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_localization:editDistrictID, ...editFormData})
+                body:JSON.stringify({ID_localization:editID, ...editFormData})
             }).then(result => {
                 if(!result.error) {
                     search();
                 }
                 loadingUpdate(false);
             })
+    }
+
+    const validateForm = () => {
+        if(Object.keys(editFormData).length == 3) {
+            if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     return (
@@ -176,13 +181,12 @@ export default function DistrictsPage({}) {
                                     </section>
                                 </>
                             }
-                        
                         />
                         <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {districts.length}</h1>
                         <section className="my-5">
                             {
-                                districts.map((obj, index) => 
-                                    <section className="base-card" key={index}>
+                                districts.map((obj) => 
+                                    <section className="base-card my-5" key={obj.ID}>
                                         <section className="flex gap-x-5 items-center">
                                             <section className="flex flex-col items-center justify-center">
                                                 <h1 className="font-bold text-md">Lokalizacja</h1>
@@ -212,17 +216,14 @@ export default function DistrictsPage({}) {
                                                         agricultural_tax:obj.podatek_rolny || "153.7000",
                                                         forest_tax:obj.podatek_lesny || "153.7000"
                                                     })
-                                                    setEditDistrictID(obj.ID)
+                                                    updateID(obj.ID)
                                                 }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                                             </section>
                                         </section>
                                     </section>
-                                
-                                
                                 )
                             }
                         </section>
-                    
                     </>
                 }
                 {
@@ -270,15 +271,12 @@ export default function DistrictsPage({}) {
                                     error={editErrors.forest_tax}
                                 />
                             </section>
-                            <button className="base-btn" onClick={() => {
-                                if(Object.keys(editFormData).length == 3) {
-                                    if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
-                                        requestEdit();
-                                    }
-                                    }
+                            <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                if(validateForm()) {
+                                    requestEdit();
+                                }
                             }}>Zaktualizuj</button>
                         </section>
-                    
                     </>
                 }
             </section>

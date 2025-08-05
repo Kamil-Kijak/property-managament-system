@@ -1,5 +1,5 @@
 
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import { useRequest } from "../hooks/useRequest";
@@ -79,6 +79,24 @@ export default function InsertRent({onClose = () => {}, landID}) {
             })
     }
 
+    const validateRenterForm = () => {
+        if(Object.keys(renterFormData).length == 3) {
+            if(Object.keys(renterErrors).every(ele => renterErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    const validateForm = () => {
+        if(Object.keys(rentFormData).length == 4) {
+            if(Object.keys(rentErrors).every(ele => rentErrors[ele] == null)) {
+                return true;
+            }  
+        }
+        return false;
+    }
+
     return (
         <>
             <section className="my-4">
@@ -150,13 +168,11 @@ export default function InsertRent({onClose = () => {}, landID}) {
                             onChange={(e) => setRenterFormData(prev => ({...prev, phone:e.target.value}))}
                             error={renterErrors.phone}
                         />
-                        <button className="base-btn" onClick={() => {
-                            if(Object.keys(renterFormData).length == 3) {
-                                if(Object.keys(renterErrors).every(ele => renterErrors[ele] == null)) {
-                                    requestInsertRenter();
-                                }
+                        <button className={validateRenterForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                            if(validateRenterForm()) {
+                                requestInsertRenter();
                             }
-                        }}>Stwórz dzierżawce</button>
+                        }}><FontAwesomeIcon icon={faPlus}/> Dodaj dzierżawce</button>
                     </section>
                 </section>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
@@ -170,13 +186,11 @@ export default function InsertRent({onClose = () => {}, landID}) {
                     onChange={(e) => setRentFormData(prev => ({...prev, rent:e.target.value}))}
                     error={rentErrors.rent}
                 />
-                <button className="base-btn text-2xl" onClick={() => {
-                    if(Object.keys(rentFormData).length == 4) {
-                        if(Object.keys(rentErrors).every(ele => rentErrors[ele] == null)) {
-                            requestInsertRent();
-                        }  
-                    }
-                }}>Stwórz nową dzierżawe</button>
+                <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                    if(validateForm()) {
+                        requestInsertRent();
+                    }  
+                }}><FontAwesomeIcon icon={faPlus}/> Dodaj nową dzierżawe</button>
             </section>
         </>
     )

@@ -8,28 +8,26 @@ import { useForm } from "../hooks/useForm";
 import InsertLandPurpose from "../forms/InsertLandPurpose";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import SimpleInput from "../components/inputs/SimpleInput"
+import { useLandPurposesStore } from "../hooks/useResultStores";
 
 export default function LandPurposesPage({}) {
 
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update)
+    const {landPurposes, updateLandPurposes, updateID, editID} = useLandPurposesStore();
 
     const request = useRequest();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
         "type":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{0,49}$/, error:"Za długi"}
     })
-
-    const [landPurposes, setLandPurposes] = useState([]);
     const [form, setForm] = useState(null);
-    const [editLandPurposeID, setEditLandPurposeID] = useState(null);
-
 
     const getLandPurposes = () => {
         loadingUpdate(true);
         request("/api/land_purposes/get", {}).then(result => {
             if(!result.error) {
-                setLandPurposes(result.data)
+                updateLandPurposes(result.data)
             }
             loadingUpdate(false);
         })
@@ -51,7 +49,7 @@ export default function LandPurposesPage({}) {
                 body:JSON.stringify({ID_land_purpose:ID})
             }).then(result => {
                 if(!result.error) {
-                    getLandPurposes();
+                    updateLandPurposes(landPurposes.filter((obj) => obj.ID != ID))
                 }
                 loadingUpdate(false);
             })
@@ -65,7 +63,7 @@ export default function LandPurposesPage({}) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_land_purpose:editLandPurposeID, ...editFormData})
+                body:JSON.stringify({ID_land_purpose:editID, ...editFormData})
             }).then(result => {
                 if(!result.error) {
                     getLandPurposes();
@@ -73,6 +71,15 @@ export default function LandPurposesPage({}) {
                 loadingUpdate(false);
             })
     }
+    const validateForm = () => {
+        if(Object.keys(editFormData).length == 1) {
+            if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     return (
         <main className="flex justify-between">
             <NavBar requiredRoles={["ADMIN"]}/>
@@ -91,7 +98,7 @@ export default function LandPurposesPage({}) {
                                         <section className="flex flex-col items-center">
                                             <button className="info-btn" onClick={() => {
                                                 setForm("edit");
-                                                setEditLandPurposeID(ele.ID)
+                                                updateID(ele.ID)
                                                 setEditFormData({
                                                     type:ele.typ
                                                 });
@@ -139,12 +146,10 @@ export default function LandPurposesPage({}) {
                                     error={editErrors.type}
                                 />
                             </section>
-                            <button className="base-btn" onClick={() => {
-                                if(Object.keys(editFormData).length == 1) {
-                                    if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
-                                        requestEditLandPurpose();
-                                    }
-                                    }
+                            <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                if(validateForm()) {
+                                    requestEditLandPurpose();
+                                }
                             }}>Zaktualizuj</button>
                         </section>
                     </>

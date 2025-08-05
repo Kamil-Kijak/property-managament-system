@@ -5,6 +5,8 @@ import { useForm } from "../hooks/useForm";
 import { useLoadingStore } from "../hooks/useScreensStore";
 import SimpleInput from "../components/inputs/SimpleInput";
 import SelectInput from "../components/inputs/SelectInput"
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
     const updateLoading = useLoadingStore((state) => state.update);
@@ -36,8 +38,23 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
                 }
                 updateLoading(false);
             })
+    }
+
+    const validateForm = () => {
+        if(Object.keys(insertFormData).length == 4) {
+            if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
+                if(checkingPassword === insertFormData.password) {
+                    return true;
+                }
+            }
         }
+        return false;
+    }
     return (
+        <>
+            <section className="my-4">
+            <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
+        </section>
         <section className="base-card my-10">
             <h1 className="text-2xl my-2 text-center">Tworzenie nowego użytkownika</h1>
             <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
@@ -57,6 +74,7 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
                     error={insertErrors.surname}
                 />
                 <SimpleInput
+                    type="password"
                     title="Hasło"
                     placeholder="password..."
                     value={insertFormData.password}
@@ -64,6 +82,7 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
                     error={insertErrors.password}
                 />
                 <SimpleInput
+                    type="password"
                     title="Powtórz hasło"
                     placeholder="repeat password..."
                     value={checkingPassword}
@@ -83,15 +102,12 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
                     </>}
                 />
             </section>
-            <button className="base-btn" onClick={() => {
-                if(Object.keys(insertFormData).length == 4) {
-                    if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
-                        if(checkingPassword === insertFormData.password) {
-                            requestInsertUser();
-                        }
-                    }
-                    }
-            }}>Stwórz użytkownika</button>
+            <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                if(validateForm()) {
+                    requestInsertUser();
+                }
+            }}><FontAwesomeIcon icon={faPlus}/> Dodaj użytkownika</button>
         </section>
+        </>
     )
 }

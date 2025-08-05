@@ -1,4 +1,4 @@
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useLocalizations } from "../hooks/useLocalizations";
 import { useEffect, useRef, useState } from "react";
@@ -89,6 +89,26 @@ export default function InsertLand({onClose = () => {}}) {
             onClose();
         }
         updateLoading(false);
+    }
+
+    const validateForm = () => {
+        if(Object.keys(landFormData).length == 16) {
+            if(Object.keys(landErrors).every(ele => landErrors[ele] == null)) {
+                if(Object.keys(localizations).every(ele => localizations[ele].length != 0)) {
+                    return true;
+                }
+            }  
+        }
+        return false;
+    }
+
+    const validateOwnerForm = () => {
+        if(Object.keys(ownerFormData).length == 3) {
+            if(Object.keys(ownerErrors).every(ele => ownerErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     return (
@@ -229,13 +249,11 @@ export default function InsertLand({onClose = () => {}}) {
                             onChange={(e) => setOwnerFormData(prev => ({...prev, phone:e.target.value}))}
                             error={ownerErrors.phone}
                         />
-                        <button className="base-btn" onClick={() => {
-                            if(Object.keys(ownerFormData).length == 3) {
-                                if(Object.keys(ownerErrors).every(ele => ownerErrors[ele] == null)) {
-                                    requestInsertOwner();
-                                }
+                        <button className={validateOwnerForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                            if(validateOwnerForm()) {
+                                requestInsertOwner();
                             }
-                        }}>Stwórz właścicela</button>
+                        }}><FontAwesomeIcon icon={faPlus}/> Dodaj właścicela</button>
                     </section>
                 </section>
                 <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
@@ -367,15 +385,11 @@ export default function InsertLand({onClose = () => {}}) {
                         error={landErrors.price}
                     />
                 </section>
-                <button className="base-btn text-2xl" onClick={() => {
-                    if(Object.keys(landFormData).length == 16) {
-                        if(Object.keys(landErrors).every(ele => landErrors[ele] == null)) {
-                            if(Object.keys(localizations).every(ele => localizations[ele].length != 0)) {
-                                requestInsertLand();
-                            }
-                        }  
+                <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                    if(validateForm()) {
+                        requestInsertLand();
                     }
-                }}>Stwórz nową działkę</button>
+                }}><FontAwesomeIcon icon={faPlus}/> Dodaj nową działkę</button>
             </section>
         </>
     )

@@ -11,10 +11,12 @@ import InsertGeneralPlan from "../forms/InsertGeneralPlan";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import SimpleInput from "../components/inputs/SimpleInput";
 import SimpleTextArea from "../components/inputs/SimpleTextArea"
+import { useGeneralPlansStore } from "../hooks/useResultStores";
 
 export default function GeneralPlansPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update);
+    const {generalPlans, updateGeneralPlans, updateID, editID} = useGeneralPlansStore();
 
     const request = useRequest();
 
@@ -22,17 +24,12 @@ export default function GeneralPlansPage({}) {
         "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"Kod 2 litery"},
         "description":{regexp:/^.{0,70}$/, error:"Za długi"}
     })
-
-    const [generalPlans, setgeneralPlans] = useState([]);
     const [form, setForm] = useState(null);
-    const [editGeneralPlanID, setEditGeneralPlanID] = useState(null);
-
-
     const getGeneralPlans = () => {
         loadingUpdate(true);
         request("/api/general_plans/get", {}).then(result => {
             if(!result.error) {
-                setgeneralPlans(result.data)
+                updateGeneralPlans(result.data)
             }
             loadingUpdate(false);
         })
@@ -54,7 +51,7 @@ export default function GeneralPlansPage({}) {
                 body:JSON.stringify({ID_general_plan:ID})
             }).then(result => {
                 if(!result.error) {
-                    getGeneralPlans();
+                    updateGeneralPlans(generalPlans.filter((obj) => obj.ID != ID))
                 }
                 loadingUpdate(false);
             })
@@ -68,7 +65,7 @@ export default function GeneralPlansPage({}) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_general_plan:editGeneralPlanID, ...editFormData})
+                body:JSON.stringify({ID_general_plan:editID, ...editFormData})
             }).then(result => {
                 if(!result.error) {
                     getGeneralPlans();
@@ -76,6 +73,15 @@ export default function GeneralPlansPage({}) {
                 loadingUpdate(false);
             })
     }
+    const validateForm = () => {
+        if(Object.keys(editFormData).length == 2) {
+            if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     return (
         <main className="flex justify-between">
             <WarningScreen
@@ -108,7 +114,7 @@ export default function GeneralPlansPage({}) {
                                     <section className="flex flex-col items-center">
                                         <button className="info-btn" onClick={() => {
                                             setForm("edit");
-                                            setEditGeneralPlanID(ele.ID)
+                                            updateID(ele.ID)
                                             setEditFormData({
                                                 code:ele.kod,
                                                 description:ele.opis
@@ -163,12 +169,10 @@ export default function GeneralPlansPage({}) {
                                     error={editErrors.description}
                                 />
                             </section>
-                            <button className="base-btn" onClick={() => {
-                                if(Object.keys(editFormData).length == 2) {
-                                    if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
-                                        requestEditGeneralPlan();
-                                    }
-                                    }
+                            <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                if(validateForm()) {
+                                    requestEditGeneralPlan();
+                                }
                             }}>Zaktualizuj</button>
                         </section>
                     </>

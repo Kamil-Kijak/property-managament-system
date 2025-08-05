@@ -139,7 +139,7 @@ const generate = async () => {
   }
 
 // cron task
-cron.schedule("0 12 * * 1", () => {
+cron.schedule("0 12 * * 2", () => {
   const weekNumber = Math.floor((new Date().getTime() / (1000 * 60 * 60 * 24 * 7)));
   if(weekNumber % 4 == 0) {
     // backup

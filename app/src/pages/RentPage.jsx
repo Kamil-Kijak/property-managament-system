@@ -12,7 +12,7 @@ import SelectInput from "../components/inputs/SelectInput";
 import SearchInput from "../components/inputs/SearchInput";
 import SearchSelectInput from "../components/inputs/SearchSelectInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function RentPage({}) {
     
@@ -68,6 +68,31 @@ export default function RentPage({}) {
         loadingUpdate(false);
     }
 
+    const validateRenterForm = () => {
+        if(Object.keys(renterFormData).length == 3) {
+            if(Object.keys(renterErrors).every(ele => renterErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    const validateEditRenterForm = () => {
+        if(Object.keys(editRenterFormData).length == 3) {
+            if(Object.keys(editRenterErrors).every(ele => editRenterErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    const validateForm = () => {
+        if(Object.keys(editRentFormData).length == 4) {
+            if(Object.keys(editRentErrors).every(ele => editRentErrors[ele] == null)) {
+                return true;
+            }  
+        }
+        return false;
+    }
 
     const search = () => {
         loadingUpdate(true);
@@ -370,13 +395,11 @@ export default function RentPage({}) {
                                         onChange={(e) => setRenterFormData(prev => ({...prev, phone:e.target.value}))}
                                         error={renterErrors.phone}
                                     />
-                                    <button className="base-btn" onClick={() => {
-                                        if(Object.keys(renterFormData).length == 3) {
-                                            if(Object.keys(renterErrors).every(ele => renterErrors[ele] == null)) {
-                                                requestInsertRenter();
-                                            }
+                                    <button className={validateRenterForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                        if(validateEditRenterForm()) {
+                                            requestInsertRenter();
                                         }
-                                    }}>Stwórz dzierżawce</button>
+                                    }}><FontAwesomeIcon icon={faPlus}/> Dodaj dzierżawce</button>
                                 </section>
                             </section>
                             <div className="bg-green-500 w-[50%] h-2 rounded-2xl mt-3"></div>
@@ -390,12 +413,10 @@ export default function RentPage({}) {
                                 onChange={(e) => setEditRentFormData(prev => ({...prev, rent:e.target.value}))}
                                 error={editRentErrors.rent}
                             />
-                            <button className="base-btn text-2xl" onClick={() => {
-                                if(Object.keys(editRentFormData).length == 4) {
-                                    if(Object.keys(editRentErrors).every(ele => editRentErrors[ele] == null)) {
-                                        requestEditRent()
-                                    }  
-                                }
+                            <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                if(validateForm()) {
+                                    requestEditRent()
+                                }  
                             }}>Zaktualizuj</button>
                         </section>
                     
@@ -432,11 +453,9 @@ export default function RentPage({}) {
                                 onChange={(e) => setEditRenterFormData(prev => ({...prev, phone:e.target.value}))}
                                 error={editRenterErrors.phone}
                             />
-                            <button className="base-btn" onClick={() => {
-                                if(Object.keys(editRenterFormData).length == 3) {
-                                    if(Object.keys(editRenterErrors).every(ele => editRenterErrors[ele] == null)) {
-                                        requestEditRenter();
-                                    }
+                            <button className={validateEditRenterForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                if(validateEditRenterForm()) {
+                                    requestEditRenter();
                                 }
                             }}>Zaktualizuj</button>
                         </section>

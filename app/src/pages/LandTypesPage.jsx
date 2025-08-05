@@ -8,11 +8,13 @@ import { useForm } from "../hooks/useForm";
 import InsertLandType from "../forms/InsertLandType";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import SimpleInput from "../components/inputs/SimpleInput";
+import { useLandTypesStore } from "../hooks/useResultStores";
 
 export default function LandTypesPage({}) {
     
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update)
+    const {landTypes, updateLandTypes, updateID, editID} = useLandTypesStore();
 
     const request = useRequest();
 
@@ -20,16 +22,13 @@ export default function LandTypesPage({}) {
         "name":{regexp:/^[A-Za-zĄĘŚĆŻŹÓŁąęłćśóżź]{0,49}$/, error:"Za długi"}
     })
 
-    const [landTypes, setLandTypes] = useState([]);
     const [form, setForm] = useState(null);
-    const [editLandTypeID, setEditLandTypeID] = useState(null);
-
 
     const getLandTypes = () => {
         loadingUpdate(true);
         request("/api/land_types/get", {}).then(result => {
             if(!result.error) {
-                setLandTypes(result.data)
+                updateLandTypes(result.data)
             }
             loadingUpdate(false);
         })
@@ -51,7 +50,7 @@ export default function LandTypesPage({}) {
                 body:JSON.stringify({ID_land_type:ID})
             }).then(result => {
                 if(!result.error) {
-                    getLandTypes();
+                    updateLandTypes(landTypes.filter((obj) => obj.ID != ID));
                 }
                 loadingUpdate(false);
             })
@@ -65,13 +64,21 @@ export default function LandTypesPage({}) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_land_type:editLandTypeID, ...editFormData})
+                body:JSON.stringify({ID_land_type:editID, ...editFormData})
             }).then(result => {
                 if(!result.error) {
                     getLandTypes();
                 }
                 loadingUpdate(false);
             })
+    }
+    const validateForm = () => {
+        if(Object.keys(editFormData).length == 1) {
+            if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
     }
     return (
         <main className="flex justify-between">
@@ -91,7 +98,7 @@ export default function LandTypesPage({}) {
                                     <section className="flex flex-col items-center">
                                         <button className="info-btn" onClick={() => {
                                             setForm("edit");
-                                            setEditLandTypeID(ele.ID)
+                                            updateID(ele.ID)
                                             setEditFormData({
                                                 name:ele.nazwa
                                             });
@@ -140,12 +147,10 @@ export default function LandTypesPage({}) {
                                     error={editErrors.name}
                                 />
                             </section>
-                            <button className="base-btn" onClick={() => {
-                                if(Object.keys(editFormData).length == 1) {
-                                    if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
-                                        requestEditLandType();
-                                    }
-                                    }
+                            <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                if(validateForm()) {
+                                    requestEditLandType();
+                                }
                             }}>Zaktualizuj</button>
                         </section>
                     </>

@@ -13,38 +13,35 @@ import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import { useUserStore } from "../hooks/useUserStore";
 import SimpleInput from "../components/inputs/SimpleInput"
 import SelectInput from "../components/inputs/SelectInput"
+import { useUsersStore } from "../hooks/useResultStores";
 
 export default function UsersPage({}) {
 
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update);
     const user = useUserStore((state) => state.user);
-    
 
-    const [editUserID, setEditUserID] = useState(null);
-    const [users, setUsers] = useState([]);
+    const {users, updateUsers, updateID, editID} = useUsersStore();
+    
     const [form, setForm] = useState(null);
     
     const request = useRequest();
     const navigate = useNavigate()
     const [editFormData, editErrors, setEditFormData] = useForm({
-            "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
-            "surname":{regexp:/^[A-ZŁĆŚŁŻŹĄĘ][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
-            "password":{regexp:/^.{8,}$/, error:"Hasło za słabe"},
-            "role":{regexp:/.+/, error:"Brak roli"}
+        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "surname":{regexp:/^[A-ZŁĆŚŁŻŹĄĘ][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "role":{regexp:/.+/, error:"Brak roli"}
     })
-
     const [passwordFormData, passwordErrors, setPasswordFormData] = useForm({
         "password":{regexp:/^.{8,}$/, error:"Hasło za słabe"}
     })
-
     const [checkingPassword, setCheckingPassword] = useState("");
     
     const getUsers = () => {
         loadingUpdate(true);
         request("/api/user/get", {}).then(result => {
             if(!result.error) {
-                setUsers(result.data)
+                updateUsers(result.data)
             }
             loadingUpdate(false);
         })
@@ -63,11 +60,23 @@ export default function UsersPage({}) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_user:editUserID, ...editFormData})
+                body:JSON.stringify({ID_user:editID, ...editFormData})
             }).then(result => {
                 if(!result.error) {
-                    getUsers();
-                    checkActualUserDataChange(editUserID);
+                    updateUsers(
+                        users.map((ele) => {
+                            if(ele.ID == editID) {
+                                return {...ele,
+                                    imie:editFormData.name,
+                                    nazwisko:editFormData.surname,
+                                    rola:editFormData.role
+                                }
+                            } else {
+                                return ele;
+                            }
+                        })
+                    )
+                    checkActualUserDataChange(editID);
                 }
                 loadingUpdate(false);
             })
@@ -84,7 +93,7 @@ export default function UsersPage({}) {
                 body:JSON.stringify({ID_user:ID})
             }).then(result => {
                 if(!result.error) {
-                    getUsers();
+                    updateUsers(users.filter((obj) => obj.ID != ID))
                     checkActualUserDataChange(ID);
                 }
                 loadingUpdate(false);
@@ -99,11 +108,12 @@ export default function UsersPage({}) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_user:editUserID, ...passwordFormData})
+                body:JSON.stringify({ID_user:editID, ...passwordFormData})
             }).then(result => {
                 if(!result.error) {
-                    getUsers();
-                    checkActualUserDataChange(editUserID);
+                    setForm(null);
+                    setCheckingPassword("")
+                    checkActualUserDataChange(editID);
                 }
                 loadingUpdate(false);
             })
@@ -117,6 +127,25 @@ export default function UsersPage({}) {
                 }
             });
         }
+    }
+
+    const valitadePasswordForm = () => {
+        if(Object.keys(passwordFormData).length == 1) {
+            if(Object.keys(passwordErrors).every(ele => passwordErrors[ele] == null)) {
+                if(checkingPassword == (passwordFormData.password || "")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    const validateForm = () => {
+        if(Object.keys(editFormData).length == 3) {
+            if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     return(
@@ -137,13 +166,12 @@ export default function UsersPage({}) {
                                         <section className="flex flex-col items-center">
                                             <button className="base-btn" onClick={() => {
                                                 setForm("change_password");
-                                                setEditUserID(ele.ID)
+                                                updateID(ele.ID)
                                                 setPasswordFormData({});
-                                                
                                             }}><FontAwesomeIcon icon={faLock}/> Zmień hasło</button>
                                             <button className="info-btn" onClick={() => {
                                                 setForm("edit");
-                                                setEditUserID(ele.ID)
+                                                updateID(ele.ID)
                                                 setEditFormData({
                                                     name:ele.imie,
                                                     surname:ele.nazwisko,
@@ -208,13 +236,11 @@ export default function UsersPage({}) {
                                 }
                                 />
                         </section>
-                        <button className="base-btn" onClick={() => {
-                            if(Object.keys(editFormData).length == 3) {
-                                if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
-                                    requestEditUser()
-                                }
-                                }
+                        <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                            if(validateForm()) {
+                                requestEditUser()
                             }
+                        }
                         }>Zaktualizuj</button>
                     </section>
                 </>
@@ -246,15 +272,11 @@ export default function UsersPage({}) {
                                     error={checkingPassword !== (passwordFormData.password || "") && "Hasła nie są takie same"}
                                 />
                             </section>
-                            <button className="base-btn" onClick={() => {
-                                if(Object.keys(passwordFormData).length == 1) {
-                                    if(Object.keys(passwordErrors).every(ele => passwordErrors[ele] == null)) {
-                                        if(checkingPassword == (passwordFormData.password || "")) {
-                                            requestUpdatePassword();
-                                        }
-                                    }
-                                    }
+                            <button className={valitadePasswordForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                if(valitadePasswordForm()) {
+                                    requestUpdatePassword();
                                 }
+                            }
                             }>Ustaw hasło</button>
                         </section>
                     

@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import NavBar from "../components/NavBar";
-import { useLocalizations } from "../hooks/useLocalizations";
 import SearchBar from "../components/SearchBar";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import { useState } from "react";
@@ -12,6 +11,7 @@ import InsertGroundClass from "../forms/InsertGroundClass";
 import { useForm } from "../hooks/useForm";
 import SimpleInput from "../components/inputs/SimpleInput";
 import SelectInput from "../components/inputs/SelectInput";
+import { useGroundClassesStore } from "../hooks/useResultStores";
 
 
 
@@ -19,12 +19,10 @@ export default function GroundClassesPage({}) {
 
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update)
+    const {groundClasses, updateGroundClasses, updateID, editID} = useGroundClassesStore();
     const [taxDistrict, setTaxDistrict] = useState(1);
     const request = useRequest();
-
-    const [groundClasses, setGroundClasses] = useState([]);
     const [form, setForm] = useState(null);
-    const [editGroundClassID, setEditGroundClassID] = useState(null);
     
     const [editFormData, editErrors, setEditFormData] = useForm({
         "ground_class":{regexp:/^.{0,10}$/, error:"Za długi"},
@@ -49,7 +47,7 @@ export default function GroundClassesPage({}) {
                 },
             }).then(result => {
                 if(!result.error) {
-                    setGroundClasses(result.data);
+                    updateGroundClasses(result.data);
                 }
                 loadingUpdate(false);
             })
@@ -67,7 +65,7 @@ export default function GroundClassesPage({}) {
                 body:JSON.stringify({ID_ground_class:ID})
             }).then(result => {
                 if(!result.error) {
-                    search();
+                    updateGroundClasses(groundClasses.filter((obj) => obj.ID != ID))
                 }
                 loadingUpdate(false);
             })
@@ -82,13 +80,22 @@ export default function GroundClassesPage({}) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_ground_class:editGroundClassID, ...editFormData})
+                body:JSON.stringify({ID_ground_class:editID, ...editFormData})
             }).then(result => {
                 if(!result.error) {
                     search();
                 }
                 loadingUpdate(false);
             })
+    }
+
+    const validateForm = () => {
+        if(Object.keys(editFormData).length == 3) {
+            if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     return (
@@ -122,8 +129,8 @@ export default function GroundClassesPage({}) {
                         <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {groundClasses.length}</h1>
                         <section className="my-5">
                             {
-                                groundClasses.map((obj, index) =>
-                                <section className="base-card" key={index}>
+                                groundClasses.map((obj) =>
+                                <section className="base-card my-5" key={obj.ID}>
                                     <section className="flex gap-x-10 items-center">
                                         <h1 className="text-4xl text-green-600 font-bold">{obj.klasa}</h1>
                                         <section className="flex flex-col items-center justify-center">
@@ -142,7 +149,7 @@ export default function GroundClassesPage({}) {
                                                     converter:obj.przelicznik,
                                                     tax:obj.podatek
                                                 })
-                                                setEditGroundClassID(obj.ID)
+                                                updateID(obj.ID)
                                             }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                                             <button className="warning-btn" onClick={() => 
                                                 warningUpdate(true, "Uwaga", () => requestDelete(obj.ID), () => warningUpdate(false),
@@ -210,12 +217,10 @@ export default function GroundClassesPage({}) {
                                         }
                                 />
                             </section>
-                            <button className="base-btn" onClick={() => {
-                                if(Object.keys(editFormData).length == 3) {
-                                    if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
-                                        requestEdit();
-                                    }
-                                    }
+                            <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                if(validateForm()) {
+                                    requestEdit();
+                                }
                             }}>Zaktualizuj</button>
                         </section>
                     </>

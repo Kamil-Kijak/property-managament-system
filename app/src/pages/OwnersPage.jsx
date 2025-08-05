@@ -10,18 +10,19 @@ import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import SearchInput from "../components/inputs/SearchInput";
 import SimpleInput from "../components/inputs/SimpleInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPrint, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useOwnersStore } from "../hooks/useResultStores";
 
 export default function OwnersPage({}) {
 
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update);
+    const {owners, updateOwners, updateID, editID} = useOwnersStore();
 
     const [searchFilters, setSearchFilters] = useState({
         name_filter:"",
         surname_filter:""
     });
-
     const [editFormData, editErrors, setEditFormData] = useForm({
         "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
         "surname":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
@@ -29,13 +30,7 @@ export default function OwnersPage({}) {
     })
 
     const [form, setForm] = useState("");
-
-    const [owners, setOwners] = useState([]);
-
-    const [ownerEditID, setOwnerEditID] = useState();
-
     const request = useRequest();
-
 
     const search = () => {
         const params = new URLSearchParams({
@@ -60,7 +55,7 @@ export default function OwnersPage({}) {
                         delete obj.telefon;
                         owners.find(ele => ele.ID == obj.ID).dzialki.push({...obj});
                     })
-                    setOwners(owners);
+                    updateOwners(owners);
                 }
                 loadingUpdate(false);
             })
@@ -82,14 +77,14 @@ export default function OwnersPage({}) {
                 body:JSON.stringify({ID_owner:ID})
             }).then(result => {
                 if(!result.error) {
-                    search();
+                    updateOwners(owners.filter((obj) => obj.ID != ID));
                 }
                 loadingUpdate(false);
             })
     }
 
     const requestEdit = () => {
-        setForm("")
+        setForm(null)
         loadingUpdate(true);
         request("/api/owners/update", {
                 method:"POST",
@@ -97,13 +92,22 @@ export default function OwnersPage({}) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({ID_owner:ownerEditID, ...editFormData})
+                body:JSON.stringify({ID_owner:editID, ...editFormData})
             }).then(result => {
                 if(!result.error) {
                     search();
                 }
                 loadingUpdate(false);
             })
+    }
+
+    const validateForm = () => {
+        if(Object.keys(editFormData).length == 3) {
+            if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     return (
@@ -132,16 +136,17 @@ export default function OwnersPage({}) {
                                     </>
                                 }
                             
-                            />
-                            <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {owners.length}</h1>
-                            <section className="my-5">
-                                {
-                                    owners.map((obj, index) => <Owner obj={obj} key={index} requestDelete={requestDelete} editOwner={(ID) => {
-                                        setForm("edit");
-                                        setOwnerEditID(ID);
-                                        }} setEditFormData={setEditFormData}/>)
-                                } 
-                            </section>
+                        />
+                        <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {owners.length}</h1>
+                        <section className="my-5">
+                            {
+                                owners.map((obj) => <Owner obj={obj} key={obj.ID} requestDelete={requestDelete} editOwner={(ID) => {
+                                    setForm("edit");
+                                    updateID(ID);
+                                    }}
+                                    setEditFormData={setEditFormData}/>)
+                            } 
+                        </section>
                     </>
                 }
                 {
@@ -174,11 +179,9 @@ export default function OwnersPage({}) {
                                 onChange={(e) => setEditFormData(prev => ({...prev, phone:e.target.value}))}
                                 error={editErrors.phone}
                             />
-                            <button className="base-btn" onClick={() => {
-                                if(Object.keys(editFormData).length == 3) {
-                                    if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
-                                        requestEdit();
-                                    }
+                            <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                if(validateForm()) {
+                                    requestEdit();
                                 }
                             }}>Zaktualizuj</button>
                         </section>

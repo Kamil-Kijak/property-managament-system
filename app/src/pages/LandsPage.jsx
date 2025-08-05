@@ -133,6 +133,15 @@ export default function LandsPage({}) {
             })
     }
 
+    const validateForm = () => {
+        if(Object.keys(editAreaFormData).length == 3) {
+            if(Object.keys(editAreaErrors).every(ele => editAreaErrors[ele] == null)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     return(
         <main className="flex justify-between">
             <NavBar requiredRoles={[]}/>
@@ -351,12 +360,10 @@ export default function LandsPage({}) {
                                     error={editAreaErrors.released_area}
                                 />
                             </section>
-                            <button className="base-btn text-2xl" onClick={() => {
-                                if(Object.keys(editAreaFormData).length == 3) {
-                                    if(Object.keys(editAreaErrors).every(ele => editAreaErrors[ele] == null)) {
-                                        requestEditArea();
-                                    }
-                                    }
+                            <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                if(validateForm()) {
+                                    requestEditArea();
+                                }
                             }}>Zaktualizuj</button>
                         </section>
                     </>
