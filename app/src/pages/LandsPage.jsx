@@ -20,10 +20,16 @@ import { useForm } from "../hooks/useForm";
 import SimpleInput from "../components/inputs/SimpleInput";
 import SelectInput from "../components/inputs/SelectInput";
 import LandsForPrint from "../components/LandsForPrint";
+import { useScrollStore } from "../hooks/useScrollStore";
+import { useLayoutEffect } from "react";
 
 export default function LandsPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.warning);
+    const {pixels, updatePixels} = useScrollStore();
+
+    const scrollRef = useRef(null);
+    const changedPixels = useRef(0);
     
     const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
     const [searchFilters, setSearchFilters] = useState({
@@ -64,6 +70,14 @@ export default function LandsPage({}) {
     }, []);
 
     useEffect(() => {
+        if(!form) {
+            scrollRef.current.scrollTo({
+                behavior:"smooth",
+                top:pixels
+            })
+        } else {
+            updatePixels(changedPixels.current)
+        }
         if(form == "editArea") {
             loadingUpdate(true);
             const params = new URLSearchParams({
@@ -76,7 +90,7 @@ export default function LandsPage({}) {
                 loadingUpdate(false);
             })
         }
-    }, [form])
+    }, [form]);
 
     const search = () => {
         loadingUpdate(true);
@@ -193,7 +207,7 @@ export default function LandsPage({}) {
     return(
         <main className="flex justify-between">
             <NavBar requiredRoles={[]}/>
-            <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative">
+            <section ref={scrollRef} className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative" onScroll={(e) => !form && ( changedPixels.current = e.target.scrollTop)}>
                 <section className="hidden">
                     <LandsForPrint ref={printComponentRef} lands={lands}/>
                 </section>
