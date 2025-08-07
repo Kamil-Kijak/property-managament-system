@@ -81,6 +81,7 @@ export default function InsertGroundClass({setForm = () => {}, search = () => {}
                                 <>
                                     <option value="rolny">Rolny</option>
                                     <option value="leśny">Leśny</option>
+                                    <option value="zwolniony">Brak opodatkowania</option>
                                 </>
                             }
                     />

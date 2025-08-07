@@ -85,7 +85,7 @@ CREATE TABLE `klasy_gruntu` (
   `klasa` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `przelicznik` decimal(3,2) NOT NULL,
   `okreg_podatkowy` int NOT NULL,
-  `podatek` enum('rolny','leśny') COLLATE utf8mb4_general_ci DEFAULT 'rolny'
+  `podatek` enum('rolny','leśny','zwolniony') COLLATE utf8mb4_general_ci DEFAULT 'rolny'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

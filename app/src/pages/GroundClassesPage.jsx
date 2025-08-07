@@ -213,6 +213,7 @@ export default function GroundClassesPage({}) {
                                             <>
                                                 <option value="rolny">Rolny</option>
                                                 <option value="leśny">Leśny</option>
+                                                <option value="zwolniony">Brak opodatkowania</option>
                                             </>
                                         }
                                 />

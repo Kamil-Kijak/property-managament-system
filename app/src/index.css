@@ -41,3 +41,14 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
+
+.print-table-section {
+    @apply border-black border-1 p-3 text-sm w-[16%]
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 9mm;
+  }
+}

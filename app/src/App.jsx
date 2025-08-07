@@ -1,9 +1,8 @@
 
-import {BrowserRouter, Routes, Route} from "react-router-dom"
+import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom"
 import {useEffect} from "react"
 
 import LoginPage from "./pages/LoginPage";
-import MainPage from "./pages/MainPage";
 import LandsPage from "./pages/LandsPage";
 import UsersPage from "./pages/UsersPage";
 import LandTypesPage from "./pages/LandTypesPage";
@@ -38,7 +37,7 @@ export default function App({}) {
             <BrowserRouter>
                 <Routes>
                     <Route path="/login" element={<LoginPage/> }/>
-                    <Route path="/" element={<MainPage/>}/>
+                    <Route path="/" element={<Navigate to={"/lands"}/>}/>
                     <Route path="/lands" element={<LandsPage/>}/>
                     <Route path="/owners" element={<OwnersPage/>}/>
                     <Route path="/renters" element={<RentPage/>}/>

@@ -6,16 +6,14 @@ import {useUserStore} from "../hooks/useUserStore"
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
 import { useRef } from "react";
 import { useRequest } from "../hooks/useRequest";
-import { useEffect } from "react";
 
-export default function Land({obj, editLand, requestDelete, addRent, file = null, setLandFiles = () => {}, addArea, editArea}) {
+export default function Land({obj, editLand, requestDelete, addRent, file = null, setLandFiles = () => {}, search, addArea, editArea}) {
 
     const warningUpdate = useWarningStore((state) => state.update)
     const loadingUpdate = useLoadingStore((state) => state.update)
     const user = useUserStore((state) => state.user)
     const [showingMore, setShowingMore] = useState(false);
     const [showingGroundAreas, setShowingGroundAreas] = useState(false);
-    const [areas, setAreas] = useState([]);
     const request = useRequest();
     const showingMoreToggle = useCallback(() => {
         setShowingMore(prev => !prev)
@@ -24,21 +22,6 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
     const showingGroundAreasToggle = useCallback(() => {
         setShowingGroundAreas(prev => !prev);
     }, [])
-
-    useEffect(() => {
-        if(areas.length == 0 && showingGroundAreas) {
-            loadingUpdate(true)
-            const params = new URLSearchParams({
-                ID_land:obj.ID
-            })
-            request(`/api/areas/get?${params.toString()}`).then(result => {
-                if(!result.error) {
-                    setAreas(result.data);
-                }
-                loadingUpdate(false)
-            })
-        }
-    }, [showingGroundAreas])
 
     const inputFileRef = useRef(null);
 
@@ -73,12 +56,11 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
             body: JSON.stringify({ID_area:ID})
         }).then(result => {
             if(!result.error) {
-                setAreas(prev => prev.filter((value) => value.ID !== ID));
+                search();
             }
             loadingUpdate(false);
         })
     }
-
 
     return (
         <section className="flex flex-col shadow-xl shadow-black/25 p-5 gap-y-6 text-center">
@@ -113,8 +95,8 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                     <section className="flex flex-col justify-center items-center gap-y-3">
                         {
                             
-                            areas.map((ele) =>
-                            <section className="flex gap-x-5" key={ele.ID}>
+                            obj.powierzchnie.map((ele) =>
+                            <section className="flex gap-x-5" key={ele.p_ID}>
                                 <section className="flex flex-col items-center justify-center gap-y-3">
                                     <h1 className="font-bold text-sm">Klasa</h1>
                                     <h1 className="font-bold text-xl text-green-500">{ele.klasa}</h1>
@@ -125,11 +107,11 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                                 </section>
                                 <section className="flex flex-col items-center justify-center gap-y-3">
                                     <h1 className="font-bold text-sm">ha. fizyczne</h1>
-                                    <p className="text-xl">{ele.powierzchnia}ha</p>
+                                    <p className="text-xl">{ele.p_powierzchnia}ha</p>
                                 </section>
                                 <section className="flex flex-col items-center justify-center gap-y-3">
                                     <h1 className="font-bold text-sm">ha. przeliczeniowe</h1>
-                                    <p className="text-xl">{(ele.powierzchnia * ele.przelicznik).toFixed(4)}ha</p>
+                                    <p className="text-xl">{(ele.p_powierzchnia * ele.przelicznik).toFixed(4)}ha</p>
                                 </section>
                                 <section className="flex flex-col items-center justify-center gap-y-3">
                                     <h1 className="font-bold text-sm">ha. zwolnione</h1>
@@ -137,30 +119,30 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                                 </section>
                                 <section className="flex flex-col items-center justify-center gap-y-3">
                                     <h1 className="font-bold text-sm">stawka</h1>
-                                    <p className="text-xl">{ele.podatek == "rolny" ? (ele.podatek_rolny || 0) : (ele.podatek_lesny || 0)}zł</p>
+                                    <p className="text-xl">{ele.podatek == "zwolniony" ? 0 : ele.podatek == "rolny" ? (obj.podatek_rolny || 0) : (obj.podatek_lesny || 0)}zł</p>
                                 </section>
                                 <section className="flex flex-col items-center justify-center gap-y-3">
                                     <h1 className="font-bold text-sm">podatek</h1>
-                                    <p className="text-xl">{((Number((ele.przelicznik * ele.powierzchnia).toFixed(4)) - ele.zwolniona_powierzchnia) * (ele.podatek == "rolny" ? (ele.podatek_rolny || 0) : (ele.podatek_lesny || 0))).toFixed(4)}zł</p>
+                                    <p className="text-xl">{((Number((ele.przelicznik * ele.p_powierzchnia).toFixed(4)) - ele.zwolniona_powierzchnia) * (ele.podatek == "zwolniony" ? 0 : ele.podatek == "rolny" ? (obj.podatek_rolny || 0) : (obj.podatek_lesny || 0))).toFixed(4)}zł</p>
                                 </section>
                                 <section className="flex flex-col items-center justify-center">
                                     <button className="warning-btn" onClick={() => {
-                                        warningUpdate(true, "Uwaga", () => requestDeleteArea(ele.ID), () => warningUpdate(false), <>
+                                        warningUpdate(true, "Uwaga", () => requestDeleteArea(ele.p_ID), () => warningUpdate(false), <>
                                             <p className="text-white font-bold text-lg mt-5">
                                                 Czy napewno chcesz usunąć tą powierzchnie?
                                             </p>
                                         </>)
                                     }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
-                                    <button className="info-btn" onClick={() => editArea(ele.ID, obj.ID, {
-                                        ID_ground_class:ele.ID_ground_class,
-                                        area:ele.powierzchnia,
+                                    <button className="info-btn" onClick={() => editArea(ele.p_ID, obj.ID, {
+                                        ID_ground_class:ele.k_ID,
+                                        area:ele.p_powierzchnia,
                                         released_area:ele.zwolniona_powierzchnia
                                     })}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                                 </section>
                             </section>)
                         }
                         {
-                            areas.length == 0 && <h1 className="font-bold text-2xl">Brak powierzchni klas gruntów</h1>
+                            obj.powierzchnie.length == 0 && <h1 className="font-bold text-2xl">Brak powierzchni klas gruntów</h1>
                         }
                         
                     </section>
@@ -168,19 +150,19 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                     <section className="flex gap-x-5 items-center justify-around">
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma ha. fizyczne</h1>
-                            <h1 className="text-xl">{areas.reduce((acc, obj) =>acc + Number(obj.powierzchnia), 0)}ha</h1>
+                            <h1 className="text-xl">{obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia), 0)}ha</h1>
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma ha. przeliczeniowe</h1>
-                            <h1 className="text-xl">{(areas.reduce((acc, obj) =>acc + Number(Math.round(obj.powierzchnia * obj.przelicznik * 10000) / 10000), 0)).toFixed(4)}ha</h1>
+                            <h1 className="text-xl">{(obj.powierzchnie.reduce((acc, obj) =>acc + Number(Math.round(obj.p_powierzchnia * obj.przelicznik * 10000) / 10000), 0)).toFixed(4)}ha</h1>
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma ha. zwolnione</h1>
-                            <h1 className="text-xl">{areas.reduce((acc, obj) =>acc + Number(obj.zwolniona_powierzchnia), 0)}ha</h1>
+                            <h1 className="text-xl">{obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.zwolniona_powierzchnia), 0)}ha</h1>
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma podatek</h1>
-                            <h1 className="text-xl">{areas.reduce((acc, obj) =>acc + Math.round((Number((obj.przelicznik * obj.powierzchnia).toFixed(4)) - obj.zwolniona_powierzchnia) * (obj.podatek == "rolny" ? (obj.podatek_rolny || 0) : (obj.podatek_lesny || 0)) * 10000) / 10000, 0)}zł</h1>
+                            <h1 className="text-xl">{obj.powierzchnie.reduce((acc, ele) =>acc + Math.round((Number((ele.przelicznik * ele.p_powierzchnia).toFixed(4)) - ele.zwolniona_powierzchnia) * (ele.podatek == "zwolniony" ? 0 : ele.podatek == "rolny" ? (obj.podatek_rolny || 0) : (obj.podatek_lesny || 0)) * 10000) / 10000, 0)}zł</h1>
                         </section>
                     </section>
                     <section className="flex flex-col justify-center items-center">

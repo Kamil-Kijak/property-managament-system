@@ -1,8 +1,8 @@
 
 import NavBar from "../components/NavBar"
-
+import {useReactToPrint} from "react-to-print"
 import SearchBar from "../components/SearchBar";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
 import { useRequest } from "../hooks/useRequest";
 import {useLocalizations} from "../hooks/useLocalizations"
@@ -19,6 +19,7 @@ import AddArea from "../forms/AddArea";
 import { useForm } from "../hooks/useForm";
 import SimpleInput from "../components/inputs/SimpleInput";
 import SelectInput from "../components/inputs/SelectInput";
+import LandsForPrint from "../components/LandsForPrint";
 
 export default function LandsPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
@@ -48,6 +49,8 @@ export default function LandsPage({}) {
     const [editAreaID, setEditAreaID] = useState();
     const [groundClasses, setGroundClasses] = useState([]);
     const request = useRequest();
+
+    const printComponentRef = useRef(null);
 
     useEffect(() => {
         loadingUpdate(true);
@@ -92,7 +95,47 @@ export default function LandsPage({}) {
                 },
             }).then(result => {
                 if(!result.error) {
-                    setLands(result.data)
+                    const lands = [];
+                    result.data.forEach((obj) => {
+                        const objToPush = {
+                            ID:obj.ID,
+                            numer_seryjny_dzialki:obj.numer_seryjny_dzialki,
+                            nr_dzialki:obj.nr_dzialki,
+                            powierzchnia:obj.powierzchnia,
+                            nr_kw:obj.nr_kw,
+                            hipoteka:obj.hipoteka,
+                            miejscowosc:obj.miejscowosc,
+                            wojewodztwo:obj.wojewodztwo,
+                            powiat:obj.powiat,
+                            gmina:obj.gmina,
+                            w_imie:obj.w_imie,
+                            w_nazwisko:obj.w_nazwisko,
+                            rodzaj:obj.rodzaj,
+                            przeznaczenie:obj.przeznaczenie,
+                            mpzp:obj.mpzp,
+                            plan_ogolny:obj.plan_ogolny,
+                            data_nabycia:obj.data_nabycia,
+                            nr_aktu:obj.nr_aktu,
+                            sprzedawca:obj.sprzedawca,
+                            cena_zakupu:obj.cena_zakupu,
+                            ID_dzierzawy:obj.ID_dzierzawy,
+                            d_imie:obj.d_imie,
+                            d_nazwisko:obj.d_nazwisko,
+                            opis:obj.opis,
+                            spolka_wodna:obj.spolka_wodna,
+                            podatek_rolny:obj.podatek_rolny,
+                            podatek_lesny:obj.podatek_lesny,
+                            w_telefon:obj.w_telefon
+                        }
+                        if(!lands.some((ele) => ele.ID == obj.ID)) {
+                            lands.push({...objToPush, powierzchnie:[]});
+                        }
+                        delete objToPush.ID;
+                        Object.keys(objToPush).forEach(key => delete obj[key]);
+                        if(obj.p_ID)
+                            lands.find(ele => ele.ID == obj.ID).powierzchnie.push({...obj});
+                    })
+                    setLands(lands);
                     setLandFiles(result.files);
                 }
                 loadingUpdate(false);
@@ -142,10 +185,18 @@ export default function LandsPage({}) {
         return false;
     }
 
+    const handlePrintLands = useReactToPrint({
+        contentRef: printComponentRef,
+        documentTitle:"System SK INVEST"
+    })
+
     return(
         <main className="flex justify-between">
             <NavBar requiredRoles={[]}/>
             <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative">
+                <section className="hidden">
+                    <LandsForPrint ref={printComponentRef} lands={lands}/>
+                </section>
                 {
                     !form && <>
                     <SearchBar
@@ -277,7 +328,7 @@ export default function LandsPage({}) {
                     />
                     <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {lands.length}</h1>
                     <section className="my-1">
-                        <button className="base-btn text-xl"><FontAwesomeIcon icon={faPrint}/> Drukuj aktualne działki</button>
+                        <button className="base-btn text-xl" onClick={handlePrintLands}><FontAwesomeIcon icon={faPrint}/> Drukuj wyniki</button>
                     </section>
                     <section className="my-2">
                        {
@@ -292,6 +343,7 @@ export default function LandsPage({}) {
                                     setLandFiles={setLandFiles}
                                     addArea={(ID) => {setForm("addArea");setEditLandID(ID)}}
                                     editArea={(ID, landID, data) => {setForm("editArea"); setEditAreaID(ID); setEditLandID(landID); setEditAreaFormData(data)}}
+                                    search={search}
                                     />)
                             })
                        }
