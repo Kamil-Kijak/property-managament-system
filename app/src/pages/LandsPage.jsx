@@ -21,7 +21,6 @@ import SimpleInput from "../components/inputs/SimpleInput";
 import SelectInput from "../components/inputs/SelectInput";
 import LandsForPrint from "../components/LandsForPrint";
 import { useScrollStore } from "../hooks/useScrollStore";
-import { useLayoutEffect } from "react";
 
 export default function LandsPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
@@ -361,6 +360,20 @@ export default function LandsPage({}) {
                                     />)
                             })
                        }
+                    </section>
+                    <section className="my-10">
+                        <h1 className="text-4xl font-bold text-center">Podsumowanie</h1>
+                        <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
+                        <section className="flex gap-x-7 justify-center">
+                            <section className="flex-col gap-y-3">
+                                <h1 className="text-2xl">Suma podatku: {(lands.reduce((acc, value) => acc + value.powierzchnie.reduce((acc2, value2) => acc2 + (Number((value2.przelicznik * value2.p_powierzchnia).toFixed(4)) - value2.zwolniona_powierzchnia) * (value2.podatek == "zwolniony" ? 0 : value2.podatek == "rolny" ? (value.podatek_rolny || 0) : (value.podatek_lesny || 0)), 0), 0)).toFixed(4)}zł</h1>
+                                <h1 className="text-2xl mt-3">Suma ha. fizyczne: {(lands.reduce((acc, value) => acc + value.powierzchnie.reduce((acc2, value2) => acc2 + Number(value2.p_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
+                            </section>
+                            <section className="flex-col gap-y-3">
+                                <h1 className="text-2xl">Suma ha. przel.: {(lands.reduce((acc, value) => acc + value.powierzchnie.reduce((acc2, value2) => acc2 + Number(value2.p_powierzchnia) * value2.przelicznik, 0), 0)).toFixed(4)}ha</h1>
+                                <h1 className="text-2xl mt-3">Suma ha. zwol.: {(lands.reduce((acc, value) => acc + value.powierzchnie.reduce((acc2, value2) => acc2 + Number(value2.zwolniona_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
+                            </section>
+                        </section>
                     </section>
                     <button className="base-btn text-2xl" onClick={() => {
                             setForm("insert")

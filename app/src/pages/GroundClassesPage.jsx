@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import NavBar from "../components/NavBar";
 import SearchBar from "../components/SearchBar";
 import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
@@ -12,6 +12,7 @@ import { useForm } from "../hooks/useForm";
 import SimpleInput from "../components/inputs/SimpleInput";
 import SelectInput from "../components/inputs/SelectInput";
 import { useGroundClassesStore } from "../hooks/useResultStores";
+import { useScrollStore } from "../hooks/useScrollStore";
 
 
 
@@ -20,6 +21,11 @@ export default function GroundClassesPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update)
     const {groundClasses, updateGroundClasses, updateID, editID} = useGroundClassesStore();
+
+    const {pixels, updatePixels} = useScrollStore();
+    const scrollRef = useRef(null);
+    const changedPixels = useRef(0);
+
     const [taxDistrict, setTaxDistrict] = useState(1);
     const request = useRequest();
     const [form, setForm] = useState(null);
@@ -33,6 +39,17 @@ export default function GroundClassesPage({}) {
     useEffect(() => {
         search()
     }, [taxDistrict]);
+
+    useEffect(() => {
+        if(!form) {
+            scrollRef.current.scrollTo({
+                behavior:"smooth",
+                top:pixels
+            })
+        } else {
+            updatePixels(changedPixels.current)
+        }
+    }, [form]);
 
     const search = () => {
         loadingUpdate(true);
@@ -101,7 +118,7 @@ export default function GroundClassesPage({}) {
     return (
         <main className="flex justify-between">
             <NavBar requiredRoles={["ADMIN"]}/>
-            <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
+            <section ref={scrollRef} className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5" onScroll={(e) => !form && ( changedPixels.current = e.target.scrollTop)}>
                 {
                     !form &&
                     <>

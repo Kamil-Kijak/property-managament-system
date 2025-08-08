@@ -68,14 +68,15 @@ export default function EditLand({onClose = () => {}, editLandID = 0}) {
                 ID_purpose:actualLandData.data.przeznaczenie,
                 ID_mpzp:actualLandData.data.mpzp,
                 ID_general_plan:actualLandData.data.plan_ogolny,
-                mortgage:actualLandData.data.hipoteka,
+                mortgage:actualLandData.data.hipoteka || "0",
                 description:actualLandData.data.opis,
-                water_company:actualLandData.data.spolka_wodna,
+                water_company:actualLandData.data.spolka_wodna || "0",
                 purchase_date:purchase_date.toLocaleDateString("sv-SE"),
                 seller:actualLandData.data.sprzedawca,
                 price:actualLandData.data.cena_zakupu,
                 case_number:actualLandData.data.nr_aktu
             });
+            console.log(actualLandData.data.hipoteka);
         }
         updateLoading(false);
     }

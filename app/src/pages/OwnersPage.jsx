@@ -12,12 +12,17 @@ import SimpleInput from "../components/inputs/SimpleInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useOwnersStore } from "../hooks/useResultStores";
+import { useScrollStore } from "../hooks/useScrollStore";
 
 export default function OwnersPage({}) {
 
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update);
     const {owners, updateOwners, updateID, editID} = useOwnersStore();
+
+    const {pixels, updatePixels} = useScrollStore();
+    const scrollRef = useRef(null);
+    const changedPixels = useRef(0);
 
     const [searchFilters, setSearchFilters] = useState({
         name_filter:"",
@@ -63,7 +68,18 @@ export default function OwnersPage({}) {
 
     useEffect(() => {
         search();
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        if(!form) {
+            scrollRef.current.scrollTo({
+                behavior:"smooth",
+                top:pixels
+            })
+        } else {
+            updatePixels(changedPixels.current)
+        }
+    }, [form])
 
     const requestDelete = (ID) => {
         warningUpdate(false);
@@ -113,7 +129,7 @@ export default function OwnersPage({}) {
     return (
         <main className="flex justify-between">
             <NavBar requiredRoles={[]}/>
-            <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative">
+            <section ref={scrollRef} className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative"  onScroll={(e) => !form && ( changedPixels.current = e.target.scrollTop)}>
                 {
                     !form && 
                     <>

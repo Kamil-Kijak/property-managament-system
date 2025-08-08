@@ -13,11 +13,16 @@ import SearchInput from "../components/inputs/SearchInput";
 import SearchSelectInput from "../components/inputs/SearchSelectInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useScrollStore } from "../hooks/useScrollStore";
 
 export default function RentPage({}) {
     
     const loadingUpdate = useLoadingStore((state) => state.update);
     const warningUpdate = useWarningStore((state) => state.update);
+
+    const {pixels, updatePixels} = useScrollStore();
+    const scrollRef = useRef(null);
+    const changedPixels = useRef(0);
 
     const [searchFilters, setSearchFilters] = useState({
         name_filter:"",
@@ -128,6 +133,17 @@ export default function RentPage({}) {
         search();
     }, [])
 
+    useEffect(() => {
+        if(!form) {
+            scrollRef.current.scrollTo({
+                behavior:"smooth",
+                top:pixels
+            })
+        } else {
+            updatePixels(changedPixels.current)
+        }
+    }, [form]);
+
     const requestDeleteRenter = (ID) => {
         warningUpdate(false);
         loadingUpdate(true);
@@ -216,7 +232,7 @@ export default function RentPage({}) {
     return (
         <main className="flex justify-between">
             <NavBar requiredRoles={[]}/>
-            <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative">
+            <section ref={scrollRef} className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5 pb-5 relative" onScroll={(e) => !form && ( changedPixels.current = e.target.scrollTop)}>
                 {
                     !form &&
                     <>
@@ -319,7 +335,13 @@ export default function RentPage({}) {
                             }
                             />)
                         }
-                    
+                        <section className="mt-10">
+                            <h1 className="text-4xl font-bold">Podsumowanie</h1>
+                            <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
+                            <section className="flex gap-x-7 justify-center">
+                                <h1 className="text-2xl">Suma czynszu: {(renters.reduce((acc, value) => acc + value.dzialki.reduce((acc2, value2) => acc2 + value2.wysokosc_czynszu * value2.powierzchnia, 0), 0)).toFixed(2)}zł</h1>
+                            </section>
+                        </section>
                     
                     </>
                 }

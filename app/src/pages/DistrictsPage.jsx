@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SearchSelectInput from "../components/inputs/SearchSelectInput";
 import NavBar from "../components/NavBar";
 import SearchBar from "../components/SearchBar";
@@ -11,12 +11,16 @@ import { useForm } from "../hooks/useForm";
 import SelectInput from "../components/inputs/SelectInput";
 import SimpleInput from "../components/inputs/SimpleInput";
 import { useDistrictsStore } from "../hooks/useResultStores";
+import { useScrollStore } from "../hooks/useScrollStore";
 
 
 export default function DistrictsPage({}) {
 
     const loadingUpdate = useLoadingStore((state) => state.update);
     const {districts, updateDistricts, updateID, editID} = useDistrictsStore();
+    const {pixels, updatePixels} = useScrollStore();
+    const scrollRef = useRef(null);
+    const changedPixels = useRef(0);
 
     const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
 
@@ -58,6 +62,17 @@ export default function DistrictsPage({}) {
         search()
     }, []);
 
+    useEffect(() => {
+        if(!form) {
+            scrollRef.current.scrollTo({
+                behavior:"smooth",
+                top:pixels
+            })
+        } else {
+            updatePixels(changedPixels.current)
+        }
+    }, [form]);
+
     const requestEdit = () => {
         loadingUpdate(true);
         setForm(null);
@@ -88,7 +103,7 @@ export default function DistrictsPage({}) {
     return (
         <main className="flex justify-between">
             <NavBar requiredRoles={[]}/>
-            <section className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5">
+            <section ref={scrollRef} className="flex flex-col items-center w-[calc(100vw-220px)] overflow-y-scroll max-h-screen px-5" onScroll={(e) => !form && ( changedPixels.current = e.target.scrollTop)}>
                 {
                     !form &&
                     <>
