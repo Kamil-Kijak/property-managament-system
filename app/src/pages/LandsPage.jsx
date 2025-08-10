@@ -24,7 +24,7 @@ import { useScrollStore } from "../hooks/useScrollStore";
 
 export default function LandsPage({}) {
     const loadingUpdate = useLoadingStore((state) => state.update);
-    const warningUpdate = useWarningStore((state) => state.warning);
+    const warningUpdate = useWarningStore((state) => state.update);
     const {pixels, updatePixels} = useScrollStore();
 
     const scrollRef = useRef(null);

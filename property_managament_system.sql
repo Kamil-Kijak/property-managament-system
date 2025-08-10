@@ -136,10 +136,10 @@ CREATE TABLE `mpzp` (
 
 CREATE TABLE `nabycia` (
   `ID` int NOT NULL,
-  `data_nabycia` date NOT NULL,
+  `data_nabycia` date,
   `nr_aktu` varchar(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `sprzedawca` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `cena_zakupu` decimal(8,2) NOT NULL
+  `cena_zakupu` decimal(8,2)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

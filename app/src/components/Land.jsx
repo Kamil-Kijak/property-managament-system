@@ -173,11 +173,11 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
             <section className="flex justify-around gap-x-5">
                 <section className="flex flex-col items-center gap-y-3">
                     <p className="font-bold">ID działki</p>
-                    <p>{obj.numer_seryjny_dzialki}</p>
+                    <p>{obj.numer_seryjny_dzialki || "BRAK"}</p>
                 </section>
                 <section className="flex flex-col items-center gap-y-3">
                     <p className="font-bold">Obręb</p>
-                    <p>{obj.numer_seryjny_dzialki.split(".")[1]}</p>
+                    <p>{obj.numer_seryjny_dzialki ? obj.numer_seryjny_dzialki.split(".")[1] : "BRAK"}</p>
                 </section>
                 <section className="flex flex-col items-center gap-y-3">
                     <p className="font-bold">Numer działki</p>
@@ -185,7 +185,7 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                 </section>
                 <section className="flex flex-col items-center gap-y-3">
                     <p className="font-bold">Numer księgi wieczystej</p>
-                    <p>{obj.nr_kw}</p>
+                    <p>{obj.nr_kw || "BRAK"}</p>
                 </section>
                 <section className="flex flex-col items-center gap-y-3">
                     <p className="font-bold">Powierzchnia w ha</p>
@@ -237,25 +237,25 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                         </section>
                         <section className="flex flex-col items-center gap-y-3">
                             <p className="font-bold">Data nabycia</p>
-                            <p>{new Date(obj.data_nabycia).toLocaleDateString()}</p>
+                            <p>{obj.data_nabycia ? new Date(obj.data_nabycia).toLocaleDateString() : "BRAK"}</p>
                         </section>
                         <section className="flex flex-col items-center">
                             <p className="font-bold mb-3">Numer aktu nabycia</p>
-                            <p>{obj.nr_aktu}</p>
+                            <p>{obj.nr_aktu || "BRAK"}</p>
                         </section>
                         <section className="flex flex-col items-center">
                             <p className="font-bold mb-3">Od kogo</p>
-                            <p>{obj.sprzedawca}</p>
+                            <p>{obj.sprzedawca || "BRAK"}</p>
                         </section>
                         <section className="flex flex-col items-center">
                             <p className="font-bold mb-3">Cena zakupu</p>
-                            <p>{obj.cena_zakupu}zł</p>
+                            <p>{obj.cena_zakupu ? `${obj.cena_zakupu}zł` : "BRAK"}</p>
                         </section>
                     </section>
                     <section className="flex justify-around gap-x-5">
                         <section className="flex flex-col items-center gap-y-3 px-10">
                             <p className="font-bold">Opis</p>
-                            <p>{obj.opis} </p>
+                            <p>{obj.opis || "BRAK"} </p>
                         </section>
                     </section>
                 

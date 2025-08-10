@@ -127,7 +127,9 @@ router.post("/insert", [checkDataExisting(["land_serial_number", "land_number", 
             IDTown = result2.insertId
         }
         let IDPurchase;
-        const [result2] = await connection.execute("INSERT INTO nabycia() VALUES(NULL, ?, ?, ?, ?)", [purchase_date, case_number, seller, price])
+        let new_purchase_date = purchase_date || null;
+        let new_price = price || null;
+        const [result2] = await connection.execute("INSERT INTO nabycia() VALUES(NULL, ?, ?, ?, ?)", [new_purchase_date, case_number, seller, new_price])
         IDPurchase = result2.insertId;
 
         await connection.execute("INSERT INTO dzialki() VALUES(NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)", [land_serial_number, land_number, area, IDTown, ID_owner, kw_number, mortgage, ID_type, description, ID_purpose, ID_mpzp, ID_general_plan, water_company, IDPurchase]);
@@ -157,7 +159,9 @@ router.post("/update", [checkDataExisting(["ID_land", "land_serial_number", "lan
             IDTown = result2.insertId
         }
         const [result2] = await connection.execute("SELECT ID_nabycia FROM dzialki WHERE ID = ?", [ID_land]);
-        await connection.execute("UPDATE nabycia SET data_nabycia = ?, nr_aktu = ?, sprzedawca = ?, cena_zakupu = ? WHERE ID = ?", [purchase_date, case_number, seller, price, result2[0].ID_nabycia]);
+        let new_purchase_date = purchase_date || null;
+        let new_price = price || null;
+        await connection.execute("UPDATE nabycia SET data_nabycia = ?, nr_aktu = ?, sprzedawca = ?, cena_zakupu = ? WHERE ID = ?", [new_purchase_date, case_number, seller, new_price, result2[0].ID_nabycia]);
         const updateParams = [land_serial_number, land_number, area, IDTown, ID_owner, kw_number, mortgage, ID_type, description, ID_purpose, ID_mpzp, ID_general_plan, water_company, ID_land]
         await connection.execute("UPDATE dzialki SET numer_seryjny_dzialki = ?, nr_dzialki = ?, powierzchnia = ?, ID_miejscowosci = ?, ID_wlasciciela = ?, nr_kw = ?, hipoteka = ?, ID_rodzaju = ?, opis = ?, ID_przeznaczenia = ?, ID_mpzp = ?, ID_planu_ogolnego = ?, spolka_wodna = ? WHERE ID = ?", updateParams)
         res.status(200).json({success:true, message:"zaktualizowano poprawnie"})

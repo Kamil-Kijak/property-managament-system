@@ -19,22 +19,22 @@ export default function InsertLand({onClose = () => {}}) {
         "phone":{regexp:/^[0-9]{9}$/, error:"Nie ma 9 cyfr"},
     })
     const [landFormData, landErrors, setLandFormData] = useForm({
-        "land_serial_number":{regexp:/^\d+_\d\.\d{4}\.(?:\d+|\d+\/\d+)$/, error:"Zły format"},
+        "land_serial_number":{regexp:/^(?:\d+_\d\.\d{4}\.(?:\d+|\d+\/\d+))?$/, error:"Zły format", optional:true},
         "land_number":{regexp:/^(?:\d+|\d+\/\d+)$/, error:"Zły format"},
         "area":{regexp:/^\d{0,4}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
-        "kw_number":{regexp:/^[A-Za-z]{2}\d[A-Za-z]\/\d{8}\/\d$/, error:"Zły format"},
+        "kw_number":{regexp:/^([A-Za-z]{2}\d[A-Za-z]\/\d{8}\/\d)?$/, error:"Zły format", optional:true},
         "ID_owner":{regexp:/.+/, error:"Wybierz właściciela"},
         "ID_type":{regexp:/.+/, error:"Wybierz rodzaj działki"},
         "ID_purpose":{regexp:/.+/, error:"Wybierz przeznaczenie działki"},
         "ID_mpzp":{regexp:/.+/, error:"Wybierz MPZP"},
         "ID_general_plan":{regexp:/.+/, error:"Wybierz plan ogólny"},
         "mortgage":{regexp:/.+/, error:"Czy ma kartoteke?"},
-        "description":{regexp:/^.{0,1000}$/, error:"Za długi"},
+        "description":{regexp:/^.{0,1000}$/, error:"Za długi", optional:true},
         "water_company":{regexp:/.+/, error:"Czy jest spółką wodną"},
-        "purchase_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Zły format"},
-        "case_number":{regexp:/^\d+\/\d+$/, error:"Zły format"},
-        "seller":{regexp:/^.{0,49}$/, error:"Za długi"},
-        "price":{regexp:/^\d{0,6}\.\d{2}$/, error:"Nie ma 2 cyfr po , lub za duża liczba"},
+        "purchase_date":{regexp:/^(\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))?$/, error:"Zły format", optional:true},
+        "case_number":{regexp:/^(\d+\/\d+)?$/, error:"Zły format", optional:true},
+        "seller":{regexp:/^(.{0,49})?$/, error:"Za długi", optional:true},
+        "price":{regexp:/^(\d{0,6}\.\d{2})?$/, error:"Nie ma 2 cyfr po , lub za duża liczba", optional:true},
     })
 
     const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
