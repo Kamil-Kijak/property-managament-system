@@ -1,31 +1,24 @@
 import {useEffect, useState } from "react"
-import { useForm } from "../hooks/useForm";
-
+import { useForm } from "../../hooks/plain/useForm";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faWarning} from "@fortawesome/free-solid-svg-icons"
-
-import WarningScreen from "../components/screens/WarningScreen";
 import { useNavigate } from "react-router-dom";
-import { useRequest } from "../hooks/useRequest";
-import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
-import SelectInput from "../components/inputs/SelectInput";
-import SimpleInput from "../components/inputs/SimpleInput";
+import {useWarningStore } from "../../hooks/stores/useScreensStore";
+import SelectInput from "../../components/inputs/SelectInput";
+import SimpleInput from "../../components/inputs/SimpleInput";
+import { useApi } from "../../hooks/plain/useApi";
 
 
 export default function LoginPage({}) {
-    
-    const loadingUpdate = useLoadingStore((state) => state.update);
+
     const warningUpdate = useWarningStore((state) => state.update);
+    const API = useApi();
 
     const navigate = useNavigate();
-    const requestGetUsers = useRequest("/api/user/get", {});
-    const request = useRequest();
-
     const [users, setUsers] = useState([]);
     const [adminCreate, setAdminCreate] = useState(false);
     const [checkingPassword, setCheckingPassword] = useState("");
     const [loginError, setLoginError] = useState(null);
-
 
     const [registerFormData, registerErrors, setRegisterFormData] = useForm({
         "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
@@ -34,73 +27,50 @@ export default function LoginPage({}) {
     })
     const [loginFormData, loginErrors, setLoginFormData] = useForm({
         "ID_user":{regexp:/\d/, error:"Podaj użytkownika"},
-        "password":{regexp:/.+/, error:"Podaj hasło"}
+        "password":{regexp:/.+/, error:"Podaj hasło", optional:true}
     })
 
     useEffect(() => {
-        requestGetUsers("/api/user/get", {}).then(result => {
-            if(!result.error) {
-                setUsers(result.data);
-            }
-        })
+        API.getUsers().then(result => setUsers(result.data));
     }, [adminCreate]);
     
     const registerAdmin = () => {
         warningUpdate(false);
-        loadingUpdate(true);
-        request("/api/user/register_admin", {
-                method:"POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body:JSON.stringify({...registerFormData})
-            }).then(result => {
-                if(!result.error) {
-                    setAdminCreate(false);
-                }
-                loadingUpdate(false);
-            })
+        !API.registerAdmin({...registerFormData}).then(result => result.error || setAdminCreate(false))
     }
+
     const loginUser = () => {
-        if(Object.keys(loginErrors).every(ele => loginErrors[ele] == null)) {
-            loadingUpdate(true);
-            request("/api/user/login", {
-                    method:"POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body:JSON.stringify({...loginFormData})
-                }).then(result => {
-                    loadingUpdate(false);
-                    if(result.success) {
-                        navigate("/")
-                    } else {
-                        if(!result.serverError) {
-                            setLoginError(result.error);
-                        }
-                    }
-                })
+        API.loginUser({...loginFormData}).then(result => {
+            if(!result.error) {
+                navigate("/")
+            } else {
+                if(!result.serverError) {
+                    setLoginError(result.error);
+                }
+            }
+        });
+    }
+
+    const validateRegisterForm = () => {
+        if(Object.keys(registerFormData).length == 3) {
+            if(Object.keys(registerErrors).every(ele => registerErrors[ele] == null)) {
+                if(checkingPassword === registerFormData.password) {
+                    return true;
+                }
+            }
         }
+        return false;
+    }
+
+    const validateLoginForm = () => {
+        if(Object.keys(loginErrors).every(ele => loginErrors[ele] == null)) {
+            return true;
+        }
+        return false;
     }
 
     return(
         <main className="w-screen min-h-screen">
-            <WarningScreen
-                title="Przed stworzeniem konta"
-                description={
-                    <>
-                        <p className="text-red-600 font-bold">
-                            Kiedy tworzysz konto administratora, nie rozpowrzechniaj jego hasła a samo hasło miej dobrze zabezpieczone
-                                i dostępne tylko dla siebie. 
-                        </p>
-                        <p className="text-white font-bold text-lg mt-5">
-                            Czy chcesz utworzyć konto?
-                        </p>
-                    </>
-                }
-                cancelCallback={() => screens.warning.set(false)}
-                acceptCallback={() => registerAdmin()}
-            />
             <section className="flex flex-col justify-center items-center h-screen">
                 {adminCreate ?
                     <section className="base-card">
@@ -139,23 +109,19 @@ export default function LoginPage({}) {
                                 error={checkingPassword !== (registerFormData.password || "") && "Hasła nie jednakowe"}
                             />
                         </section>
-                        <button className="base-btn" onClick={() => {
-                            if(Object.keys(registerFormData).length == 3) {
-                                if(Object.keys(registerErrors).every(ele => registerErrors[ele] == null)) {
-                                    if(checkingPassword === registerFormData.password) {
-                                        warningUpdate(true, "Przed stworzeniem konta", registerAdmin, () => warningUpdate(false),
-                                            <>
-                                                <p className="text-red-600 font-bold">
-                                                    Kiedy tworzysz konto administratora, nie rozpowrzechniaj jego hasła a samo hasło miej dobrze zabezpieczone
-                                                        i dostępne tylko dla siebie. 
-                                                </p>
-                                                <p className="text-white font-bold text-lg mt-5">
-                                                    Czy chcesz utworzyć konto?
-                                                </p>
-                                            </>
-                                        )
-                                    }
-                                }
+                        <button className={validateRegisterForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                            if(validateRegisterForm()) {
+                                warningUpdate(true, "Przed stworzeniem konta", registerAdmin, () => warningUpdate(false),
+                                    <>
+                                        <p className="text-red-600 font-bold">
+                                            Kiedy tworzysz konto administratora, nie rozpowrzechniaj jego hasła a samo hasło miej dobrze zabezpieczone
+                                                i dostępne tylko dla siebie. 
+                                        </p>
+                                        <p className="text-white font-bold text-lg mt-5">
+                                            Czy chcesz utworzyć konto?
+                                        </p>
+                                    </>
+                                )
                             }
                         }}>Stwórz konto</button>
                         <button className="base-btn" onClick={() => setAdminCreate(false)}>Powrót</button>
@@ -197,7 +163,11 @@ export default function LoginPage({}) {
                                         onChange={(e) => setLoginFormData(prev => ({...prev, password:e.target.value}))}
                                         error={loginError}
                                     />
-                                    <button className="base-btn" onClick={loginUser}>Zaloguj</button>
+                                    <button className={validateLoginForm() ? "base-btn" : "unactive-btn"} onClick={() => {
+                                        if(validateLoginForm()) {
+                                            loginUser();
+                                        }
+                                    }}>Zaloguj</button>
                                 </section>
                             }
                         </section>

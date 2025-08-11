@@ -1,43 +1,35 @@
 
 import { useState} from "react";
-import { useRequest } from "../hooks/useRequest";
-import { useForm } from "../hooks/useForm";
-import { useLoadingStore } from "../hooks/useScreensStore";
-import SimpleInput from "../components/inputs/SimpleInput";
-import SelectInput from "../components/inputs/SelectInput"
-import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useForm } from "../../hooks/plain/useForm";
+import {useUsersStore} from "../../hooks/stores/useResultStores"
+import SimpleInput from "../../components/inputs/SimpleInput";
+import SelectInput from "../../components/inputs/SelectInput"
+import { useFormStore } from "../../hooks/stores/useFormStore";
+import { useApi } from "../../hooks/plain/useApi";
+import InsertSection from "../../pages/sections/InsertSection";
 
-export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
-    const updateLoading = useLoadingStore((state) => state.update);
+export default function InsertUser({}) {
+    const {form, updateForm} = useFormStore();
+    const updateUsers = useUsersStore((state) => state.updateUsers);
 
+    const API = useApi();
+    
+    const [insertFormData, insertErrors, setInsertFormData] = useForm({
+        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "surname":{regexp:/^[A-ZŁĆŚŁŻŹĄĘ][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
+        "password":{regexp:/^.{8,}$/, error:"Za słabe"},
+        "role":{regexp:/.+/, error:"Wybierz role"}
+    }
+)
     const [checkingPassword, setCheckingPassword] = useState("");
 
-    const [insertFormData, insertErrors, setInsertFormData] = useForm({
-            "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
-            "surname":{regexp:/^[A-ZŁĆŚŁŻŹĄĘ][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
-            "password":{regexp:/^.{8,}$/, error:"Za słabe"},
-            "role":{regexp:/.+/, error:"Wybierz role"}
-        }
-    )
-    const request = useRequest();
-
     const requestInsertUser = () => {
-        updateLoading(true);
-        setForm(null);
-        request("/api/user/insert", {
-                method:"POST",
-                credentials:"include",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body:JSON.stringify({...insertFormData})
-            }).then(result => {
-                if(!result.error) {
-                    getUsers();
-                }
-                updateLoading(false);
-            })
+        updateForm(null);
+        API.insertUser({...insertFormData}).then(result => {
+            if(!result.error) {
+                API.getUsers().then(result => updateUsers(result));
+            }
+        })
     }
 
     const validateForm = () => {
@@ -51,14 +43,13 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
         return false;
     }
     return (
-        <>
-            <section className="my-4">
-            <button className="base-btn text-2xl" onClick={() => setForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
-        </section>
-        <section className="base-card my-10">
-            <h1 className="text-2xl my-2 text-center">Tworzenie nowego użytkownika</h1>
-            <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
-            <section className="py-2 flex-col items-center">
+        form == "insert" &&
+        <InsertSection
+            title="Tworzenie nowego użytkownika"
+            validateForm={validateForm}
+            onSubmit={requestInsertUser}
+            fields={
+                <section className="py-2 flex-col items-center">
                 <SimpleInput
                     title="Imie"
                     placeholder="name..."
@@ -102,12 +93,7 @@ export default function InsertUser({setForm = () => {}, getUsers = () => {}}) {
                     </>}
                 />
             </section>
-            <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
-                if(validateForm()) {
-                    requestInsertUser();
-                }
-            }}><FontAwesomeIcon icon={faPlus}/> Dodaj użytkownika</button>
-        </section>
-        </>
+            }
+        />
     )
 }

@@ -10,7 +10,6 @@ const useForm = (regexpObjects) => {
 
     useEffect(() => {
         Object.keys(formData).forEach(ele => {
-            console.log(formData);
             if(!regexpObjects[ele].regexp.test(formData[ele])) {
                 setErrors(prev => ({...prev, [ele]:regexpObjects[ele].error}))
             } else {

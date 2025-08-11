@@ -1,7 +1,7 @@
 
 import { faWarning, faXmark} from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import { useErrorStore } from "../../hooks/useScreensStore"
+import { useErrorStore } from "../../hooks/stores/useScreensStore"
 
 export default function ErrorScreen() {
     const active = useErrorStore((state) => state.active)

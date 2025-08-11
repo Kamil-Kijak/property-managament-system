@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import { useErrorStore } from "./useScreensStore";
+import { useErrorStore } from "../stores/useScreensStore";
 
 const useRequest = () => {
     const updateError = useErrorStore((state) => state.update)
