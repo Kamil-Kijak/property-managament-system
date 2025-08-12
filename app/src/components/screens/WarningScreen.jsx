@@ -2,7 +2,7 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faXmark, faCheck} from "@fortawesome/free-solid-svg-icons"
 import {faWarning} from "@fortawesome/free-solid-svg-icons"
-import { useWarningStore } from "../../hooks/useScreensStore"
+import { useWarningStore } from "../../hooks/stores/useScreensStore"
 
 export default function WarningScreen() {
     const {active, title, description, onAccept, onCancel} = useWarningStore();

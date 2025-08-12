@@ -1,5 +1,5 @@
 
-import { useLoadingStore } from "../../hooks/useScreensStore"
+import { useLoadingStore } from "../../hooks/stores/useScreensStore"
 
 
 export default function LoadingScreen() {

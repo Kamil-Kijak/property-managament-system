@@ -2,19 +2,26 @@ import { faEye, faFile, faFileArrowDown, faMountainSun, faPen, faPlug, faPlus, f
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback } from "react";
 import { useState } from "react";
-import {useUserStore} from "../hooks/useUserStore"
-import { useLoadingStore, useWarningStore } from "../hooks/useScreensStore";
+import {useUserStore} from "../hooks/stores/useUserStore"
+import {useWarningStore } from "../hooks/stores/useScreensStore";
 import { useRef } from "react";
-import { useRequest } from "../hooks/useRequest";
+import { useApi } from "../hooks/plain/useApi";
+import { useLandsStore } from "../hooks/stores/useResultStores";
+import { useFormStore } from "../hooks/stores/useFormStore";
 
-export default function Land({obj, editLand, requestDelete, addRent, file = null, setLandFiles = () => {}, search, addArea, editArea}) {
+export default function Land({obj, requestDelete, file = null, setLandFiles = () => {}, search, editArea}) {
 
-    const warningUpdate = useWarningStore((state) => state.update)
-    const loadingUpdate = useLoadingStore((state) => state.update)
+    const warningUpdate = useWarningStore((state) => state.update);
+    const updateID = useLandsStore((state) => state.updateID);
+    const updateForm = useFormStore((state) => state.updateForm);
+
+
     const user = useUserStore((state) => state.user)
     const [showingMore, setShowingMore] = useState(false);
     const [showingGroundAreas, setShowingGroundAreas] = useState(false);
-    const request = useRequest();
+
+    const API = useApi();
+
     const showingMoreToggle = useCallback(() => {
         setShowingMore(prev => !prev)
     }, []);
@@ -32,33 +39,19 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
         const documentFile = e.target.files[0];
         const formData = new FormData();
         formData.append("file", documentFile);
-        request(`/api/files/upload/${serial.replace("/", "-")}`, {
-            method: 'POST',
-            credentials:"include",
-            body: formData
-        }).then(result => {
+        API.fileUpload(serial, formData).then(result => {
             if(!result.error) {
-                console.log("Poprawno wgrano plik")
+                setLandFiles(prev => [...prev, `${serial.replace("/", "-")}.png`])
             }
         })
-        setLandFiles(prev => [...prev, `${serial.replace("/", "-")}.png`])
     }
 
     const requestDeleteArea = (ID) => {
         warningUpdate(false);
-        loadingUpdate(true);
-        request("/api/areas/delete", {
-            method: 'POST',
-            credentials:"include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ID_area:ID})
-        }).then(result => {
+        API.deleteArea({ID_area:ID}).then(result => {
             if(!result.error) {
                 search();
             }
-            loadingUpdate(false);
         })
     }
 
@@ -68,8 +61,14 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                 <section className="flex items-center justify-start gap-x-5">
                     <button className="base-btn" onClick={showingMoreToggle}><FontAwesomeIcon icon={faEye}/> Pokaż {showingMore ? "mniej":"więcej"}</button>
                     <button className="base-btn" onClick={showingGroundAreasToggle}><FontAwesomeIcon icon={faMountainSun}/> {showingGroundAreas ? "ukryj":"pokaż"} Powierzchnie</button>
-                    {!obj.ID_dzierzawy && obj.przeznaczenie == "Dzierżawa" && <button className="base-btn" onClick={() => addRent(obj.ID)}><FontAwesomeIcon icon={faUser}/> Dodaj dzierżawe</button>}
-                    <button className="info-btn" onClick={() => editLand(obj.ID)}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                    {!obj.ID_dzierzawy && obj.przeznaczenie == "Dzierżawa" && <button className="base-btn" onClick={() => {
+                        updateID(obj.ID)
+                        updateForm("insert_rent")
+                    }}><FontAwesomeIcon icon={faUser}/> Dodaj dzierżawe</button>}
+                    <button className="info-btn" onClick={() => {
+                        updateID(obj.ID);
+                        updateForm("edit")
+                    }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                     {user.rola === "ADMIN" && <button className="warning-btn" onClick={() => {
                         warningUpdate(true, "Uwaga", () => requestDelete(obj.ID), () => warningUpdate(false), <>
                             <p className="text-red-600 font-bold">
@@ -166,7 +165,10 @@ export default function Land({obj, editLand, requestDelete, addRent, file = null
                         </section>
                     </section>
                     <section className="flex flex-col justify-center items-center">
-                        <button className="base-btn text-xl" onClick={() => addArea(obj.ID)}><FontAwesomeIcon icon={faPlus}/> Dodaj nową powierzchnie</button>
+                        <button className="base-btn text-xl" onClick={() => {
+                            updateForm("insert_area")
+                            updateID(obj.ID)
+                        }}><FontAwesomeIcon icon={faPlus}/> Dodaj nową powierzchnie</button>
                     </section>
                 </>
             }
