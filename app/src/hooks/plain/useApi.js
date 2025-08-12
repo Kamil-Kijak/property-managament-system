@@ -114,6 +114,10 @@ const useApi = () => {
     const updateOwner = async (data) => {
         return await requestFromApi("/api/owners/update", postOptions(data));
     }
+
+    const insertOwner = async (data) => {
+        return await requestFromApi("/api/owners/insert", postOptions(data));
+    }
     const getDistricts = async (params) => {
         return await requestFromApi(`/api/districts/get?${params.toString()}`,  {
             method:"GET",
@@ -144,6 +148,9 @@ const useApi = () => {
     const insertGroundClass = async (data) => {
         return await requestFromApi("/api/ground_classes/insert", postOptions(data));
     }
+    const getLandGroundClasses = async (params) => {
+        return await requestFromApi(`/api/ground_classes/get_land_classes?${params.toString()}`);
+    }
     const getAllRenters = async () => {
         return await requestFromApi("/api/renters/get_all", {});
     }
@@ -171,6 +178,51 @@ const useApi = () => {
     const updateRent = async (data) => {
         return await requestFromApi("/api/rents/update", postOptions(data));
     }
+    const insertRent = async (data) => {
+        return await requestFromApi("/api/rents/insert", postOptions(data));
+    }
+
+    const getLands = async (params) => {
+        return await requestFromApi(`/api/lands/get?${params.toString()}`, {
+            method:"GET",
+            credentials:"include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+    }
+    const getLand = async (ID) => {
+        return await requestFromApi(`/api/lands/get_land?ID_land=${ID}`, {credentials:"include"});
+    }
+    const deleteLand = async (data) => {
+        return await requestFromApi("/api/lands/delete", postOptions(data));
+    }
+    const updateLand = async (data) => {
+        return await requestFromApi("/api/lands/update", postOptions(data));
+    }
+    const insertLand = async (data) => {
+        return await requestFromApi("/api/lands/insert", postOptions(data));
+    }
+    const getInsertionRequiredData = async () => {
+        return await requestFromApi("/api/lands/get_insertion_required_data", {});
+    }
+    const updateArea = async (data) => {
+        return await requestFromApi("/api/areas/update", postOptions(data));
+    }
+    const deleteArea = async (data) => {
+        return await requestFromApi("/api/areas/delete", postOptions(data));
+    }
+    const insertArea = async (data) => {
+        return await requestFromApi("/api/areas/insert", postOptions(data));
+    }
+
+    const fileUpload = async (serial, formData) => {
+        return await requestFromApi(`/api/files/upload/${serial.replace("/", "-")}`, {
+            method: 'POST',
+            credentials:"include",
+            body: formData
+        });
+    }
 
     return {
         getUsers, registerAdmin, loginUser, updateUser, deleteUser, updatePassword, userLogout, insertUser, auth,
@@ -178,11 +230,14 @@ const useApi = () => {
         getGeneralPlans, deleteGeneralPlan, updateGeneralPlan, insertGeneralPlan,
         getLandPurposes, deleteLandPurpose, updateLandPurpose, insertLandPurpose,
         getLandTypes, deleteLandType, updateLandType, insertLandType,
-        getOwners, deleteOwner, updateOwner,
+        getOwners, deleteOwner, updateOwner, insertOwner,
         getDistricts, updateDistricts,
-        getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass,
+        getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass,getLandGroundClasses,
         getAllRenters, getRenters, deleteRenter, updateRenter, insertRenter,
-        deleteRent, updateRent
+        deleteRent, updateRent, insertRent,
+        getLands, deleteLand, getInsertionRequiredData, insertLand, getLand, updateLand,
+        updateArea, deleteArea,insertArea,
+        fileUpload
     }
 }
 export {useApi}

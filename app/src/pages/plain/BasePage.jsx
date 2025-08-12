@@ -18,7 +18,6 @@ export default function BasePage({requiredRoles = [], children}) {
         updatePixels(0);
         changedPixels.current = 0;
         updateForm(null);
-        console.log(changedPixels.current, pixels);
         requestAnimationFrame(() => {
             scrollRef.current?.scrollTo({
                 behavior: "smooth",

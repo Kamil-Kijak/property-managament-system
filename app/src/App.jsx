@@ -3,7 +3,7 @@ import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom"
 import {useEffect} from "react"
 
 import LoginPage from "./pages/plain/LoginPage";
-// import LandsPage from "./pages/LandsPage";
+import LandsPage from "./pages/showingData/LandsPage";
 import UsersPage from "./pages/showingData/UsersPage";
 import LandTypesPage from "./pages/showingData/LandTypesPage";
 import LandPurposesPage from "./pages/showingData/LandPurposesPage";
@@ -45,6 +45,7 @@ export default function App({}) {
                     <Route path="/districts" element={<DistrictsPage/>}/>
                     <Route path="/groundclasses" element={<GroundClassesPage/>}/>
                     <Route path="/renters" element={<RentPage/>}/>
+                    <Route path="/lands" element={<LandsPage/>}/>
                     <Route path="*" element={<NotFoundPage/>}/>
                 </Routes>
             </BrowserRouter>
