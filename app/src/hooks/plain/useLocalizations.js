@@ -1,6 +1,6 @@
 
 import { useMemo, useState } from "react"
-import LocalizationData from "../data/output.json"
+import LocalizationData from "../../data/output.json"
 
 const useLocalizations = () => {
     const [localizations, setLocalizations] = useState({

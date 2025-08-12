@@ -99,12 +99,61 @@ const useApi = () => {
         return await requestFromApi("/api/land_types/insert", postOptions(data));
     }
 
+    const getOwners = async (params) => {
+        return await requestFromApi(`/api/owners/get?${params.toString()}`,  {
+            method:"GET",
+            credentials:"include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+    }
+    const deleteOwner = async (data) => {
+        return await requestFromApi("/api/owners/delete", postOptions(data));
+    }
+    const updateOwner = async (data) => {
+        return await requestFromApi("/api/owners/update", postOptions(data));
+    }
+    const getDistricts = async (params) => {
+        return await requestFromApi(`/api/districts/get?${params.toString()}`,  {
+            method:"GET",
+            credentials:"include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+    }
+    const updateDistricts = async (data) => {
+        return await requestFromApi("/api/districts/update", postOptions(data));
+    }
+    const getGroundClasses = async (params) => {
+        return await requestFromApi(`/api/ground_classes/get?${params.toString()}`,  {
+            method:"GET",
+            credentials:"include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+    }
+    const deleteGroundClass = async (data) => {
+        return await requestFromApi("/api/ground_classes/delete", postOptions(data));
+    }
+    const updateGroundClass = async (data) => {
+        return await requestFromApi("/api/ground_classes/update", postOptions(data));
+    }
+    const insertGroundClass = async (data) => {
+        return await requestFromApi("/api/ground_classes/insert", postOptions(data));
+    }
+
     return {
         getUsers, registerAdmin, loginUser, updateUser, deleteUser, updatePassword, userLogout, insertUser, auth,
         getMpzp, deleteMpzp, updateMpzp, insertMpzp,
         getGeneralPlans, deleteGeneralPlan, updateGeneralPlan, insertGeneralPlan,
         getLandPurposes, deleteLandPurpose, updateLandPurpose, insertLandPurpose,
-        getLandTypes, deleteLandType, updateLandType, insertLandType
+        getLandTypes, deleteLandType, updateLandType, insertLandType,
+        getOwners, deleteOwner, updateOwner,
+        getDistricts, updateDistricts,
+        getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass
     }
 }
 export {useApi}

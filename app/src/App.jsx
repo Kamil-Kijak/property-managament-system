@@ -13,10 +13,10 @@ import MpzpPage from "./pages/showingData/MpzpPage";
 import LoadingScreen from "./components/screens/LoadingScreen";
 import ErrorScreen from "./components/screens/ErrorScreen";
 import WarningScreen from "./components/screens/WarningScreen";
-// import OwnersPage from "./pages/OwnersPage";
+import OwnersPage from "./pages/showingData/OwnersPage";
 // import RentPage from "./pages/RentPage";
-// import GroundClassesPage from "./pages/GroundClassesPage";
-// import DistrictsPage from "./pages/DistrictsPage";
+import GroundClassesPage from "./pages/showingData/GroundClassesPage";
+import DistrictsPage from "./pages/showingData/DistrictsPage";
 import NotFoundPage from "./pages/plain/NotFoundPage";
 
 
@@ -41,6 +41,9 @@ export default function App({}) {
                     <Route path="/generalplans" element={<GeneralPlansPage/>}/>
                     <Route path="/landpurposes" element={<LandPurposesPage/>}/>
                     <Route path="/landtypes" element={<LandTypesPage/>}/>
+                    <Route path="/owners" element={<OwnersPage/>}/>
+                    <Route path="/districts" element={<DistrictsPage/>}/>
+                    <Route path="/groundclasses" element={<GroundClassesPage/>}/>
                     <Route path="*" element={<NotFoundPage/>}/>
                 </Routes>
             </BrowserRouter>

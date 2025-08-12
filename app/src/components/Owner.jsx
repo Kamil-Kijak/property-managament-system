@@ -1,12 +1,16 @@
 import { faPen, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {useWarningStore} from "../hooks/useScreensStore"
-import { useUserStore } from "../hooks/useUserStore";
+import {useWarningStore} from "../hooks/stores/useScreensStore"
+import { useUserStore } from "../hooks/stores/useUserStore";
+import { useFormStore } from "../hooks/stores/useFormStore";
+import { useOwnersStore } from "../hooks/stores/useResultStores";
 
-export default function Owner({obj, editOwner, requestDelete, setEditFormData}) {
+export default function Owner({obj, requestDelete, setEditFormData}) {
 
     const warningUpdate = useWarningStore((state) => state.update)
     const user = useUserStore((state) => state.user);
+    const updateForm = useFormStore((state) => state.updateForm);
+    const updateID = useOwnersStore((state) => state.updateID);
 
     return (
         <section>
@@ -15,7 +19,8 @@ export default function Owner({obj, editOwner, requestDelete, setEditFormData}) 
                 <h1 className="text-3xl">tel:{obj.telefon}</h1>
                 <section className="flex gap-x-5">
                     <button className="info-btn" onClick={() => {
-                        editOwner(obj.ID);
+                        updateForm("edit")
+                        updateID(obj.ID);
                         setEditFormData({
                             name:obj.imie,
                             surname:obj.nazwisko,
@@ -41,11 +46,11 @@ export default function Owner({obj, editOwner, requestDelete, setEditFormData}) 
                 obj.dzialki.map((ele, index) => <section key={index} className="flex shadow-xl shadow-black/25 p-5 gap-x-20 text-center">
                     <section className="flex flex-col items-center gap-y-3">
                         <p className="font-bold">ID działki</p>
-                        <p>{ele.numer_seryjny_dzialki}</p>
+                        <p>{ele.numer_seryjny_dzialki || "BRAK"}</p>
                     </section>
                     <section className="flex flex-col items-center gap-y-3">
                         <p className="font-bold">Obręb</p>
-                        <p>{ele.numer_seryjny_dzialki.split(".")[1]}</p>
+                        <p>{ele.numer_seryjny_dzialki ? ele.numer_seryjny_dzialki.split(".")[1] : "BRAK"}</p>
                     </section>
                     <section className="flex flex-col items-center gap-y-3">
                         <p className="font-bold">Numer działki</p>
