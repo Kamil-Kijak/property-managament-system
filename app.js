@@ -64,7 +64,10 @@ app.use("/api/districts", districtsRoutes)
 app.use("/api/files", filesRoutes)
 
 app.use((req, res) => {
-  res.status(400).send(`
+  if(process.env.STATIC_HOST) {
+    res.sendFile(path.join(__dirname, "app", 'dist', 'index.html'));
+  } else {
+    res.status(400).send(`
     <main className="flex flex-col items-center justify-center h-screen">
             <section className="base-card gap-y-5">
                 <h1 className="text-black text-4xl font-bold">Ups - Strony nie znaleziono</h1>
@@ -75,8 +78,8 @@ app.use((req, res) => {
             </section>
         </main>`
       )
-})
-
+  }
+});
 
 
 const generate = async () => {
