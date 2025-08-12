@@ -25,7 +25,6 @@ export default function LandTypesPage({}) {
     })
 
     useEffect(() => {
-        updateForm(null);
         API.getLandTypes().then(result => {
             if(!result.error) {
                 updateLandTypes(result.data);

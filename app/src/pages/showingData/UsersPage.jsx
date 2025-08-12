@@ -38,7 +38,6 @@ export default function UsersPage({}) {
     })
     
     useEffect(() => {
-        updateForm(null);
         API.getUsers().then(result => updateUsers(result.data));
     }, []);
 

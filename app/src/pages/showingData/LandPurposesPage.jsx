@@ -25,7 +25,6 @@ export default function LandPurposesPage({}) {
     })
 
     useEffect(() => {
-        updateForm(null);
         API.getLandPurposes().then(result => {
             if(!result.error) {
                 updateLandPurposes(result.data)

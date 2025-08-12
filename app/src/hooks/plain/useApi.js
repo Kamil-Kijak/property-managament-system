@@ -144,6 +144,33 @@ const useApi = () => {
     const insertGroundClass = async (data) => {
         return await requestFromApi("/api/ground_classes/insert", postOptions(data));
     }
+    const getAllRenters = async () => {
+        return await requestFromApi("/api/renters/get_all", {});
+    }
+    const getRenters = async (params) => {
+        return await requestFromApi(`/api/rents/get?${params.toString()}`, {
+            method:"GET",
+            credentials:"include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+    }
+    const deleteRenter = async (data) => {
+        return await requestFromApi("/api/renters/delete", postOptions(data));
+    }
+    const updateRenter = async (data) => {
+        return await requestFromApi("/api/renters/update", postOptions(data));
+    }
+    const insertRenter = async (data) => {
+        return await requestFromApi("/api/renters/insert", postOptions(data));
+    }
+    const deleteRent = async (data) => {
+        return await requestFromApi("/api/rents/delete", postOptions(data));
+    }
+    const updateRent = async (data) => {
+        return await requestFromApi("/api/rents/update", postOptions(data));
+    }
 
     return {
         getUsers, registerAdmin, loginUser, updateUser, deleteUser, updatePassword, userLogout, insertUser, auth,
@@ -153,7 +180,9 @@ const useApi = () => {
         getLandTypes, deleteLandType, updateLandType, insertLandType,
         getOwners, deleteOwner, updateOwner,
         getDistricts, updateDistricts,
-        getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass
+        getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass,
+        getAllRenters, getRenters, deleteRenter, updateRenter, insertRenter,
+        deleteRent, updateRent
     }
 }
 export {useApi}

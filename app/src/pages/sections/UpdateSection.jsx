@@ -14,7 +14,7 @@ export default function UpdateSection({title = "Edycja", validateForm = () => {}
             </section>
             <section className="base-card my-10">
                 <h1 className="text-2xl my-2 text-center">{title}</h1>
-                <div className="bg-green-500 w-full h-1 rounded-2xl mt-3"></div>
+                <div className="bg-green-500 w-full h-1 rounded-2xl my-3"></div>
                 {fields}
                 <button className={validateForm() ? "base-btn" : "unactive-btn"} onClick={() => {
                     if(validateForm()) {

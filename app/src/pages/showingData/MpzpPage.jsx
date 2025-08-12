@@ -27,7 +27,6 @@ export default function MpzpPage({}) {
     })
 
     useEffect(() => {
-        updateForm(null);
         API.getMpzp().then(result => {
             if(!result.error)
                 updateMpzp(result.data)

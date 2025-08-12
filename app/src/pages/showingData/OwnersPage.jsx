@@ -51,7 +51,6 @@ export default function OwnersPage({}) {
     }
 
     useEffect(() => {
-        updateForm(null);
         search();
     }, []);
 

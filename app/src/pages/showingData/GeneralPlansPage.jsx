@@ -27,7 +27,6 @@ export default function GeneralPlansPage({}) {
     })
     
     useEffect(() => {
-        updateForm(null);
         API.getGeneralPlans().then(result => {
             if(!result.error) {
                 updateGeneralPlans(result.data)

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import NavBar from "../../components/nav/NavBar";
 import { useFormStore } from "../../hooks/stores/useFormStore";
 import { useScrollStore } from "../../hooks/stores/useScrollStore"
@@ -8,9 +8,24 @@ import { useScrollStore } from "../../hooks/stores/useScrollStore"
 export default function BasePage({requiredRoles = [], children}) {
 
     const form = useFormStore((state) => state.form);
-    const {pixels, updatePixels} = useScrollStore();
+    const updateForm = useFormStore((state) => state.updateForm);
+    const updatePixels = useScrollStore((state) => state.updatePixels);
+    const pixels = useScrollStore((state) => state.pixels);
     const scrollRef = useRef(null);
     const changedPixels = useRef(0);
+
+    useLayoutEffect(() => {
+        updatePixels(0);
+        changedPixels.current = 0;
+        updateForm(null);
+        console.log(changedPixels.current, pixels);
+        requestAnimationFrame(() => {
+            scrollRef.current?.scrollTo({
+                behavior: "smooth",
+                top: 0
+            });
+        });
+    }, []);
 
     useEffect(() => {
         if(!form) {
@@ -22,6 +37,7 @@ export default function BasePage({requiredRoles = [], children}) {
             updatePixels(changedPixels.current)
         }
     }, [form]);
+
 
     return (
         <main className="flex justify-between">

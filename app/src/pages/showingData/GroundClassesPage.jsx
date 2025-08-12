@@ -33,7 +33,6 @@ export default function GroundClassesPage({}) {
     });
 
     useEffect(() => {
-        updateForm(null);
         search()
     }, [taxDistrict]);
 

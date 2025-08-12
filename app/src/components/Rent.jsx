@@ -1,8 +1,8 @@
 import { faEye, faPen, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback, useState } from "react";
-import { useWarningStore } from "../hooks/useScreensStore";
-import { useUserStore } from "../hooks/useUserStore";
+import { useWarningStore } from "../hooks/stores/useScreensStore";
+import { useUserStore } from "../hooks/stores/useUserStore";
 
 export default function Rent({ele, deleteRent, editRent}) {
 

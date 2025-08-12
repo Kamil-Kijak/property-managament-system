@@ -45,7 +45,6 @@ export default function DistrictsPage({}) {
     }
 
     useEffect(() => {
-        updateForm(null);
         search()
     }, []);
 

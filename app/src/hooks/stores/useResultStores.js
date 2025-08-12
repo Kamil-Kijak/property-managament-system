@@ -50,5 +50,20 @@ const useGroundClassesStore = create((set) => ({
     updateID:(ID) => set({editID:ID})
 }));
 
+const useRentersStore = create((set) => ({
+    renters:[],
+    editID:0,
+    updateRenters:(renters) => set({renters:renters}),
+    updateID:(ID) => set({editID:ID})
+}));
+const useLandsStore = create((set) => ({
+    lands:[],
+    editID:0,
+    updateLands:(lands) => set({lands:lands}),
+    updateID:(ID) => set({editID:ID})
+}));
 
-export {useUsersStore, useGeneralPlansStore, useDistrictsStore, useMpzpStore, useOwnersStore, useLandTypesStore, useLandPurposesStore, useGroundClassesStore}
+
+
+export {useUsersStore, useGeneralPlansStore, useDistrictsStore, useMpzpStore, useOwnersStore, useLandTypesStore, useLandPurposesStore,
+     useGroundClassesStore, useRentersStore, useLandsStore}

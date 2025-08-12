@@ -14,7 +14,7 @@ import LoadingScreen from "./components/screens/LoadingScreen";
 import ErrorScreen from "./components/screens/ErrorScreen";
 import WarningScreen from "./components/screens/WarningScreen";
 import OwnersPage from "./pages/showingData/OwnersPage";
-// import RentPage from "./pages/RentPage";
+import RentPage from "./pages/showingData/RentPage";
 import GroundClassesPage from "./pages/showingData/GroundClassesPage";
 import DistrictsPage from "./pages/showingData/DistrictsPage";
 import NotFoundPage from "./pages/plain/NotFoundPage";
@@ -44,6 +44,7 @@ export default function App({}) {
                     <Route path="/owners" element={<OwnersPage/>}/>
                     <Route path="/districts" element={<DistrictsPage/>}/>
                     <Route path="/groundclasses" element={<GroundClassesPage/>}/>
+                    <Route path="/renters" element={<RentPage/>}/>
                     <Route path="*" element={<NotFoundPage/>}/>
                 </Routes>
             </BrowserRouter>
