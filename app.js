@@ -18,7 +18,6 @@ const landTypesRoutes = require("./routes/landTypes")
 const landPurposesRoutes = require("./routes/landPurposes")
 const mpzpRoutes = require("./routes/mpzp")
 const mainPlansRoutes = require("./routes/generalPlans")
-const purchasesRoutes = require("./routes/purchases")
 const groundClassesRoutes = require("./routes/groundClasses");
 const ownersRoutes = require("./routes/owners")
 const landsRoutes = require("./routes/lands");
@@ -33,7 +32,7 @@ const app = express();
 
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000,
-  max: 150,
+  max: 200,
 });
 
 // middlewares
@@ -53,7 +52,6 @@ app.use("/api/land_types", landTypesRoutes);
 app.use("/api/land_purposes", landPurposesRoutes)
 app.use("/api/mpzp", mpzpRoutes);
 app.use("/api/general_plans", mainPlansRoutes);
-app.use("/api/purchaces", purchasesRoutes);
 app.use("/api/ground_classes", groundClassesRoutes);
 app.use("/api/owners", ownersRoutes);
 app.use("/api/lands", landsRoutes);

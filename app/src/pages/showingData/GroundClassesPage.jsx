@@ -57,7 +57,7 @@ export default function GroundClassesPage({}) {
     }
 
     return (
-        <BasePage requiredRoles={["ADMIN"]}>
+        <BasePage requiredRoles={["KSIEGOWOSC"]}>
             <SearchBar
                 onSearch={search}
                 elements={

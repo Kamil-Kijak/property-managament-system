@@ -27,7 +27,7 @@ export default function InsertUser({}) {
         updateForm(null);
         API.insertUser({...insertFormData}).then(result => {
             if(!result.error) {
-                API.getUsers().then(result => updateUsers(result));
+                API.getUsers().then(result => updateUsers(result.data));
             }
         })
     }

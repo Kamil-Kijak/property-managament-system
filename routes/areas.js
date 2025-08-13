@@ -21,6 +21,8 @@ router.get("/get", [checkDataExisting(["ID_land"])], async (req, res) => {
     }
 });
 
+router.use(roleAuthorization(["KSIEGOWOSC"]));
+
 router.post("/insert", [checkDataExisting(["ID_land", "ID_ground_class", "area", "released_area"])], async (req, res) => {
     const {ID_land, ID_ground_class, area, released_area} = req.body;
     try {
@@ -40,6 +42,7 @@ router.post("/update", [checkDataExisting(["ID_area", "ID_ground_class", "area",
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 })
+
 router.post("/delete", [checkDataExisting(["ID_area"])], async (req, res) => {
     const {ID_area} = req.body;
     try {

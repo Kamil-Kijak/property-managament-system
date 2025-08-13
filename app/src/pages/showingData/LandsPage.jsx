@@ -288,7 +288,8 @@ export default function LandsPage({}) {
                             <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
                             <section className="flex gap-x-7 justify-center">
                                 <section className="flex-col gap-y-3">
-                                    <h1 className="text-2xl">Suma podatku: {(lands.reduce((acc, value) => acc + value.powierzchnie.reduce((acc2, value2) => acc2 + (Number((value2.przelicznik * value2.p_powierzchnia).toFixed(4)) - value2.zwolniona_powierzchnia) * (value2.podatek == "zwolniony" ? 0 : value2.podatek == "rolny" ? (value.podatek_rolny || 0) : (value.podatek_lesny || 0)), 0), 0)).toFixed(4)}zł</h1>
+                                    <h1 className="text-2xl">Suma podatku rolnego: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter((value2) => value2.podatek == "rolny").reduce((acc2, value2) => acc2 + (Number((value2.przelicznik * value2.p_powierzchnia).toFixed(4)) - value2.zwolniona_powierzchnia) * value.podatek_rolny, 0), 0)).toFixed(4)}zł</h1>
+                                    <h1 className="text-2xl mt-3">Suma podatku leśnego: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter((value2) => value2.podatek == "leśny").reduce((acc2, value2) => acc2 + (Number((value2.przelicznik * value2.p_powierzchnia).toFixed(4)) - value2.zwolniona_powierzchnia) * value.podatek_lesny, 0), 0)).toFixed(4)}zł</h1>
                                     <h1 className="text-2xl mt-3">Suma ha. fizyczne: {(lands.reduce((acc, value) => acc + value.powierzchnie.reduce((acc2, value2) => acc2 + Number(value2.p_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
                                 </section>
                                 <section className="flex-col gap-y-3">

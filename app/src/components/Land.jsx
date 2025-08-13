@@ -124,20 +124,23 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                                     <h1 className="font-bold text-sm">podatek</h1>
                                     <p className="text-xl">{((Number((ele.przelicznik * ele.p_powierzchnia).toFixed(4)) - ele.zwolniona_powierzchnia) * (ele.podatek == "zwolniony" ? 0 : ele.podatek == "rolny" ? (obj.podatek_rolny || 0) : (obj.podatek_lesny || 0))).toFixed(4)}zł</p>
                                 </section>
-                                <section className="flex flex-col items-center justify-center">
-                                    <button className="warning-btn" onClick={() => {
-                                        warningUpdate(true, "Uwaga", () => requestDeleteArea(ele.p_ID), () => warningUpdate(false), <>
-                                            <p className="text-white font-bold text-lg mt-5">
-                                                Czy napewno chcesz usunąć tą powierzchnie?
-                                            </p>
-                                        </>)
-                                    }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
-                                    <button className="info-btn" onClick={() => editArea(ele.p_ID, obj.ID, {
-                                        ID_ground_class:ele.k_ID,
-                                        area:ele.p_powierzchnia,
-                                        released_area:ele.zwolniona_powierzchnia
-                                    })}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
-                                </section>
+                                {
+                                    user.rola == "KSIEGOWOSC" && 
+                                    <section className="flex flex-col items-center justify-center">
+                                        <button className="warning-btn" onClick={() => {
+                                            warningUpdate(true, "Uwaga", () => requestDeleteArea(ele.p_ID), () => warningUpdate(false), <>
+                                                <p className="text-white font-bold text-lg mt-5">
+                                                    Czy napewno chcesz usunąć tą powierzchnie?
+                                                </p>
+                                            </>)
+                                        }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
+                                        <button className="info-btn" onClick={() => editArea(ele.p_ID, obj.ID, {
+                                            ID_ground_class:ele.k_ID,
+                                            area:ele.p_powierzchnia,
+                                            released_area:ele.zwolniona_powierzchnia
+                                        })}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                                    </section>
+                                }
                             </section>)
                         }
                         {
@@ -149,7 +152,7 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                     <section className="flex gap-x-5 items-center justify-around">
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma ha. fizyczne</h1>
-                            <h1 className="text-xl">{obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia), 0)}ha</h1>
+                            <h1 className="text-xl">{(obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia), 0)).toFixed(4)}ha</h1>
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma ha. przeliczeniowe</h1>
@@ -160,16 +163,23 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                             <h1 className="text-xl">{obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.zwolniona_powierzchnia), 0)}ha</h1>
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
-                            <h1 className="font-bold text-sm">suma podatek</h1>
-                            <h1 className="text-xl">{obj.powierzchnie.reduce((acc, ele) =>acc + Math.round((Number((ele.przelicznik * ele.p_powierzchnia).toFixed(4)) - ele.zwolniona_powierzchnia) * (ele.podatek == "zwolniony" ? 0 : ele.podatek == "rolny" ? (obj.podatek_rolny || 0) : (obj.podatek_lesny || 0)) * 10000) / 10000, 0)}zł</h1>
+                            <h1 className="font-bold text-sm">suma podatek rolny</h1>
+                            <h1 className="text-xl">{obj.powierzchnie.filter((value) => value.podatek == "rolny").reduce((acc, ele) =>acc + Math.round((Number((ele.przelicznik * ele.p_powierzchnia).toFixed(4)) - ele.zwolniona_powierzchnia) * obj.podatek_rolny * 10000) / 10000, 0)}zł</h1>
+                        </section>
+                        <section className="flex flex-col items-center justify-center gap-y-3">
+                            <h1 className="font-bold text-sm">suma podatek leśny</h1>
+                            <h1 className="text-xl">{obj.powierzchnie.filter((value) => value.podatek == "leśny").reduce((acc, ele) =>acc + Math.round((Number((ele.przelicznik * ele.p_powierzchnia).toFixed(4)) - ele.zwolniona_powierzchnia) * obj.podatek_lesny * 10000) / 10000, 0)}zł</h1>
                         </section>
                     </section>
-                    <section className="flex flex-col justify-center items-center">
-                        <button className="base-btn text-xl" onClick={() => {
-                            updateForm("insert_area")
-                            updateID(obj.ID)
-                        }}><FontAwesomeIcon icon={faPlus}/> Dodaj nową powierzchnie</button>
-                    </section>
+                    {
+                        user.rola == "KSIEGOWOSC" &&
+                        <section className="flex flex-col justify-center items-center">
+                            <button className="base-btn text-xl" onClick={() => {
+                                updateForm("insert_area")
+                                updateID(obj.ID)
+                            }}><FontAwesomeIcon icon={faPlus}/> Dodaj nową powierzchnie</button>
+                        </section>
+                    }
                 </>
             }
             <section className="flex justify-around gap-x-5">

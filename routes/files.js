@@ -3,7 +3,6 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const authorization = require("../middlewares/authorization");
-const checkDataExisting = require("../middlewares/checkDataExisting");
 const multer = require("multer");
 
 

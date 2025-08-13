@@ -63,7 +63,7 @@ export default function NavBar({requiredRoles = []}) {
                     buttonContent={<><FontAwesomeIcon icon={faUsers}/> Dzierżawy i Dzierżawcy</>}
                 />
                 {
-                    user.rola === "KSIĘGOWOŚĆ" || user.rola === "ADMIN" &&
+                    user.rola === "KSIEGOWOSC" &&
                     <>
                         <NavButton
                             path="/groundclasses"

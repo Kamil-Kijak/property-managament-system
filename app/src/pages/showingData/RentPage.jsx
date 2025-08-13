@@ -195,6 +195,15 @@ export default function RentPage({}) {
                         }
                     />
                 }
+                footer={
+                    <section className="my-10">
+                        <h1 className="text-4xl font-bold text-center">Podsumowanie</h1>
+                        <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
+                        <section className="flex gap-x-7 justify-center">
+                            <h1 className="text-2xl">Suma czynszu: {(renters.reduce((acc, value) => acc + value.dzialki.reduce((acc, value) => acc + parseFloat((parseFloat(value.wysokosc_czynszu) * parseFloat(value.powierzchnia))), 0), 0)).toFixed(2)}zł</h1>
+                        </section>
+                    </section>
+                }
             />
             <EditRenter
                 editRenterFormData={editRenterFormData}

@@ -12,6 +12,7 @@ const roleAuthorization = require("../middlewares/roleAuthorization")
 const router = express.Router();
 
 router.use(authorization());
+router.use(roleAuthorization(["KSIEGOWOSC"]))
 
 router.get("/get", [checkDataExisting(["tax_district", "agricultural_tax", "forest_tax", "commune", "district", "province"])], async (req, res) => {
     const {tax_district, agricultural_tax, forest_tax, commune, district, province} = req.query
