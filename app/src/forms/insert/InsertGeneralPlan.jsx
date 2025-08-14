@@ -7,16 +7,23 @@ import { useFormStore } from "../../hooks/stores/useFormStore";
 import { useGeneralPlansStore } from "../../hooks/stores/useResultStores";
 import InsertSection from "../../pages/sections/InsertSection";
 
+import generalPlans from "../../data/generalPlans.json"
+import { useEffect } from "react";
+
 export default function InsertGeneralPlan({}) {
 
-    const {form, updateForm} = useFormStore();
+    const {updateForm} = useFormStore();
     const updateGeneralPlans = useGeneralPlansStore((state) => state.updateGeneralPlans);
     const API = useApi();
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
         "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"Kod 2 litery"},
         "description":{regexp:/^.{0,70}$/, error:"Za długi"}
-    })
+    });
+
+    useEffect(() => {
+        setInsertFormData(prev => ({...prev, description:generalPlans[insertFormData.code] || ""}))
+    }, [insertFormData.code]);
 
     const requestInsertGeneralPlan = () => {
         updateForm(null);
@@ -40,7 +47,6 @@ export default function InsertGeneralPlan({}) {
     }
 
     return (
-        form == "insert" &&
         <InsertSection
             title="Tworzenie planu ogólnego"
             validateForm={validateForm}

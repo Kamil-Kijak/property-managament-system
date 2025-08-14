@@ -25,8 +25,9 @@ import EditArea from "../../forms/edit/EditArea";
 
 export default function LandsPage({}) {
     const warningUpdate = useWarningStore((state) => state.update);
-    const {lands, updateLands, updateID, editID} = useLandsStore();
+    const {lands, updateLands, updateID} = useLandsStore();
     const updateForm = useFormStore((state) => state.updateForm);
+    const form = useFormStore((state) => state.form);
 
     const API = useApi();
     const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
@@ -37,8 +38,7 @@ export default function LandsPage({}) {
         purpose_filter:"",
         rent_filter:"",
         low_area_filter:"",
-        high_area_filter:"",
-        seller_filter:""
+        high_area_filter:""
     });
     const [editAreaFormData, editAreaErrors, setEditAreaFormData] = useForm({
         "ID_ground_class":{regexp:/.+/, error:"Wybierz klase gruntu"},
@@ -248,12 +248,6 @@ export default function LandsPage({}) {
                         value={searchFilters.high_area_filter}
                         onChange={(e) => setSearchFilters(prev => ({...prev, high_area_filter:e.target.value}))}
                     />
-                    <SearchInput
-                        title="Od kogo"
-                        placeholder="from whom..."
-                        value={searchFilters.seller_filter}
-                        onChange={(e) => setSearchFilters(prev => ({...prev, seller_filter:e.target.value}))}
-                    />
                     </>
                 }
             />
@@ -288,8 +282,8 @@ export default function LandsPage({}) {
                             <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
                             <section className="flex gap-x-7 justify-center">
                                 <section className="flex-col gap-y-3">
-                                    <h1 className="text-2xl">Suma podatku rolnego: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter((value2) => value2.podatek == "rolny").reduce((acc2, value2) => acc2 + (Number((value2.przelicznik * value2.p_powierzchnia).toFixed(4)) - value2.zwolniona_powierzchnia) * value.podatek_rolny, 0), 0)).toFixed(4)}zł</h1>
-                                    <h1 className="text-2xl mt-3">Suma podatku leśnego: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter((value2) => value2.podatek == "leśny").reduce((acc2, value2) => acc2 + (Number((value2.przelicznik * value2.p_powierzchnia).toFixed(4)) - value2.zwolniona_powierzchnia) * value.podatek_lesny, 0), 0)).toFixed(4)}zł</h1>
+                                    <h1 className="text-2xl">Suma podatku rolnego: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter((value2) => value2.podatek == "rolny").reduce((acc2, value2) => acc2 + ((Number(value2.p_powierzchnia) * value2.przelicznik) - value2.zwolniona_powierzchnia) * (value.podatek_rolny || 0), 0), 0)).toFixed(4)}zł</h1>
+                                    <h1 className="text-2xl mt-3">Suma podatku leśnego: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter((value2) => value2.podatek == "leśny").reduce((acc2, value2) => acc2 + Number(value2.p_powierzchnia) * (value.podatek_lesny || 0), 0), 0)).toFixed(4)}zł</h1>
                                     <h1 className="text-2xl mt-3">Suma ha. fizyczne: {(lands.reduce((acc, value) => acc + value.powierzchnie.reduce((acc2, value2) => acc2 + Number(value2.p_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
                                 </section>
                                 <section className="flex-col gap-y-3">
@@ -304,18 +298,27 @@ export default function LandsPage({}) {
                     </>
                 }
             />
-            <InsertLand
-                search={search}
-            />
+            {
+                form == "insert" &&
+                <InsertLand
+                    search={search}
+                />
+            }
             <EditLand
                 search={search}
             />
-            <InsertRent
-                search={search}
-            />
-            <InsertArea
-                search={search}
-            />
+            {
+                form == "insert_rent" &&
+                <InsertRent
+                    search={search}
+                />
+            }
+            {
+                form == "insert_area" &&
+                <InsertArea
+                    search={search}
+                />
+            }
             <EditArea
                 search={search}
                 areaID={areaEditID}

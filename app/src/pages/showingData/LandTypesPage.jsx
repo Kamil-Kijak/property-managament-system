@@ -17,6 +17,7 @@ export default function LandTypesPage({}) {
     const warningUpdate = useWarningStore((state) => state.update)
     const {landTypes, updateLandTypes, updateID} = useLandTypesStore();
     const updateForm = useFormStore((state) => state.updateForm);
+    const form = useFormStore((state) => state.form);
     
     const API = useApi();
 
@@ -79,7 +80,10 @@ export default function LandTypesPage({}) {
                     }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowy rodzaj działki</button>
                 }
             />
-            <InsertLandType/>  
+            {
+                form == "insert" &&
+                <InsertLandType/>  
+            }
             <EditLandType
                 editFormData={editFormData}
                 editErrors={editErrors}

@@ -12,7 +12,7 @@ import InsertSection from "../../pages/sections/InsertSection";
 export default function InsertArea({search}) {
 
     const editID = useLandsStore((state) => state.editID);
-    const {form, updateForm} = useFormStore();
+    const {updateForm, form} = useFormStore();
 
     const API = useApi();
 
@@ -59,7 +59,6 @@ export default function InsertArea({search}) {
     }
 
     return (
-        form == "insert_area" &&
         <InsertSection
             title="Tworzenie nowej powierzchni"
             validateForm={validateForm}

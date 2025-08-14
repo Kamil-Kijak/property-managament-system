@@ -25,7 +25,7 @@ export default function InsertRent({search}) {
     const [rentFormData, rentErrors, setRentFormData] = useForm({
         "start_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Zły format"},
         "end_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Zły formt"},
-        "rent":{regexp:/^\d{0,5}\.\d{2}$/, error:"Nie ma 2 po , lub za duża liczba"},
+        "rent":{regexp:/^\d{0,5}$/, error:"Za duża liczba"},
         "ID_renter":{regexp:/.+/, error:"Wybierz dzierżawce"},
     })
 
@@ -80,14 +80,15 @@ export default function InsertRent({search}) {
     const validateForm = () => {
         if(Object.keys(rentFormData).length == 4) {
             if(Object.keys(rentErrors).every(ele => rentErrors[ele] == null)) {
-                return true;
+                if(invoiceIssueDate.day && invoiceIssueDate.month) {
+                    return true;
+                }
             }  
         }
         return false;
     }
 
     return (
-        form == "insert_rent" && 
         <InsertSection
             title="Tworzenie nowej dzierżawy"
             validateForm={validateForm}
@@ -167,7 +168,6 @@ export default function InsertRent({search}) {
                     </section>
                     <SimpleInput
                         type="number"
-                        step="any"
                         min={0}
                         title="Wysokość czynszu (zł)"
                         placeholder="rent cost (zł)..."

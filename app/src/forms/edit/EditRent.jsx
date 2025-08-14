@@ -9,7 +9,7 @@ import UpdateSection from "../../pages/sections/UpdateSection";
 import InsertSection from "../../pages/sections/InsertSection";
 
 
-export default function EditRent({editRentFormData, editRentErrors, setEditRentFormData, search, invoiceIssueDate}) {
+export default function EditRent({editRentFormData, editRentErrors, setEditRentFormData, search, invoiceIssueDate, setInvoiceIssueDate}) {
     const {form, updateForm} = useFormStore();
     const editID = useRentersStore((state) => state.editID)
 
@@ -42,7 +42,9 @@ export default function EditRent({editRentFormData, editRentErrors, setEditRentF
     const validateForm = () => {
         if(Object.keys(editRentFormData).length == 4) {
             if(Object.keys(editRentErrors).every(ele => editRentErrors[ele] == null)) {
-                return true;
+                if(invoiceIssueDate.day && invoiceIssueDate.month) {
+                    return true;
+                }
             }  
         }
         return false;
@@ -152,7 +154,6 @@ export default function EditRent({editRentFormData, editRentErrors, setEditRentF
                     </section>
                     <SimpleInput
                         type="number"
-                        step="any"
                         min={0}
                         title="Wysokość czynszu (zł)"
                         placeholder="rent cost (zł)..."

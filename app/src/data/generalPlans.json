@@ -1,0 +1,15 @@
+{
+    "SW":"strefa wielofunkcyjna z zabudową mieszkaniową wielorodzinną",
+    "SJ":"strefa wielofunkcyjna z zabudową mieszkaniową jednorodzinną",
+    "SZ":"strefa wielofunkcyjna z zabudową zagrodową",
+    "SU":"strefa usługowa",
+    "SH":"strefa handlu wielkopowierzchniowego",
+    "SP":"strefa gospodarcza",
+    "SR":"strefa produkcji rolniczej",
+    "SI":"strefa infrastrukturalna",
+    "SN":"strefa zieleni i rekreacji",
+    "SC":"strefa cmentarzy",
+    "SG":"strefa górnictwa",
+    "SO":"strefa otwarta",
+    "SK":"strefa komunikacyjna"
+}

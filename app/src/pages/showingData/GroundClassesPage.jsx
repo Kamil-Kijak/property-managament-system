@@ -21,6 +21,7 @@ export default function GroundClassesPage({}) {
     const warningUpdate = useWarningStore((state) => state.update)
     const {groundClasses, updateGroundClasses, updateID} = useGroundClassesStore();
     const updateForm = useFormStore((state) => state.updateForm);
+    const form = useFormStore((state) => state.form);
 
     const API = useApi();
 
@@ -127,10 +128,13 @@ export default function GroundClassesPage({}) {
                     </section>
                     }
             />
-            <InsertGroundClass
-                search={search}
-                taxDistrict={taxDistrict}
-            />
+            {
+                form == "insert" &&
+                <InsertGroundClass
+                    search={search}
+                    taxDistrict={taxDistrict}
+                />
+            }
             <EditGroundClass
                 search={search}
                 editFormData={editFormData}

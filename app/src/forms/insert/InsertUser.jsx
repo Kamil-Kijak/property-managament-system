@@ -9,7 +9,7 @@ import { useApi } from "../../hooks/plain/useApi";
 import InsertSection from "../../pages/sections/InsertSection";
 
 export default function InsertUser({}) {
-    const {form, updateForm} = useFormStore();
+    const {updateForm} = useFormStore();
     const updateUsers = useUsersStore((state) => state.updateUsers);
 
     const API = useApi();
@@ -43,7 +43,6 @@ export default function InsertUser({}) {
         return false;
     }
     return (
-        form == "insert" &&
         <InsertSection
             title="Tworzenie nowego użytkownika"
             validateForm={validateForm}

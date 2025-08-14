@@ -9,7 +9,7 @@ import InsertSection from "../../pages/sections/InsertSection";
 
 export default function InsertGroundClass({search = () => {}, taxDistrict}) {
 
-    const {form, updateForm} = useFormStore();
+    const {updateForm} = useFormStore();
 
     const API = useApi();
 
@@ -39,7 +39,6 @@ export default function InsertGroundClass({search = () => {}, taxDistrict}) {
     }
 
     return (
-        form == "insert" &&
         <InsertSection
             title={`Tworzenie klasy gruntu dla okr. podatkowego nr ${taxDistrict}`}
             validateForm={validateForm}

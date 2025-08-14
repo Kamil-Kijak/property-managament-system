@@ -9,7 +9,7 @@ import InsertSection from "../../pages/sections/InsertSection";
 
 export default function InsertLandType({}) {
 
-    const {form, updateForm} = useFormStore();
+    const {updateForm} = useFormStore();
     const updateLandTypes = useLandTypesStore((state) => state.updateLandTypes);
 
     const API = useApi();
@@ -41,7 +41,6 @@ export default function InsertLandType({}) {
     }
 
     return (
-        form == "insert" &&
         <InsertSection
             title="Tworzenie rodzaju działki"
             validateForm={validateForm}

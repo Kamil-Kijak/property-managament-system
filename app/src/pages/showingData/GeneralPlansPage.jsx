@@ -18,6 +18,7 @@ export default function GeneralPlansPage({}) {
     const warningUpdate = useWarningStore((state) => state.update);
     const {generalPlans, updateGeneralPlans, updateID} = useGeneralPlansStore();
     const updateForm = useFormStore((state) => state.updateForm);
+    const form = useFormStore((state) => state.form);
 
     const API = useApi();
 
@@ -82,7 +83,9 @@ export default function GeneralPlansPage({}) {
                     }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowy plan ogólny</button>
                 }
             />
-            <InsertGeneralPlan/>
+            {
+                form == "insert" && <InsertGeneralPlan/>
+            }
             <EditGeneralPlan
                 editFormData={editFormData}
                 editErrors={editErrors}

@@ -57,8 +57,9 @@ export default function InsertLand({search}) {
     }
     
     useEffect(() => {
-        if(form == "insert")
+        if(form == "insert") {
             fetchAllData();
+        }
     }, [form]);
 
     const requestInsertOwner = () => {
@@ -101,7 +102,6 @@ export default function InsertLand({search}) {
     }
 
     return (
-        form == "insert" &&
         <InsertSection
             title="Tworzenie nowej działki"
             validateForm={validateForm}

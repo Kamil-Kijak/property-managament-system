@@ -23,7 +23,7 @@ export default function UsersPage({}) {
     const users = useUsersStore((state) => state.users);
     
     const user = useUserStore((state) => state.user);
-    const {updateForm} = useFormStore();
+    const {updateForm, form} = useFormStore();
 
     const API = useApi();
     const navigate = useNavigate();
@@ -103,7 +103,10 @@ export default function UsersPage({}) {
                     }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowego użytkownika</button>
                 }
             />
-            <InsertUser/>
+            {
+                form == "insert" &&
+                <InsertUser/>
+            }
             <EditUser
                 editFormData={editFormData}
                 editErrors={editErrors}

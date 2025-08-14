@@ -84,8 +84,13 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                     {
                         file && <a target="_blank" href={`/api/files/file/${file.substring(0, file.lastIndexOf("."))}`} className="pdf-btn"><FontAwesomeIcon icon={faFile}/> Plik</a>
                     }
-                    <button className="pdf-btn" onClick={selectFile}><FontAwesomeIcon icon={faFileArrowDown}/> Wgraj plik</button>
-                    <input ref={inputFileRef} type="file" className="hidden" accept="image/png,image/jpg,application/pdf" id="file" onChange={(e) => uploadFile(e, obj.numer_seryjny_dzialki)} />
+                    {
+                        user.rola == "SEKRETARIAT" &&
+                        <>
+                            <button className="pdf-btn" onClick={selectFile}><FontAwesomeIcon icon={faFileArrowDown}/> Wgraj plik</button>
+                            <input ref={inputFileRef} type="file" className="hidden" accept="image/png,image/jpg,application/pdf" id="file" onChange={(e) => uploadFile(e, obj.numer_seryjny_dzialki)} />
+                        </>
+                    }
                 </section>
             </section>
             {
@@ -122,7 +127,10 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                                 </section>
                                 <section className="flex flex-col items-center justify-center gap-y-3">
                                     <h1 className="font-bold text-sm">podatek</h1>
-                                    <p className="text-xl">{((Number((ele.przelicznik * ele.p_powierzchnia).toFixed(4)) - ele.zwolniona_powierzchnia) * (ele.podatek == "zwolniony" ? 0 : ele.podatek == "rolny" ? (obj.podatek_rolny || 0) : (obj.podatek_lesny || 0))).toFixed(4)}zł</p>
+                                    <p className="text-xl">{
+                                        ele.podatek == "leśny" ? (Number(ele.p_powierzchnia) * (obj.podatek_lesny || 0)).toFixed(4) : ele.podatek == "zwolniony" ? 0 :
+                                        (((Number(ele.p_powierzchnia) * ele.przelicznik) - ele.zwolniona_powierzchnia) * (obj.podatek_rolny || 0)).toFixed(4)
+                                    }zł</p>
                                 </section>
                                 {
                                     user.rola == "KSIEGOWOSC" && 
@@ -156,7 +164,7 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma ha. przeliczeniowe</h1>
-                            <h1 className="text-xl">{(obj.powierzchnie.reduce((acc, obj) =>acc + Number(Math.round(obj.p_powierzchnia * obj.przelicznik * 10000) / 10000), 0)).toFixed(4)}ha</h1>
+                            <h1 className="text-xl">{(obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia) * obj.przelicznik, 0)).toFixed(4)}ha</h1>
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma ha. zwolnione</h1>
@@ -164,11 +172,11 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma podatek rolny</h1>
-                            <h1 className="text-xl">{obj.powierzchnie.filter((value) => value.podatek == "rolny").reduce((acc, ele) =>acc + Math.round((Number((ele.przelicznik * ele.p_powierzchnia).toFixed(4)) - ele.zwolniona_powierzchnia) * obj.podatek_rolny * 10000) / 10000, 0)}zł</h1>
+                            <h1 className="text-xl">{(obj.powierzchnie.filter((value) => value.podatek == "rolny").reduce((acc, ele) =>acc + ((Number(ele.p_powierzchnia) * ele.przelicznik) - ele.zwolniona_powierzchnia) * (obj.podatek_rolny || 0), 0)).toFixed(4)}zł</h1>
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma podatek leśny</h1>
-                            <h1 className="text-xl">{obj.powierzchnie.filter((value) => value.podatek == "leśny").reduce((acc, ele) =>acc + Math.round((Number((ele.przelicznik * ele.p_powierzchnia).toFixed(4)) - ele.zwolniona_powierzchnia) * obj.podatek_lesny * 10000) / 10000, 0)}zł</h1>
+                            <h1 className="text-xl">{(obj.powierzchnie.filter((value) => value.podatek == "leśny").reduce((acc, ele) =>acc + (Number(ele.p_powierzchnia) * (obj.podatek_lesny || 0)), 0)).toFixed(4)}zł</h1>
                         </section>
                     </section>
                     {
@@ -260,7 +268,7 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                             <p>{obj.sprzedawca || "BRAK"}</p>
                         </section>
                         <section className="flex flex-col items-center">
-                            <p className="font-bold mb-3">Cena zakupu</p>
+                            <p className="font-bold mb-3">Cena za ha</p>
                             <p>{obj.cena_zakupu ? `${obj.cena_zakupu}zł` : "BRAK"}</p>
                         </section>
                     </section>

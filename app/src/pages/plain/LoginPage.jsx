@@ -71,7 +71,8 @@ export default function LoginPage({}) {
 
     return(
         <main className="w-screen min-h-screen">
-            <section className="flex flex-col justify-center items-center h-screen">
+            <section className="flex flex-col justify-start items-center h-screen">
+                <img src="./SKINVEST_logo.png" alt="" className="w-[200px] my-10" />
                 {adminCreate ?
                     <section className="base-card">
                         <h1 className="text-2xl my-2 text-center">Tworzenie konta administratora</h1>

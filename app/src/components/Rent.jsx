@@ -65,7 +65,7 @@ export default function Rent({ele, deleteRent, editRent}) {
                         <p>{ele.wysokosc_czynszu}zł</p>
                     </section>
                     <section className="flex flex-col items-center">
-                        <p className="font-bold mb-3">Lokalizacja</p>
+                        <p className="font-bold mb-3">Lokalizacja działki</p>
                         <p>{ele.wojewodztwo}, {ele.powiat}</p>
                         <p>{ele.gmina}, {ele.miejscowosc}</p>
                     </section>

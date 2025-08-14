@@ -16,8 +16,9 @@ import EditMpzp from "../../forms/edit/EditMpzp";
 export default function MpzpPage({}) {
     
     const warningUpdate = useWarningStore((state) => state.update);
-    const {mpzp, updateMpzp, updateID, editID} = useMpzpStore();
+    const {mpzp, updateMpzp, updateID} = useMpzpStore();
     const updateForm = useFormStore((state) => state.updateForm);
+    const form = useFormStore((state) => state.form);
 
     const API = useApi();
 
@@ -80,7 +81,10 @@ export default function MpzpPage({}) {
                     }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowy MPZP</button>
                 }
             />
-            <InsertMpzp/>
+            {
+                form == "insert" &&
+                <InsertMpzp/>
+            }
             <EditMpzp
                 editFormData={editFormData}
                 editErrors={editErrors}

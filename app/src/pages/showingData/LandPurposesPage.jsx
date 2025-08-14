@@ -16,6 +16,7 @@ export default function LandPurposesPage({}) {
 
     const warningUpdate = useWarningStore((state) => state.update);
     const updateForm = useFormStore((state) => state.updateForm);
+    const form = useFormStore((state) => state.form);
     const {landPurposes, updateLandPurposes, updateID} = useLandPurposesStore();
 
     const API = useApi();
@@ -79,7 +80,9 @@ export default function LandPurposesPage({}) {
                     }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowe przeznaczenie działki</button>
                 }
             />
-            <InsertLandPurpose/>
+            {
+                form == "insert" && <InsertLandPurpose/>
+            }
             <EditLandPurpose
                 editFormData={editFormData}
                 editErrors={editErrors}

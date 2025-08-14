@@ -6,9 +6,11 @@ import { useFormStore } from "../../hooks/stores/useFormStore";
 import { useMpzpStore } from "../../hooks/stores/useResultStores";
 import { useApi } from "../../hooks/plain/useApi";
 import InsertSection from "../../pages/sections/InsertSection";
+import { useEffect } from "react";
+import mpzp from "../../data/mpzp.json"
 
 export default function InsertMpzp({}) {
-    const {form, updateForm} = useFormStore();
+    const {updateForm} = useFormStore();
     const updateMpzp = useMpzpStore((state) => state.updateMpzp);
 
     const API = useApi();
@@ -16,7 +18,11 @@ export default function InsertMpzp({}) {
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
         "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"Kod 2 litery"},
         "description":{regexp:/^.{0,49}$/, error:"Za długi"}
-    })
+    });
+
+    useEffect(() => {
+        setInsertFormData(prev => ({...prev, description:mpzp[insertFormData.code] || ""}))
+    }, [insertFormData.code]);
 
     const requestInsertMpzp = () => {
         updateForm(null);
@@ -40,7 +46,6 @@ export default function InsertMpzp({}) {
     }
 
     return (
-        form == "insert" &&
         <InsertSection
             title="Tworzenie MPZP"
             validateForm={validateForm}

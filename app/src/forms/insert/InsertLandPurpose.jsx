@@ -8,7 +8,7 @@ import InsertSection from "../../pages/sections/InsertSection";
 
 export default function InsertLandPurpose({}) {
     
-    const {form, updateForm} = useFormStore();
+    const {updateForm} = useFormStore();
     const updateLandPurposes = useLandPurposesStore((state) => state.updateLandPurposes);
 
     const API = useApi();
@@ -40,7 +40,6 @@ export default function InsertLandPurpose({}) {
     }
     
     return (
-        form == "insert" &&
         <InsertSection
             title="Tworzenie przeznaczenia działki"
             onSubmit={requestInsertLandPurpose}
