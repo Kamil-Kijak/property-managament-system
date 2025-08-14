@@ -17,7 +17,7 @@ export default function InsertMpzp({}) {
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
         "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"Kod 2 litery"},
-        "description":{regexp:/^.{0,49}$/, error:"Za długi"}
+        "description":{regexp:/^.{0,70}$/, error:"Za długi"}
     });
 
     useEffect(() => {

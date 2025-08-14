@@ -85,12 +85,15 @@ export default function GroundClassesPage({}) {
                 list={groundClasses}
                 template={(obj) =>
                     <section className="base-card my-5" key={obj.ID}>
-                        <section className="flex gap-x-10 items-center">
+                        <section className="flex gap-x-10 w-full items-center justify-between">
                             <h1 className="text-4xl text-green-600 font-bold">{obj.klasa}</h1>
-                            <section className="flex flex-col items-center justify-center">
-                                <h1 className="font-bold text-xl">Przelicznik</h1>
-                                <p className="mx-10 text-xl">{obj.przelicznik}</p>
-                            </section>
+                            {
+                                obj.podatek == "rolny" &&
+                                <section className="flex flex-col items-center justify-center">
+                                    <h1 className="font-bold text-xl">Przelicznik</h1>
+                                    <p className="mx-10 text-xl">{obj.przelicznik}</p>
+                                </section>
+                            }
                             <section className="flex flex-col items-center justify-center">
                                 <h1 className="font-bold text-xl">Rodzaj podatku klasy</h1>
                                 <p className="mx-10 text-xl">{obj.podatek}</p>

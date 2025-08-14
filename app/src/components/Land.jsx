@@ -128,8 +128,8 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                                 <section className="flex flex-col items-center justify-center gap-y-3">
                                     <h1 className="font-bold text-sm">podatek</h1>
                                     <p className="text-xl">{
-                                        ele.podatek == "leśny" ? (Number(ele.p_powierzchnia) * (obj.podatek_lesny || 0)).toFixed(4) : ele.podatek == "zwolniony" ? 0 :
-                                        (((Number(ele.p_powierzchnia) * ele.przelicznik) - ele.zwolniona_powierzchnia) * (obj.podatek_rolny || 0)).toFixed(4)
+                                        ele.podatek == "leśny" ? ((Number(ele.p_powierzchnia) - ele.zwolniona_powierzchnia) * (obj.podatek_lesny || 0)).toFixed(4) : ele.podatek == "zwolniony" ? 0 :
+                                        ((Number((Number(ele.p_powierzchnia) * ele.przelicznik).toFixed(4)) - ele.zwolniona_powierzchnia) * (obj.podatek_rolny || 0)).toFixed(4)
                                     }zł</p>
                                 </section>
                                 {
@@ -157,26 +157,24 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                         
                     </section>
                     <div className="bg-green-500 w-full h-2 rounded-2xl mt-3"></div>
-                    <section className="flex gap-x-5 items-center justify-around">
+                    <section className="flex gap-x-5 items-start justify-around">
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma ha. fizyczne</h1>
                             <h1 className="text-xl">{(obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia), 0)).toFixed(4)}ha</h1>
+                            {obj.powierzchnia == (obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia), 0)).toFixed(4) ?
+                            <h1 className="font-bold text-green-600 text-xl">Zgodność</h1>:<h1 className="font-bold text-red-600 text-xl">Brak zgodnośći</h1>}
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
-                            <h1 className="font-bold text-sm">suma ha. przeliczeniowe</h1>
-                            <h1 className="text-xl">{(obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia) * obj.przelicznik, 0)).toFixed(4)}ha</h1>
-                        </section>
-                        <section className="flex flex-col items-center justify-center gap-y-3">
-                            <h1 className="font-bold text-sm">suma ha. zwolnione</h1>
-                            <h1 className="text-xl">{obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.zwolniona_powierzchnia), 0)}ha</h1>
+                            <h1 className="font-bold text-sm">suma ha. przeliczeniowe rolne</h1>
+                            <h1 className="text-xl">{(obj.powierzchnie.filter((ele) => ele.podatek == "rolny").reduce((acc, obj) =>acc + Number(obj.p_powierzchnia) * obj.przelicznik, 0)).toFixed(4)}ha</h1>
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma podatek rolny</h1>
-                            <h1 className="text-xl">{(obj.powierzchnie.filter((value) => value.podatek == "rolny").reduce((acc, ele) =>acc + ((Number(ele.p_powierzchnia) * ele.przelicznik) - ele.zwolniona_powierzchnia) * (obj.podatek_rolny || 0), 0)).toFixed(4)}zł</h1>
+                            <h1 className="text-xl">{(obj.powierzchnie.filter((value) => value.podatek == "rolny").reduce((acc, ele) =>acc + (Number((Number(ele.p_powierzchnia) * ele.przelicznik).toFixed(4)) - ele.zwolniona_powierzchnia) * (obj.podatek_rolny || 0), 0)).toFixed(4)}zł</h1>
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma podatek leśny</h1>
-                            <h1 className="text-xl">{(obj.powierzchnie.filter((value) => value.podatek == "leśny").reduce((acc, ele) =>acc + (Number(ele.p_powierzchnia) * (obj.podatek_lesny || 0)), 0)).toFixed(4)}zł</h1>
+                            <h1 className="text-xl">{(obj.powierzchnie.filter((value) => value.podatek == "leśny").reduce((acc, ele) =>acc + ((Number(ele.p_powierzchnia) - ele.zwolniona_powierzchnia) * (obj.podatek_lesny || 0)), 0)).toFixed(4)}zł</h1>
                         </section>
                     </section>
                     {

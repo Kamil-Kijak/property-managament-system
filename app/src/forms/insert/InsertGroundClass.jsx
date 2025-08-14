@@ -5,6 +5,7 @@ import SelectInput from "../../components/inputs/SelectInput";
 import { useApi } from "../../hooks/plain/useApi";
 import { useFormStore } from "../../hooks/stores/useFormStore";
 import InsertSection from "../../pages/sections/InsertSection";
+import { useEffect } from "react";
 
 
 export default function InsertGroundClass({search = () => {}, taxDistrict}) {
@@ -18,6 +19,12 @@ export default function InsertGroundClass({search = () => {}, taxDistrict}) {
         "converter":{regexp:/^\d{1}\.\d{2}$/, error:"Nie ma 2 cyfr po , lub za duża liczba"},
         "tax":{regexp:/.+/, error:"Wybierz rodzaj podatku"}
     });
+
+    useEffect(() => {
+        if(insertFormData.tax == "leśny" || insertFormData.tax == "zwolniony") {
+            setInsertFormData(prev => ({...prev, converter:"1.00"}))
+        }
+    }, [insertFormData.tax])
 
 
     const requestInsertGroundClass = () => {
@@ -52,16 +59,6 @@ export default function InsertGroundClass({search = () => {}, taxDistrict}) {
                         onChange={(e) => setInsertFormData(prev => ({...prev, ground_class:e.target.value}))}
                         error={insertErrors.ground_class}
                     />
-                    <SimpleInput
-                        type="number"
-                        step="any"
-                        min={0}
-                        title="Przelicznik"
-                        placeholder="converter..."
-                        value={insertFormData.converter}
-                        onChange={(e) => setInsertFormData(prev => ({...prev, converter:e.target.value}))}
-                        error={insertErrors.converter}
-                    />
                     <SelectInput
                         title="Rodzaj podatku klasy"
                         value={insertFormData.tax}
@@ -74,6 +71,19 @@ export default function InsertGroundClass({search = () => {}, taxDistrict}) {
                                 </>
                             }
                     />
+                    {
+                        insertFormData.tax == "rolny" &&
+                        <SimpleInput
+                            type="number"
+                            step="any"
+                            min={0}
+                            title="Przelicznik"
+                            placeholder="converter..."
+                            value={insertFormData.converter}
+                            onChange={(e) => setInsertFormData(prev => ({...prev, converter:e.target.value}))}
+                            error={insertErrors.converter}
+                        />
+                    }
                 </section>
             }
         />

@@ -96,7 +96,7 @@ export default function InsertArea({search}) {
                             type="number"
                             min={0}
                             step="any"
-                            title="Zwolnione ha. przeliczeniowe"
+                            title="Zwolnione ha."
                             placeholder="released area..."
                             value={insertAreaFormData.released_area}
                             onChange={(e) => setInsertAreaFormData(prev => ({...prev, released_area:e.target.value}))}

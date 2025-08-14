@@ -83,7 +83,7 @@ export default function EditArea({areaID, search, editAreaFormData, editAreaErro
                             type="number"
                             min={0}
                             step="any"
-                            title="Zwolnione ha. przeliczeniowe"
+                            title="Zwolnione ha. "
                             placeholder="released area..."
                             value={editAreaFormData.released_area}
                             onChange={(e) => setEditAreaFormData(prev => ({...prev, released_area:e.target.value}))}

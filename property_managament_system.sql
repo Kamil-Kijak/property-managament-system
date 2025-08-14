@@ -70,7 +70,7 @@ CREATE TABLE `dzierzawy` (
   `ID_dzierzawcy` int NOT NULL,
   `data_rozpoczecia` date NOT NULL,
   `data_zakonczenia` date NOT NULL,
-  `wysokosc_czynszu` decimal(7,2) NOT NULL,
+  `wysokosc_czynszu` MEDIUMINT NOT NULL,
   `data_wystawienia_fv_czynszowej` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

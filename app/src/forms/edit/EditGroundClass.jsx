@@ -1,5 +1,6 @@
 
 
+import { useEffect } from "react";
 import SelectInput from "../../components/inputs/SelectInput";
 import SimpleInput from "../../components/inputs/SimpleInput";
 import { useApi } from "../../hooks/plain/useApi";
@@ -13,6 +14,12 @@ export default function EditGroundClass({editFormData, editErrors, setEditFormDa
     const editID = useGroundClassesStore((state) => state.editID);
 
     const API = useApi();
+
+    useEffect(() => {
+        if(editFormData.tax == "leśny" || editFormData.tax == "zwolniony") {
+            setEditFormData(prev => ({...prev, converter:"1.00"}))
+        }
+    }, [editFormData.tax])
 
     const requestEdit = () => {
         updateForm(null);
@@ -47,16 +54,6 @@ export default function EditGroundClass({editFormData, editErrors, setEditFormDa
                         onChange={(e) => setEditFormData(prev => ({...prev, ground_class:e.target.value}))}
                         error={editErrors.ground_class}
                     />
-                    <SimpleInput
-                        type="number"
-                        step="any"
-                        min={0}
-                        title="Przelicznik"
-                        placeholder="converter..."
-                        value={editFormData.converter}
-                        onChange={(e) => setEditFormData(prev => ({...prev, converter:e.target.value}))}
-                        error={editErrors.converter}
-                    />
                     <SelectInput
                         title="Rodzaj podatku klasy"
                         value={editFormData.tax}
@@ -69,6 +66,19 @@ export default function EditGroundClass({editFormData, editErrors, setEditFormDa
                                 </>
                             }
                     />
+                    {
+                        editFormData.tax == "rolny" &&
+                        <SimpleInput
+                            type="number"
+                            step="any"
+                            min={0}
+                            title="Przelicznik"
+                            placeholder="converter..."
+                            value={editFormData.converter}
+                            onChange={(e) => setEditFormData(prev => ({...prev, converter:e.target.value}))}
+                            error={editErrors.converter}
+                        />
+                    }
                 </section>
             }
         />

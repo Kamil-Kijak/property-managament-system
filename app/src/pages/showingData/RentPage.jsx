@@ -39,7 +39,7 @@ export default function RentPage({}) {
     const [editRentFormData, editRentErrors, setEditRentFormData] = useForm({
         "start_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Zły format"},
         "end_date":{regexp:/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, error:"Zły formt"},
-        "rent":{regexp:/^\d{0,5}$/, error:"Za duża liczba"},
+        "rent":{regexp:/^\d{0,7}$/, error:"Za duża liczba"},
         "ID_renter":{regexp:/.+/, error:"Wybierz dzierżawce"},
     });
     const [invoiceIssueDate, setInvoiceIssueDate] = useState({
