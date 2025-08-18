@@ -12,6 +12,19 @@ const roleAuthorization = require("../middlewares/roleAuthorization")
 const router = express.Router();
 
 router.use(authorization());
+
+router.get("/get_towns", [checkDataExisting(["town"])], async (req, res) => {
+    const {town} = req.query;
+    try {
+        let SQL = "SELECT m.ID, m.nazwa, l.gmina, l.powiat, l.wojewodztwo FROM miejscowosci m INNER JOIN lokalizacje l ON m.ID_lokalizacji=l.ID WHERE m.nazwa LIKE ?";
+        const params = [`${town}%`];
+        const [result] = await connection.execute(SQL, params);
+        res.status(200).json({success:true, message:"pobrano miejscowości", data:result})
+    } catch (err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err});
+    }
+})
+
 router.use(roleAuthorization(["KSIEGOWOSC"]))
 
 router.get("/get", [checkDataExisting(["tax_district", "agricultural_tax", "forest_tax", "commune", "district", "province"])], async (req, res) => {

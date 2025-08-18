@@ -27,7 +27,8 @@ export default function RentPage({}) {
         owner_name_filter:"",
         owner_surname_filter:"",
         month_filter:"",
-        end_year_filter:""
+        end_year_filter:"",
+        limit:"200"
     });
 
     const [editRenterFormData, editRenterErrors, setEditRenterFormData] = useForm({
@@ -95,28 +96,32 @@ export default function RentPage({}) {
                 elements={
                     <>
                         <SearchInput
-                            type="text"
+                            type="number"
+                            min={0}
+                            title="limit wyników"
+                            placeholder="results limit..."
+                            value={searchFilters.limit}
+                            onChange={(e) => setSearchFilters(prev => ({...prev, limit:e.target.value}))}
+                        />
+                        <SearchInput
                             title="Imie dzierżawcy"
                             placeholder="renter name..."
                             value={searchFilters.name_filter}
                             onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value}))}
                         />
                         <SearchInput
-                            type="text"
                             title="Nazwisko dzierżawcy"
                             placeholder="renter surname..."
                             value={searchFilters.surname_filter}
                             onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value}))}
                         />
                         <SearchInput
-                            type="text"
                             title="Imie właściciela"
                             placeholder="owner name..."
                             value={searchFilters.owner_name_filter}
                             onChange={(e) => setSearchFilters(prev => ({...prev, owner_name_filter:e.target.value}))}
                         />
                         <SearchInput
-                            type="text"
                             title="Nazwisko właściciela"
                             placeholder="owner surname..."
                             value={searchFilters.owner_surname_filter}

@@ -21,6 +21,10 @@ const useApi = () => {
         loadingUpdate(false);
         return result;
     }
+    const requestFromApiLite = async (url, options) => {
+        const result = await request(url, options);
+        return result;
+    }
     
     const getUsers = async () => {
         return await requestFromApi("/api/user/get", {});
@@ -120,6 +124,15 @@ const useApi = () => {
     }
     const getDistricts = async (params) => {
         return await requestFromApi(`/api/districts/get?${params.toString()}`,  {
+            method:"GET",
+            credentials:"include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+    }
+    const getTowns = async (params) => {
+        return await requestFromApiLite(`/api/districts/get_towns?${params.toString()}`,  {
             method:"GET",
             credentials:"include",
             headers: {
@@ -231,7 +244,7 @@ const useApi = () => {
         getLandPurposes, deleteLandPurpose, updateLandPurpose, insertLandPurpose,
         getLandTypes, deleteLandType, updateLandType, insertLandType,
         getOwners, deleteOwner, updateOwner, insertOwner,
-        getDistricts, updateDistricts,
+        getDistricts, updateDistricts, getTowns,
         getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass,getLandGroundClasses,
         getAllRenters, getRenters, deleteRenter, updateRenter, insertRenter,
         deleteRent, updateRent, insertRent,

@@ -39,7 +39,7 @@ export default function InsertLand({search}) {
         "price":{regexp:/^(\d{0,6}\.\d{2})?$/, error:"Nie ma 2 cyfr po , lub za duża liczba", optional:true},
     })
 
-    const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
+    const [availableLocalizations, localizations, setLocalizations, matchedTowns] = useLocalizations();
     const [selectData, setSelectData] = useState({
         owners:[],
         land_types:[],
@@ -180,21 +180,27 @@ export default function InsertLand({search}) {
                             
                             />
                         </section>
-                        <section className="w-[150px]">
-                            <SelectInput
-                                title="Miejscowość"
-                                value={localizations.town}
-                                onChange={(e) => setLocalizations(prev => ({...prev, town:e.target.value}))}
-                                options={
-                                    <>
-                                        {
-                                            availableLocalizations.towns.map((obj) => <option key={obj} value={obj}>{obj}</option>)
-                                        }
-                                    </>
+                    </section>
+                    <section className="flex justify-center w-full gap-x-5 my-5">
+                        <SimpleInput
+                            title="Miejscowość"
+                            placeholder="town..."
+                            value={localizations.town}
+                            onChange={(e) => setLocalizations(prev => ({...prev, town:e.target.value}))}
+                        />
+                        {
+                            matchedTowns.length > 0 &&
+                            <select multiple={true} className="border-3 rounded-lg p-3 gap-y-2" onChange={(e) => {
+                                const data = e.target.value.split(",");
+                                setLocalizations({town:data[0], commune:data[1], district:data[2], province:data[3]})
+                            }}>
+                                {
+                                    matchedTowns.map(obj => <option key={obj.ID} value={`${obj.nazwa},${obj.gmina},${obj.powiat},${obj.wojewodztwo}`}>
+                                    {obj.nazwa}, {obj.gmina}, {obj.powiat}, {obj.wojewodztwo}
+                                    </option>)
                                 }
-                            
-                            />
-                        </section>
+                            </select>
+                        }
                     </section>
                     <section className="flex justify-center w-full gap-x-10 my-5 items-center">
                         <section className="w-[150px]">

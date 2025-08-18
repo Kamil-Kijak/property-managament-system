@@ -65,6 +65,14 @@ export default function UsersPage({}) {
         <BasePage requiredRoles={["ADMIN"]}>
             <DisplaySection
                 list={users}
+                header={
+                    <>
+                        <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {users.length}</h1>
+                        <button className="base-btn text-2xl" onClick={() => {
+                            updateForm("insert")
+                        }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowego użytkownika</button>
+                    </>
+                }
                 template={(obj) => 
                     <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={obj.ID}>
                         <FontAwesomeIcon icon={faUserTie} className="text-6xl text-green-600"/>
@@ -96,11 +104,6 @@ export default function UsersPage({}) {
                             }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                         </section>
                     </section>
-                }
-                footer={
-                    <button className="base-btn text-2xl" onClick={() => {
-                        updateForm("insert")
-                    }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowego użytkownika</button>
                 }
             />
             {

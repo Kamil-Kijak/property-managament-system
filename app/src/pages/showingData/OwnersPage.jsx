@@ -6,7 +6,6 @@ import { useForm } from "../../hooks/plain/useForm";
 import {useWarningStore } from "../../hooks/stores/useScreensStore";
 import SearchInput from "../../components/inputs/SearchInput";
 import { useOwnersStore } from "../../hooks/stores/useResultStores";
-import { useFormStore } from "../../hooks/stores/useFormStore";
 import { useApi } from "../../hooks/plain/useApi";
 import BasePage from "../plain/BasePage";
 import DisplaySection from "../sections/DisplaySection";
@@ -16,12 +15,12 @@ export default function OwnersPage({}) {
 
     const warningUpdate = useWarningStore((state) => state.update);
     const {owners, updateOwners} = useOwnersStore();
-    const updateForm = useFormStore((state) => state.updateForm);
     const API = useApi();
 
     const [searchFilters, setSearchFilters] = useState({
         name_filter:"",
-        surname_filter:""
+        surname_filter:"",
+        limit:"200"
     });
     const [editFormData, editErrors, setEditFormData] = useForm({
         "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
@@ -69,6 +68,14 @@ export default function OwnersPage({}) {
                 onSearch={search}
                     elements={
                         <>
+                            <SearchInput
+                                type="number"
+                                min={0}
+                                title="Limit wyników"
+                                placeholder="results limit..."
+                                value={searchFilters.limit}
+                                onChange={(e) => setSearchFilters(prev => ({...prev, limit:e.target.value}))}
+                            />
                             <SearchInput
                                 title="Imie właściciela"
                                 placeholder="name..."

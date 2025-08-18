@@ -45,6 +45,14 @@ export default function LandPurposesPage({}) {
         <BasePage requiredRoles={["ADMIN"]}>
             <DisplaySection
                 list={landPurposes}
+                header={
+                    <>
+                        <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {landPurposes.length}</h1>
+                        <button className="base-btn text-2xl" onClick={() => {
+                            updateForm("insert")
+                        }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowe przeznaczenie działki</button>
+                    </>
+                }
                 template={(obj) => 
                     <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={obj.ID}>
                         <h1 className="text-4xl text-green-600 font-bold">ID: {obj.ID}</h1>
@@ -73,11 +81,6 @@ export default function LandPurposesPage({}) {
                             }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                         </section>
                     </section>
-                }
-                footer={
-                    <button className="base-btn text-2xl" onClick={() => {
-                        updateForm("insert")
-                    }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowe przeznaczenie działki</button>
                 }
             />
             {

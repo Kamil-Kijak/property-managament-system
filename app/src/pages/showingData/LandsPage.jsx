@@ -38,7 +38,8 @@ export default function LandsPage({}) {
         purpose_filter:"",
         rent_filter:"",
         low_area_filter:"",
-        high_area_filter:""
+        high_area_filter:"",
+        limit:"200"
     });
     const [editAreaFormData, editAreaErrors, setEditAreaFormData] = useForm({
         "ID_ground_class":{regexp:/.+/, error:"Wybierz klase gruntu"},
@@ -139,6 +140,14 @@ export default function LandsPage({}) {
                 elements={
                     <>
                     <SearchInput
+                        type="number"
+                        min={0}
+                        title="Limit wyników"
+                        placeholder="results limit..."
+                        value={searchFilters.limit}
+                        onChange={(e) => setSearchFilters(prev => ({...prev, limit:e.target.value}))}
+                    />
+                    <SearchInput
                         title="Numer seryjny"
                         placeholder="land ID..."
                         value={searchFilters.serial_filter}
@@ -196,18 +205,11 @@ export default function LandsPage({}) {
                         />
                     </section>
                     <section className="w-[150px]">
-                        <SearchSelectInput
+                        <SearchInput
                             title="Miejscowość"
                             placeholder="NaN"
                             value={localizations.town}
-                            onChange={(e) => setLocalizations(prev => ({...prev, town:e.target.value,}))}
-                            options={
-                                <>
-                                    {
-                                        availableLocalizations.towns.map((obj) => <option key={obj} value={obj}>{obj}</option>)
-                                    }
-                                </>
-                            }
+                            onChange={(e) => setLocalizations(prev => ({...prev, town:e.target.value}))}
                         />
                     </section>
                     <SearchSelectInput
@@ -264,6 +266,9 @@ export default function LandsPage({}) {
                         <section className="my-1">
                             <button className="base-btn text-xl" onClick={handlePrintLands}><FontAwesomeIcon icon={faPrint}/> Drukuj wyniki</button>
                         </section>
+                        <button className="base-btn text-2xl" onClick={() => {
+                                updateForm("insert")
+                            }}><FontAwesomeIcon icon={faPlus}/> Dodaj nową działkę</button>
                     </>
                 }
                 list={lands}
@@ -294,9 +299,6 @@ export default function LandsPage({}) {
                                 </section>
                             </section>
                         </section>
-                        <button className="base-btn text-2xl" onClick={() => {
-                                updateForm("insert")
-                            }}><FontAwesomeIcon icon={faPlus}/> Dodaj nową działkę</button>
                     </>
                 }
             />
