@@ -4,7 +4,7 @@ export default function SearchInput({type = "text", title = "title", placeholder
     return (
         <section className="flex flex-col items-start mb-2">
             <h1 className="font-bold">{title}</h1>
-            <input type={type} min={min} onChange={onChange}  placeholder={placeholder} className="border-2 border-black rounded-md bg-white p-1" value={value || ""} />
+            <input autoComplete="off" type={type} min={min} onChange={onChange}  placeholder={placeholder} className="border-2 border-black rounded-md bg-white p-1" value={value || ""} />
         </section>
     )
 }

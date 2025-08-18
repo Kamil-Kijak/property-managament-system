@@ -27,28 +27,32 @@ router.get("/get_towns", [checkDataExisting(["town"])], async (req, res) => {
 
 router.use(roleAuthorization(["KSIEGOWOSC"]))
 
-router.get("/get", [checkDataExisting(["tax_district", "agricultural_tax", "forest_tax", "commune", "district", "province"])], async (req, res) => {
-    const {tax_district, agricultural_tax, forest_tax, commune, district, province} = req.query
+router.get("/get", [checkDataExisting(["tax_district", "agricultural_tax", "forest_tax", "commune", "district", "province", "limit"])], async (req, res) => {
+    const {tax_district, agricultural_tax, forest_tax, commune, district, province, limit} = req.query
     try {
         let SQL = "SELECT * FROM lokalizacje WHERE wojewodztwo LIKE ? AND powiat LIKE ? AND gmina LIKE ?";
         const params = [`${province}%`, `${district}%`, `${commune}%`]
-        if(tax_district != "") {
+        if(tax_district) {
             SQL+= " AND okreg_podatkowy = ?"
             params.push(tax_district);
         }
-        if(agricultural_tax != "") {
+        if(agricultural_tax) {
             if(agricultural_tax == "1") {
                 SQL+= " AND podatek_rolny IS NOT NULL"
             } else {
                 SQL+= " AND podatek_rolny IS NULL"
             }
         }
-        if(forest_tax != "") {
+        if(forest_tax) {
             if(forest_tax == "1") {
                 SQL+= " AND podatek_lesny IS NOT NULL"
             } else {
                 SQL+= " AND podatek_lesny IS NULL"
             }
+        }
+        if(limit) {
+            SQL += " limit ?"
+            params.push(limit);
         }
         const [result] = await connection.execute(SQL, params);
         res.status(200).json({success:true, message:"przefiltrowano gminy", data:result})

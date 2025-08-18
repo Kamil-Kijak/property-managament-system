@@ -11,6 +11,7 @@ import BasePage from "../plain/BasePage";
 import DisplaySection from "../sections/DisplaySection";
 import EditDistrict from "../../forms/edit/EditDistrict";
 import { useApi } from "../../hooks/plain/useApi";
+import SearchInput from "../../components/inputs/SearchInput";
 
 
 export default function DistrictsPage({}) {
@@ -29,7 +30,8 @@ export default function DistrictsPage({}) {
     const [searchFilters, setSearchFilters] = useState({
         tax_district:"",
         agricultural_tax:"",
-        forest_tax:""
+        forest_tax:"",
+        limit:"200"
     })
 
     const search = () => {
@@ -54,6 +56,14 @@ export default function DistrictsPage({}) {
                 onSearch={search}
                 elements={
                     <>
+                        <SearchInput
+                            type="number"
+                            min={0}
+                            placeholder="results limit..."
+                            title="limit wyników"
+                            onChange={(e) => setSearchFilters(prev => ({...prev, limit:e.target.value}))}
+                            value={searchFilters.limit}
+                        />
                         <SearchSelectInput
                             placeholder="NaN"
                             title="Okręg podatkowy"

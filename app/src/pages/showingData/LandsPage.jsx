@@ -30,7 +30,7 @@ export default function LandsPage({}) {
     const form = useFormStore((state) => state.form);
 
     const API = useApi();
-    const [availableLocalizations, localizations, setLocalizations] = useLocalizations();
+    const [availableLocalizations, localizations, setLocalizations, matchedTowns] = useLocalizations();
 
     const [searchFilters, setSearchFilters] = useState({
         serial_filter:"",
@@ -207,11 +207,24 @@ export default function LandsPage({}) {
                     <section className="w-[150px]">
                         <SearchInput
                             title="Miejscowość"
-                            placeholder="NaN"
+                            placeholder="town"
                             value={localizations.town}
                             onChange={(e) => setLocalizations(prev => ({...prev, town:e.target.value}))}
                         />
                     </section>
+                    {
+                        matchedTowns.length > 0 &&
+                        <select multiple={true} className="border-3 rounded-lg p-3 gap-y-2" onChange={(e) => {
+                            const data = e.target.value.split(",");
+                            setLocalizations({town:data[0], commune:data[1], district:data[2], province:data[3]})
+                        }}>
+                            {
+                                matchedTowns.map(obj => <option className="text-sm" key={obj.ID} value={`${obj.nazwa},${obj.gmina},${obj.powiat},${obj.wojewodztwo}`}>
+                                {obj.nazwa}, {obj.gmina}, {obj.powiat}, {obj.wojewodztwo}
+                                </option>)
+                            }
+                        </select>
+                    }
                     <SearchSelectInput
                         title="Przeznaczenie"
                         placeholder="NaN"

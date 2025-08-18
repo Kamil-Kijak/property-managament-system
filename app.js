@@ -8,9 +8,9 @@ const path = require("path");
 const rateLimit = require("express-rate-limit")
 const transporter = require("./util/mailTransporter")
 const cron = require("node-cron")
+const { exec } = require("child_process");
 
 const connection = require("./util/mysqlConnection")
-
 
 // routes variables
 const userRoutes = require("./routes/users");
@@ -26,7 +26,6 @@ const rentersRoutes = require("./routes/renters");
 const areasRoutes = require("./routes/areas");
 const districtsRoutes = require("./routes/districts");
 const filesRoutes = require("./routes/files")
-const { exec } = require("child_process");
 
 const app = express();
 
@@ -43,7 +42,7 @@ app.use(cookieParser());
 
 // static page host
 if(process.env.STATIC_HOST) {
-    app.use(express.static(path.join(__dirname, "app", "dist")))
+  app.use(express.static(path.join(__dirname, "app", "dist")))
 }
 
 // routes
@@ -193,6 +192,6 @@ const server = http.createServer(app);
 
 
 server.listen(process.env.PORT || 3000, () => {
-  console.log(`serwer nasłuchuje na porcie ${process.env.PORT || 3000}`)
+  console.log(`Serwer działa na porcie ${process.env.PORT || 3000}`)
 })
 

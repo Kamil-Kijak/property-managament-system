@@ -81,8 +81,16 @@ export default function GroundClassesPage({}) {
                 }
             />
             <DisplaySection
-                header={<h1 className="font-bold text-lg mt-5">Znalezione wyniki: {groundClasses.length}</h1>}
                 list={groundClasses}
+                header={
+                    <>
+                        <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {groundClasses.length}</h1>
+                        <section className="flex flex-col gap-y-2 items-center mt-10">
+                            <button className="base-btn text-2xl" onClick={() => updateForm("insert")}><FontAwesomeIcon icon={faPlus}/> Dodaj nową klase gruntu</button>
+                            <h1 className="text-2xl font-bold">Dla okręgu podatkowego nr {taxDistrict}</h1>
+                        </section>
+                    </>
+                }
                 template={(obj) =>
                     <section className="base-card my-5" key={obj.ID}>
                         <section className="flex gap-x-10 w-full items-center justify-between">
@@ -124,12 +132,6 @@ export default function GroundClassesPage({}) {
                         </section>
                     </section>
                 }
-                footer={
-                    <section className="flex flex-col gap-y-2 items-center my-10">
-                        <button className="base-btn text-2xl" onClick={() => updateForm("insert")}><FontAwesomeIcon icon={faPlus}/> Dodaj nową klase gruntu</button>
-                        <h1 className="text-2xl font-bold">Dla okręgu podatkowego nr {taxDistrict}</h1>
-                    </section>
-                    }
             />
             {
                 form == "insert" &&
