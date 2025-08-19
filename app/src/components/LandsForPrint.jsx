@@ -4,9 +4,10 @@ import { Fragment } from "react";
 const LandsForPrint = React.forwardRef(({lands}, ref) => {
     const today = new Date();
     return (
-        <section ref={ref} className="">
+        <section ref={ref} className="max-h-full">
             <h1 className="text-3xl text-center font-bold mt-5">Wypis gruntów</h1>
             <p className="text-center mt-2">z dnia {today.toLocaleDateString("pl-PL")}</p>
+            <h1 className="text-center font-bold mt-5">Liczba wyników: {lands.length}</h1>
             <table className="my-5 w-full">
                 <thead>
                     <tr>
@@ -26,9 +27,10 @@ const LandsForPrint = React.forwardRef(({lands}, ref) => {
                             <tr className="border-t-black border-t-2">
                                 <td className="print-table-section">{obj.nr_dzialki}</td>
                                 <td className="print-table-section">
-                                    <p>{obj.miejscowosc}, {obj.gmina}</p>
-                                    <p>{obj.powiat}</p>
-                                    <p>{obj.wojewodztwo}</p>
+                                    <p className="">m:{obj.miejscowosc}</p>
+                                    <p className="break-all">gm:{obj.gmina}</p>
+                                    <p className="break-all">pow:{obj.powiat}</p>
+                                    <p className="">woj:{obj.wojewodztwo}</p>
                                 </td>
                                 <td className="print-table-section">
                                     <p>MPZP: {obj.mpzp}</p>
@@ -49,7 +51,7 @@ const LandsForPrint = React.forwardRef(({lands}, ref) => {
                                 <td className="print-table-section">
                                     <p className="break-all">{obj.w_imie}</p>
                                     <p className="break-all">{obj.w_nazwisko}</p>
-                                    <p className="break-all">{obj.w_telefon}</p>
+                                    <p>{obj.w_telefon}</p>
                                 </td>
                                 <td className="print-table-section">
                                     <p>{obj.nr_kw}</p>
@@ -59,7 +61,7 @@ const LandsForPrint = React.forwardRef(({lands}, ref) => {
 
                             </tr>
                             <tr className="border-t-black border-t-2 border-dashed">
-                                <td className="whitespace-nowrap my-2 p-3">ID: <span className="font-bold">{obj.numer_seryjny_dzialki}</span></td>
+                                <td className="whitespace-nowrap text-sm my-2 py-3">ID: <span className="font-bold">{obj.numer_seryjny_dzialki || "BRAK"}</span></td>
                             </tr>
                         </Fragment>
                         )

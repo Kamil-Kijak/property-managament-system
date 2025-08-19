@@ -21,7 +21,10 @@ export default function Rent({ele, deleteRent, editRent}) {
     const [showingMore, setShowingMore] = useState(false);
 
     return (
-        <section className="flex flex-col shadow-xl shadow-black/25 p-5 gap-y-6 text-center">
+        <section className="flex flex-col shadow-xl shadow-black/25 p-5 gap-y-6 mb-5 text-center">
+            {
+                new Date(ele.data_zakonczenia).getTime() < Date.now() && <p className="text-2xl text-start text-red-700 font-bold">Dzierżawa przedawniona</p>
+            }
             <section className="flex items-center justify-start gap-x-5">
                 <button className="base-btn" onClick={showingMoreToggle}><FontAwesomeIcon icon={faEye}/> Pokaż {showingMore ? "mniej":"więcej"}</button>
                 <button className="info-btn" onClick={() => editRent(ele.ID)}><FontAwesomeIcon icon={faPen}/> Edytuj</button>

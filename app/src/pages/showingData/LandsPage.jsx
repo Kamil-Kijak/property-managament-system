@@ -22,6 +22,7 @@ import { useFormStore } from "../../hooks/stores/useFormStore";
 import BasePage from "../plain/BasePage";
 import DisplaySection from "../sections/DisplaySection";
 import EditArea from "../../forms/edit/EditArea";
+import SumarizeSection from "../sections/SumarizeSection";
 
 export default function LandsPage({}) {
     const warningUpdate = useWarningStore((state) => state.update);
@@ -31,6 +32,8 @@ export default function LandsPage({}) {
 
     const API = useApi();
     const [availableLocalizations, localizations, setLocalizations, matchedTowns] = useLocalizations();
+
+    const limitDisplayRef = useRef(null);
 
     const [searchFilters, setSearchFilters] = useState({
         serial_filter:"",
@@ -102,7 +105,8 @@ export default function LandsPage({}) {
                         spolka_wodna:obj.spolka_wodna,
                         podatek_rolny:obj.podatek_rolny,
                         podatek_lesny:obj.podatek_lesny,
-                        w_telefon:obj.w_telefon
+                        w_telefon:obj.w_telefon,
+                        d_telefon:obj.d_telefon
                     }
                     if(!lands.some((ele) => ele.ID == obj.ID)) {
                         lands.push({...objToPush, powierzchnie:[]});
@@ -115,8 +119,10 @@ export default function LandsPage({}) {
                 lands.forEach((obj) => {
                     obj.powierzchnie = [...obj.powierzchnie].sort((a, b) => a.klasa.localeCompare(b.klasa));
                 })
-                updateLands(lands);
+                updateLands(lands.sort((a, b) =>
+                     a.wojewodztwo.localeCompare(b.wojewodztwo) || a.powiat.localeCompare(b.powiat) || a.gmina.localeCompare(b.gmina) || a.miejscowosc.localeCompare(b.miejscowosc)));
                 setLandFiles(result.files);
+                limitDisplayRef.current.innerHTML = `Limit wyników: ${searchFilters.limit || "NIEOGRANICZONY"}`
             }
         });
     }
@@ -275,6 +281,7 @@ export default function LandsPage({}) {
             <DisplaySection
                 header={
                     <>
+                        <h1 ref={limitDisplayRef} className="font-bold text-lg mt-5">Limit wyników: {searchFilters.limit || "NIEOGRANICZONY"}</h1>
                         <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {lands.length}</h1>
                         <section className="my-1">
                             <button className="base-btn text-xl" onClick={handlePrintLands}><FontAwesomeIcon icon={faPrint}/> Drukuj wyniki</button>
@@ -282,6 +289,30 @@ export default function LandsPage({}) {
                         <button className="base-btn text-2xl" onClick={() => {
                                 updateForm("insert")
                             }}><FontAwesomeIcon icon={faPlus}/> Dodaj nową działkę</button>
+                        <SumarizeSection>
+                            <section className="my-10">
+                                <h1 className="text-4xl font-bold text-center">Podsumowanie</h1>
+                                <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
+                                <section className="flex gap-x-7 justify-center">
+                                    <section className="flex-col gap-y-3">
+                                        <h1 className="text-2xl">Suma ha. przel. rolne: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter(value2 => value2.podatek == "rolny").reduce((acc2, value2) => acc2 + Number((Number(value2.p_powierzchnia) * value2.przelicznik).toFixed(4)), 0), 0)).toFixed(4)}ha</h1>
+                                        <h1 className="text-2xl mt-3">Suma podatku rolnego: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter((value2) => value2.podatek == "rolny").reduce((acc2, value2) => acc2 + (Number((Number(value2.p_powierzchnia) * value2.przelicznik).toFixed(4)) - value2.zwolniona_powierzchnia) * (value.podatek_rolny || 0), 0), 0)).toFixed(4)}zł</h1>
+                                        <h1 className="text-2xl mt-3">Suma podatku leśnego: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter((value2) => value2.podatek == "leśny").reduce((acc2, value2) => acc2 + (Number(value2.p_powierzchnia) - value2.zwolniona_powierzchnia) * (value.podatek_lesny || 0), 0), 0)).toFixed(4)}zł</h1>
+                                    </section>
+                                    <section className="flex-col gap-y-3">
+                                        <h1 className="text-2xl">Suma ha. fizyczne rolne: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter(value2 => value2.podatek == "rolny").reduce((acc2, value2) => acc2 + Number(value2.p_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
+                                        <h1 className="text-2xl mt-3">Suma ha. fizyczne leśne: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter(value2 => value2.podatek == "leśny").reduce((acc2, value2) => acc2 + Number(value2.p_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
+                                        <h1 className="text-2xl mt-3">Suma ha. fizyczne inne: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter(value2 => value2.podatek == "zwolniony").reduce((acc2, value2) => acc2 + Number(value2.p_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
+                                        <h1 className="text-2xl mt-3 font-bold">Razem: {(lands.reduce((acc, value) => acc + value.powierzchnie.reduce((acc2, value2) => acc2 + Number(value2.p_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
+                                    </section>
+                                    <section className="flex-col gap-y-3">
+                                        <h1 className="text-2xl">Suma ha. zwol. rolne: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter(value2 => value2.podatek == "rolny").reduce((acc2, value2) => acc2 + Number(value2.zwolniona_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
+                                        <h1 className="text-2xl mt-3">Suma ha. zwol. leśne: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter(value2 => value2.podatek == "leśny").reduce((acc2, value2) => acc2 + Number(value2.zwolniona_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
+                                        <h1 className="text-2xl mt-3 font-bold">Razem: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter(value2 => value2.podatek != "zwolniony").reduce((acc2, value2) => acc2 + Number(value2.zwolniona_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
+                                    </section>
+                                </section>
+                            </section>
+                        </SumarizeSection>
                     </>
                 }
                 list={lands}
@@ -295,24 +326,6 @@ export default function LandsPage({}) {
                         editArea={(ID, landID, data) => {updateForm("edit_area"); setAreaEditID(ID); updateID(landID); setEditAreaFormData(data)}}
                         search={search}
                     />
-                }
-                footer={
-                    <>
-                        <section className="my-10">
-                            <h1 className="text-4xl font-bold text-center">Podsumowanie</h1>
-                            <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
-                            <section className="flex gap-x-7 justify-center">
-                                <section className="flex-col gap-y-3">
-                                    <h1 className="text-2xl">Suma podatku rolnego: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter((value2) => value2.podatek == "rolny").reduce((acc2, value2) => acc2 + (Number((Number(value2.p_powierzchnia) * value2.przelicznik).toFixed(4)) - value2.zwolniona_powierzchnia) * (value.podatek_rolny || 0), 0), 0)).toFixed(4)}zł</h1>
-                                    <h1 className="text-2xl mt-3">Suma podatku leśnego: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter((value2) => value2.podatek == "leśny").reduce((acc2, value2) => acc2 + (Number(value2.p_powierzchnia) - value2.zwolniona_powierzchnia) * (value.podatek_lesny || 0), 0), 0)).toFixed(4)}zł</h1>
-                                </section>
-                                <section className="flex-col gap-y-3">
-                                    <h1 className="text-2xl">Suma ha. fizyczne: {(lands.reduce((acc, value) => acc + value.powierzchnie.reduce((acc2, value2) => acc2 + Number(value2.p_powierzchnia), 0), 0)).toFixed(4)}ha</h1>
-                                    <h1 className="text-2xl mt-3">Suma ha. przel. rolne: {(lands.reduce((acc, value) => acc + value.powierzchnie.filter(value2 => value2.podatek == "rolny").reduce((acc2, value2) => acc2 + Number(value2.p_powierzchnia) * value2.przelicznik, 0), 0)).toFixed(4)}ha</h1>
-                                </section>
-                            </section>
-                        </section>
-                    </>
                 }
             />
             {

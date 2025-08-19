@@ -43,7 +43,7 @@ export default function Owner({obj, requestDelete, setEditFormData}) {
                 </section>
             </section>
             {
-                obj.dzialki.map((ele, index) => <section key={index} className="flex shadow-xl shadow-black/25 p-5 gap-x-20 text-center">
+                obj.dzialki.map((ele, index) => <section key={index} className="flex shadow-xl shadow-black/25 p-5 gap-x-20 mb-5 text-center">
                     <section className="flex flex-col items-center gap-y-3">
                         <p className="font-bold">ID działki</p>
                         <p>{ele.numer_seryjny_dzialki || "BRAK"}</p>

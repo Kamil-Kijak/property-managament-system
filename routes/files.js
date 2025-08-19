@@ -46,11 +46,30 @@ router.get("/file/:serial", (req, res) => {
         } else {
             return res.status(404).send(`<h1 style="text-align:center">Pliku nie znaleziono</h1>`)
         }
-    })
+    });
 });
 
 router.post("/upload/:serial", [upload.single("file")], (req, res) => {
     if(req.file) {
+        fs.readdir("./land_files", (err, files) => {
+            if(err) {
+                console.error("Błąd odczytu folderu:", err);
+                return;
+            }
+            files.forEach(file => {
+                const fileName = path.parse(file).name;
+                if (fileName === path.parse(req.file.filename).name && file != req.file.filename) {
+                    const fullPath = path.join("./land_files", file);
+                    fs.unlink(fullPath, err => {
+                        if (err) {
+                            console.error(`Nie udało się usunąć ${file}:`, err);
+                        } else {
+                            console.log(`Usunięto: ${file}`);
+                        }
+                    });
+                }
+            });
+            });
         res.status(200).json({success:true, message:"Plik został poprawnie wgrany", file:req.file.filename})
     } else {
         res.status(400).json({success:false, message:"Plik został odrzucony"})

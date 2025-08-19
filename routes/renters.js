@@ -11,16 +11,6 @@ const router = express.Router();
 
 router.use(authorization());
 
-router.get("/get_renter", [checkDataExisting(["ID_rent"])], async (req, res) => {
-    const {ID_rent} = req.query;
-    try {
-        const [result] = await connection.execute("SELECT dz.imie dz.nazwisko FROM dzierzawy d INNER JOIN dzierzawcy dz on d.ID_dzierzawcy=dz.ID WHERE d.ID = ?", [ID_rent]);
-        res.status(200).json({success:true, message:"pobrano dane dzierżawcy", data:result});
-    } catch(err) {
-        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
-    }
-})
-
 router.get("/get_all", async (req, res) => {
     try {
         const [result] = await connection.execute("SELECT * FROM dzierzawcy order by nazwisko");
@@ -29,16 +19,6 @@ router.get("/get_all", async (req, res) => {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 });
-
-router.get("/get", [checkDataExisting(["name_filter", "surname_filter"])], async (req, res) => {
-    const {name_filter, surname_filter} = req.query;
-    try {
-        const [result] = await connection.execute("SELECT * FROM dzierzawcy WHERE imie LIKE ? AND surname LIKE ?", [`%${name_filter}`, `%${surname_filter}`]);
-        res.status(200).json({success:true, message:"pobrano dzierżawców",data:result})
-    } catch (err) {
-        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
-    }
-})
 
 router.post("/insert", [checkDataExisting(["name", "surname", "phone"])], async (req, res) => {
     const {name, surname, phone} = req.body;

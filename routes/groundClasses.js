@@ -15,7 +15,7 @@ router.use(authorization());
 router.get("/get", [checkDataExisting(["tax_district"])], async (req, res) => {
     const {tax_district} = req.query;
     try {
-        const [result] = await connection.execute("SELECT k.klasa, k.przelicznik, k.podatek, k.ID FROM klasy_gruntu k WHERE k.okreg_podatkowy = ?", [tax_district]);
+        const [result] = await connection.execute("SELECT k.klasa, k.przelicznik, k.podatek, k.ID FROM klasy_gruntu k WHERE k.okreg_podatkowy = ? ORDER BY k.klasa", [tax_district]);
         res.status(200).json({success:true, message:`pobrano klasy gruntu dla okręgu ${tax_district}`, data:result})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
@@ -25,7 +25,7 @@ router.get("/get", [checkDataExisting(["tax_district"])], async (req, res) => {
 router.get("/get_land_classes", [checkDataExisting(["ID_land"])], async (req, res) => {
     const {ID_land} = req.query;
     try {
-        const [result] = await connection.execute("SELECT k.ID, k.klasa, k.przelicznik FROM klasy_gruntu k INNER JOIN lokalizacje l on k.okreg_podatkowy=l.okreg_podatkowy INNER JOIN miejscowosci m on m.ID_lokalizacji=l.ID INNER JOIN dzialki d on d.ID_miejscowosci=m.ID WHERE d.ID = ?", [ID_land]);
+        const [result] = await connection.execute("SELECT k.ID, k.klasa, k.przelicznik FROM klasy_gruntu k INNER JOIN lokalizacje l on k.okreg_podatkowy=l.okreg_podatkowy INNER JOIN miejscowosci m on m.ID_lokalizacji=l.ID INNER JOIN dzialki d on d.ID_miejscowosci=m.ID WHERE d.ID = ? ORDER BY k.klasa", [ID_land]);
         res.status(200).json({success:true, message:`pobrano klasy gruntu dla dzialki ${ID_land}`, data:result})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

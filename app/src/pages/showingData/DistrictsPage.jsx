@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SearchSelectInput from "../../components/inputs/SearchSelectInput";
 import SearchBar from "../../components/SearchBar";
 import { useLocalizations } from "../../hooks/plain/useLocalizations";
@@ -21,6 +21,8 @@ export default function DistrictsPage({}) {
     const updateForm = useFormStore((state) => state.updateForm);
     const API = useApi();
 
+    const limitDisplayRef = useRef(null);
+
     const [editFormData, editErrors, setEditFormData] = useForm({
         "tax_district":{regexp:/\d+/, error:"Wybierz okręg"},
         "agricultural_tax":{regexp:/^\d{1,4}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
@@ -42,6 +44,7 @@ export default function DistrictsPage({}) {
         API.getDistricts(params).then(result => {
             if(!result.error) {
                 updateDistricts(result.data);
+                limitDisplayRef.current.innerHTML = `Limit wyników: ${searchFilters.limit || "NIEOGRANICZONY"}`
             }
         });
     }
@@ -151,7 +154,12 @@ export default function DistrictsPage({}) {
                 }
             />
             <DisplaySection
-                header={<h1 className="font-bold text-lg mt-5">Znalezione wyniki: {districts.length}</h1>}
+                header={
+                    <>
+                        <h1 ref={limitDisplayRef} className="font-bold text-lg mt-5">Limit wyników: {searchFilters.limit || "NIEOGRANICZONY"}</h1>
+                        <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {districts.length}</h1>
+                    </>
+                }
                 list={districts}
                 template={(obj) => 
                     <section className="base-card my-5" key={obj.ID}>

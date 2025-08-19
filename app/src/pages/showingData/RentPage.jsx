@@ -1,6 +1,6 @@
 
 import SearchBar from "../../components/SearchBar"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useWarningStore } from "../../hooks/stores/useScreensStore";
 import Renter from "../../components/Renter";
 import { useForm } from "../../hooks/plain/useForm";
@@ -13,6 +13,7 @@ import BasePage from "../plain/BasePage";
 import DisplaySection from "../sections/DisplaySection";
 import EditRenter from "../../forms/edit/EditRenter";
 import EditRent from "../../forms/edit/EditRent";
+import SumarizeSection from "../sections/SumarizeSection";
 
 export default function RentPage({}) {
     
@@ -21,7 +22,10 @@ export default function RentPage({}) {
     const API = useApi();
     const updateForm = useFormStore((state) => state.updateForm);
 
+    const limitDisplayRef = useRef(null);
+
     const [searchFilters, setSearchFilters] = useState({
+        show_expired:"",
         name_filter:"",
         surname_filter:"",
         owner_name_filter:"",
@@ -65,6 +69,7 @@ export default function RentPage({}) {
                     renters.find(ele => ele.ID == obj.ID_dzierzawcy).dzialki.push({...obj});
                 });
                 updateRenters(renters);
+                limitDisplayRef.current.innerHTML = `Limit wyników: ${searchFilters.limit || "NIEOGRANICZONY"}`
             }
         })
     }
@@ -102,6 +107,18 @@ export default function RentPage({}) {
                             placeholder="results limit..."
                             value={searchFilters.limit}
                             onChange={(e) => setSearchFilters(prev => ({...prev, limit:e.target.value}))}
+                        />
+                        <SearchSelectInput
+                            title="Pokaż przedawnione"
+                            placeholder=""
+                            value={searchFilters.show_expired}
+                            onChange={(e) => setSearchFilters(prev => ({...prev, show_expired:e.target.value}))}
+                            options={
+                                <>
+                                    <option value="">NIE</option>
+                                    <option value="1">TAK</option>
+                                </>
+                            }
                         />
                         <SearchInput
                             title="Imie dzierżawcy"
@@ -161,7 +178,21 @@ export default function RentPage({}) {
                 }
             />
             <DisplaySection
-                header={<h1 className="font-bold text-lg mt-5">Znalezione wyniki: {renters.length}</h1>}
+                header={
+                    <>
+                        <h1 ref={limitDisplayRef} className="font-bold text-lg mt-5">Limit wyników: {searchFilters.limit || "NIEOGRANICZONY"}</h1>
+                        <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {renters.reduce((acc, value) => acc + value.dzialki.length, 0)}</h1>
+                        <SumarizeSection>
+                            <section className="my-10">
+                                <h1 className="text-4xl font-bold text-center">Podsumowanie</h1>
+                                <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
+                                <section className="flex flex-col gap-y-7 justify-center">
+                                    <h1 className="text-2xl">Suma czynszu: {(renters.reduce((acc, value) => acc + value.dzialki.reduce((acc, value) => acc + parseFloat((parseFloat(value.wysokosc_czynszu) * parseFloat(value.powierzchnia))), 0), 0)).toFixed(2)}zł</h1>
+                                </section>
+                            </section>
+                        </SumarizeSection>
+                    </>
+                }
                 list={renters}
                 template={(obj, index) =>
                     <Renter
@@ -199,15 +230,6 @@ export default function RentPage({}) {
                             }
                         }
                     />
-                }
-                footer={
-                    <section className="my-10">
-                        <h1 className="text-4xl font-bold text-center">Podsumowanie</h1>
-                        <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
-                        <section className="flex gap-x-7 justify-center">
-                            <h1 className="text-2xl">Suma czynszu: {(renters.reduce((acc, value) => acc + value.dzialki.reduce((acc, value) => acc + parseFloat((parseFloat(value.wysokosc_czynszu) * parseFloat(value.powierzchnia))), 0), 0)).toFixed(2)}zł</h1>
-                        </section>
-                    </section>
                 }
             />
             <EditRenter

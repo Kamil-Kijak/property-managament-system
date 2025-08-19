@@ -249,7 +249,7 @@ const useApi = () => {
         getAllRenters, getRenters, deleteRenter, updateRenter, insertRenter,
         deleteRent, updateRent, insertRent,
         getLands, deleteLand, getInsertionRequiredData, insertLand, getLand, updateLand,
-        updateArea, deleteArea,insertArea,
+        updateArea, deleteArea, insertArea,
         fileUpload
     }
 }

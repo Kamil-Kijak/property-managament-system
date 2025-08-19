@@ -59,8 +59,6 @@ export default function UsersPage({}) {
             })
         }
     }
-    console.log(users);
-
     return(
         <BasePage requiredRoles={["ADMIN"]}>
             <DisplaySection

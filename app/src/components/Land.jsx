@@ -162,7 +162,7 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                             <h1 className="font-bold text-sm">suma ha. fizyczne</h1>
                             <h1 className="text-xl">{(obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia), 0)).toFixed(4)}ha</h1>
                             {obj.powierzchnia == (obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia), 0)).toFixed(4) ?
-                            <h1 className="font-bold text-green-600 text-xl">Zgodność</h1>:<h1 className="font-bold text-red-600 text-xl">Brak zgodnośći</h1>}
+                            <h1 className="font-bold text-green-600 text-xl">Zgodność</h1>:<h1 className="font-bold text-red-600 text-xl">Brak zgodności</h1>}
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma ha. przeliczeniowe rolne</h1>
@@ -248,10 +248,12 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                         <section className="flex flex-col items-center gap-y-3">
                             <p className="font-bold">Dzierżawca</p>
                             <p>{obj.ID_dzierzawy ? `${obj.d_nazwisko} ${obj.d_imie}` : "BRAK"}</p>
+                            {obj.ID_dzierzawy && <p>{obj.d_telefon}</p>}
                         </section>
                         <section className="flex flex-col items-center gap-y-3">
                             <p className="font-bold">Właściciel</p>
                             <p>{obj.w_imie} {obj.w_nazwisko}</p>
+                            <p>{obj.w_telefon}</p>
                         </section>
                         <section className="flex flex-col items-center gap-y-3">
                             <p className="font-bold">Data nabycia</p>

@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.get("/get", async (req, res) => {
     try {
-        const [result] = await connection.execute("SELECT ID, imie, nazwisko, rola from uzytkownicy")
+        const [result] = await connection.execute("SELECT ID, imie, nazwisko, rola from uzytkownicy ORDER BY rola")
         res.status(200).json({success:true, message:"pobrano użytkowników", data:result})
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

@@ -16,7 +16,7 @@ router.use(authorization());
 router.get("/get_towns", [checkDataExisting(["town"])], async (req, res) => {
     const {town} = req.query;
     try {
-        let SQL = "SELECT m.ID, m.nazwa, l.gmina, l.powiat, l.wojewodztwo FROM miejscowosci m INNER JOIN lokalizacje l ON m.ID_lokalizacji=l.ID WHERE m.nazwa LIKE ?";
+        let SQL = "SELECT m.ID, m.nazwa, l.gmina, l.powiat, l.wojewodztwo FROM miejscowosci m INNER JOIN lokalizacje l ON m.ID_lokalizacji=l.ID WHERE m.nazwa LIKE ? ORDER BY m.nazwa";
         const params = [`${town}%`];
         const [result] = await connection.execute(SQL, params);
         res.status(200).json({success:true, message:"pobrano miejscowości", data:result})
@@ -50,6 +50,7 @@ router.get("/get", [checkDataExisting(["tax_district", "agricultural_tax", "fore
                 SQL+= " AND podatek_lesny IS NULL"
             }
         }
+        SQL+= " ORDER BY wojewodztwo, powiat, gmina";
         if(limit) {
             SQL += " limit ?"
             params.push(limit);

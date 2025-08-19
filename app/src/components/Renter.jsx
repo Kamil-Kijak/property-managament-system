@@ -12,7 +12,7 @@ export default function Renter({obj, deleteRenter, editRenter, deleteRent, editR
 
     return (
         <section>
-            <section className="border-b-8 border-b-green-500 flex gap-x-20 py-5 mb-10 items-center w-[1000px]">
+            <section className="border-b-8 border-b-green-500 flex gap-x-20 py-5 mb-10 items-center">
                 <h1 className="text-3xl">{obj.imie} {obj.nazwisko}</h1>
                 <h1 className="text-3xl">tel:{obj.telefon}</h1>
                 <section className="flex gap-x-5">

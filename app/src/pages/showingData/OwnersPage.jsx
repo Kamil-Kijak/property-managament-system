@@ -1,5 +1,5 @@
 
-import {useEffect,useState } from "react"
+import {useEffect,useRef,useState } from "react"
 import SearchBar from "../../components/SearchBar";
 import Owner from "../../components/Owner";
 import { useForm } from "../../hooks/plain/useForm";
@@ -16,6 +16,8 @@ export default function OwnersPage({}) {
     const warningUpdate = useWarningStore((state) => state.update);
     const {owners, updateOwners} = useOwnersStore();
     const API = useApi();
+
+    const limitDisplayRef = useRef(null);
 
     const [searchFilters, setSearchFilters] = useState({
         name_filter:"",
@@ -45,8 +47,9 @@ export default function OwnersPage({}) {
                     owners.find(ele => ele.ID == obj.ID).dzialki.push({...obj});
                 })
                 updateOwners(owners);
+                limitDisplayRef.current.innerHTML = `Limit wyników: ${searchFilters.limit || "NIEOGRANICZONY"}`
             }
-        })
+        });
     }
 
     useEffect(() => {
@@ -92,13 +95,19 @@ export default function OwnersPage({}) {
                     }
             />
             <DisplaySection
-                header={<h1 className="font-bold text-lg mt-5">Znalezione wyniki: {owners.length}</h1>}
+                header={
+                    <>
+                        <h1 ref={limitDisplayRef} className="font-bold text-lg mt-5">Limit wyników: {searchFilters.limit || "NIEOGRANICZONY"}</h1>
+                        <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {owners.reduce((acc, value) => acc + value.dzialki.length, 0)}</h1>
+                    </>
+                }
                 list={owners}
                 template={(obj) =>
-                    <Owner obj={obj}
-                    key={obj.ID}
-                    requestDelete={requestDelete} 
-                    setEditFormData={setEditFormData}
+                    <Owner
+                        obj={obj}
+                        key={obj.ID}
+                        requestDelete={requestDelete} 
+                        setEditFormData={setEditFormData}
                     />
                 }
             

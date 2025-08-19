@@ -11,14 +11,6 @@ const router = express.Router();
 
 router.use(authorization());
 
-router.get("/get_all", async (req, res) => {
-    try {
-        const [result] = await connection.execute("SELECT * FROM wlasciciele order by nazwisko");
-        res.status(200).json({success:true, message:"pobrano dane wlascicieli", data:result})
-    } catch (err) {
-        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
-    }
-});
 router.get("/get", [checkDataExisting(["name_filter", "surname_filter", "limit"])], async (req, res) => {
     const {name_filter, surname_filter, limit} = req.query;
     try {

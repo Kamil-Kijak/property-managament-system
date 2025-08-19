@@ -1,11 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useFormStore } from "../../hooks/stores/useFormStore"
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useEffect } from "react";
 
 
 export default function InsertSection({title = "Tworzenie", validateForm = () => {}, onSubmit = () => {}, fields = <></>, showClose = true}) {
 
     const updateForm = useFormStore((state) => state.updateForm);
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, []);
 
     return (
         <>
