@@ -39,7 +39,7 @@ export default function EditUser({editFormData, editErrors, setEditFormData}) {
         updateForm(null);
         API.updateUser({ID_user:editID, ...editFormData}).then(result => {
             if(!result.error) {
-                API.getUsers().then(result => updateUsers(result));
+                API.getUsers().then(result => updateUsers(result.data));
                 checkActualUserDataChange(editID);
             }
         })
@@ -74,6 +74,7 @@ export default function EditUser({editFormData, editErrors, setEditFormData}) {
                         onChange={(e) => setEditFormData(prev => ({...prev, role:e.target.value}))}
                         options={
                         <>
+                            <option value="TEREN">Terenowy</option>
                             <option value="ADMIN">Administrator</option>
                             <option value="SEKRETARIAT">Sekretariat</option>
                             <option value="Ksiegowosc">Ksiegowosc</option>

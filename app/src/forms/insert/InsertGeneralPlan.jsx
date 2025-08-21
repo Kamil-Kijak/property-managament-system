@@ -17,7 +17,7 @@ export default function InsertGeneralPlan({}) {
     const API = useApi();
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
-        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"Kod 2 litery"},
+        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ/]{1,5}$/, error:"Kod od 1 do 5 znaków"},
         "description":{regexp:/^.{0,70}$/, error:"Za długi"}
     });
 

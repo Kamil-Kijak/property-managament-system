@@ -2,6 +2,11 @@ import { useRequest } from "./useRequest"
 
 import {useLoadingStore} from "../stores/useScreensStore"
 
+import MpzpData from "../../data/mpzp.json"
+import GeneralPlansData from "../../data/generalPlans.json"
+import LandPurposesData from "../../data/LandPurposes.json"
+import LandTypesData from "../../data/landTypes.json"
+
 
 const useApi = () => {
     const request = useRequest();
@@ -66,6 +71,9 @@ const useApi = () => {
     const insertMpzp = async (data) => {
         return await requestFromApi("/api/mpzp/insert", postOptions(data));
     }
+    const insertManyMpzp = async () => {
+        return await requestFromApi("/api/mpzp/insert_many", postOptions({data:MpzpData}))
+    }
     const getGeneralPlans = async () => {
         return await requestFromApi("/api/general_plans/get", {});
     }
@@ -77,6 +85,9 @@ const useApi = () => {
     }
     const insertGeneralPlan = async (data) => {
         return await requestFromApi("/api/general_plans/insert", postOptions(data));
+    }
+    const insertManyGeneralPlans = async (data) => {
+        return await requestFromApi("/api/general_plans/insert_many", postOptions({data:GeneralPlansData}));
     }
     const getLandPurposes = async () => {
         return await requestFromApi("/api/land_purposes/get", {});
@@ -90,6 +101,9 @@ const useApi = () => {
     const insertLandPurpose = async (data) => {
         return await requestFromApi("/api/land_purposes/insert", postOptions(data));
     }
+    const insertManyLandPurposes = async () => {
+        return await requestFromApi("/api/land_purposes/insert_many", postOptions({data:LandPurposesData}));
+    }
     const getLandTypes = async () => {
         return await requestFromApi("/api/land_types/get", {});
     }
@@ -101,6 +115,9 @@ const useApi = () => {
     }
     const insertLandType = async (data) => {
         return await requestFromApi("/api/land_types/insert", postOptions(data));
+    }
+    const insertManyLandTypes = async () => {
+        return await requestFromApi("/api/land_types/insert_many", postOptions({data:LandTypesData}));
     }
 
     const getOwners = async (params) => {
@@ -239,10 +256,10 @@ const useApi = () => {
 
     return {
         getUsers, registerAdmin, loginUser, updateUser, deleteUser, updatePassword, userLogout, insertUser, auth,
-        getMpzp, deleteMpzp, updateMpzp, insertMpzp,
-        getGeneralPlans, deleteGeneralPlan, updateGeneralPlan, insertGeneralPlan,
-        getLandPurposes, deleteLandPurpose, updateLandPurpose, insertLandPurpose,
-        getLandTypes, deleteLandType, updateLandType, insertLandType,
+        getMpzp, deleteMpzp, updateMpzp, insertMpzp, insertManyMpzp,
+        getGeneralPlans, deleteGeneralPlan, updateGeneralPlan, insertGeneralPlan,insertManyGeneralPlans,
+        getLandPurposes, deleteLandPurpose, updateLandPurpose, insertLandPurpose,insertManyLandPurposes,
+        getLandTypes, deleteLandType, updateLandType, insertLandType, insertManyLandTypes,
         getOwners, deleteOwner, updateOwner, insertOwner,
         getDistricts, updateDistricts, getTowns,
         getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass,getLandGroundClasses,

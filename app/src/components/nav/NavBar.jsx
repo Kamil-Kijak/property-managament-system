@@ -63,6 +63,15 @@ export default function NavBar({requiredRoles = []}) {
                     buttonContent={<><FontAwesomeIcon icon={faUsers}/> Dzierżawy i Dzierżawcy</>}
                 />
                 {
+                    user.rola == "TEREN" &&
+                    <>
+                        <NavButton
+                            path="/forms"
+                            buttonContent={<><FontAwesomeIcon icon={faFile}/> Formularze</>}
+                        />
+                    </>
+                }
+                {
                     user.rola === "KSIEGOWOSC" &&
                     <>
                         <NavButton

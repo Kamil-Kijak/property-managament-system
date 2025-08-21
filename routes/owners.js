@@ -15,7 +15,7 @@ router.get("/get", [checkDataExisting(["name_filter", "surname_filter", "limit"]
     const {name_filter, surname_filter, limit} = req.query;
     try {
         const params = [`%${name_filter}%`, `%${surname_filter}%`];
-        let SQL = "SELECT w.*, d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.nazwa as miejscowosc, l.gmina, l.powiat, l.wojewodztwo, p.typ FROM wlasciciele w INNER JOIN dzialki d on d.ID_wlasciciela=w.ID INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN przeznaczenia_dzialek p on p.ID=d.ID_przeznaczenia WHERE w.imie LIKE ? AND w.nazwisko LIKE ? ORDER BY w.nazwisko";
+        let SQL = "SELECT w.*, d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.nazwa as miejscowosc, l.gmina, l.powiat, l.wojewodztwo, p.typ FROM wlasciciele w INNER JOIN dzialki d on d.ID_wlasciciela=w.ID INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji LEFT JOIN przeznaczenia_dzialek p on p.ID=d.ID_przeznaczenia WHERE w.imie LIKE ? AND w.nazwisko LIKE ? ORDER BY w.nazwisko";
         if(limit) {
             SQL += " limit ?"
             params.push(limit);

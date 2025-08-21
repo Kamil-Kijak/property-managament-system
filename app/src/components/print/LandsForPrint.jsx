@@ -1,10 +1,11 @@
-import React from "react";
+
 import { Fragment } from "react";
 
-const LandsForPrint = React.forwardRef(({lands}, ref) => {
+
+export default function LandsForPrint({lands}) {
     const today = new Date();
     return (
-        <section ref={ref} className="max-h-full">
+        <section className="max-h-full">
             <h1 className="text-3xl text-center font-bold mt-5">Wypis gruntów</h1>
             <p className="text-center mt-2">z dnia {today.toLocaleDateString("pl-PL")}</p>
             <h1 className="text-center font-bold mt-5">Liczba wyników: {lands.length}</h1>
@@ -24,7 +25,7 @@ const LandsForPrint = React.forwardRef(({lands}, ref) => {
                     {
                         lands.map((obj) =>
                         <Fragment key={obj.ID}>
-                            <tr className="border-t-black border-t-2">
+                            <tr className="border-t-black border-t-2 break-inside-avoid">
                                 <td className="print-table-section">{obj.nr_dzialki}</td>
                                 <td className="print-table-section">
                                     <p className="">m:{obj.miejscowosc}</p>
@@ -33,10 +34,10 @@ const LandsForPrint = React.forwardRef(({lands}, ref) => {
                                     <p className="">woj:{obj.wojewodztwo}</p>
                                 </td>
                                 <td className="print-table-section">
-                                    <p>MPZP: {obj.mpzp}</p>
-                                    <p>plan ogól.: {obj.plan_ogolny}</p>
-                                    <p>Przeznaczenie: {obj.przeznaczenie}</p>
-                                    <p>Rodzaj: {obj.rodzaj}</p>
+                                    <p>MPZP: {obj.mpzp || "brak"}</p>
+                                    <p>plan ogól.: {obj.plan_ogolny || "brak"}</p>
+                                    <p>Przeznaczenie: {obj.przeznaczenie || "brak"}</p>
+                                    <p>Rodzaj: {obj.rodzaj || "brak"}</p>
                                 </td>
                                 <td className="print-table-section">
                                     {
@@ -70,6 +71,4 @@ const LandsForPrint = React.forwardRef(({lands}, ref) => {
             </table>
         </section>
     )
-});
-
-export default LandsForPrint;
+}

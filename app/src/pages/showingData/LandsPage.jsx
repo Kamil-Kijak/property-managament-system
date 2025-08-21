@@ -1,5 +1,4 @@
 
-import {useReactToPrint} from "react-to-print"
 import SearchBar from "../../components/SearchBar";
 import { useRef, useState } from "react";
 import { useEffect } from "react";
@@ -15,7 +14,7 @@ import SearchInput from "../../components/inputs/SearchInput"
 import SearchSelectInput from "../../components/inputs/SearchSelectInput"
 import InsertArea from "../../forms/insert/InsertArea";
 import { useForm } from "../../hooks/plain/useForm";
-import LandsForPrint from "../../components/LandsForPrint";
+import LandsForPrint from "../../components/print/LandsForPrint";
 import { useApi } from "../../hooks/plain/useApi";
 import { useLandsStore } from "../../hooks/stores/useResultStores";
 import { useFormStore } from "../../hooks/stores/useFormStore";
@@ -23,6 +22,7 @@ import BasePage from "../plain/BasePage";
 import DisplaySection from "../sections/DisplaySection";
 import EditArea from "../../forms/edit/EditArea";
 import SumarizeSection from "../sections/SumarizeSection";
+import PrintButton from "../../components/print/PrintButton";
 
 export default function LandsPage({}) {
     const warningUpdate = useWarningStore((state) => state.update);
@@ -54,7 +54,6 @@ export default function LandsPage({}) {
     const [landFiles, setLandFiles] = useState([]);
     const [areaEditID, setAreaEditID] = useState(null);
 
-    const printComponentRef = useRef(null);
 
     useEffect(() => {
         API.getLandPurposes().then(result => {
@@ -134,10 +133,6 @@ export default function LandsPage({}) {
             }
         });
     }
-    const handlePrintLands = useReactToPrint({
-        contentRef: printComponentRef,
-        documentTitle:"System SK INVEST"
-    })
 
     return(
         <BasePage requiredRoles={[]}>
@@ -275,17 +270,20 @@ export default function LandsPage({}) {
                     </>
                 }
             />
-            <section className="hidden">
-                <LandsForPrint ref={printComponentRef} lands={lands}/>
-            </section>
             <DisplaySection
                 header={
                     <>
                         <h1 ref={limitDisplayRef} className="font-bold text-lg mt-5">Limit wyników: {searchFilters.limit || "NIEOGRANICZONY"}</h1>
                         <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {lands.length}</h1>
-                        <section className="my-1">
-                            <button className="base-btn text-xl" onClick={handlePrintLands}><FontAwesomeIcon icon={faPrint}/> Drukuj wyniki</button>
-                        </section>
+                        <PrintButton
+                            title={
+                                <>
+                                    <FontAwesomeIcon icon={faPrint}/> Drukuj wyniki
+                                </>
+                            }
+                            documentTitle="System SK INVEST/działki"
+                            printComponent={<LandsForPrint lands={lands}/>}
+                        />
                         <button className="base-btn text-2xl" onClick={() => {
                                 updateForm("insert")
                             }}><FontAwesomeIcon icon={faPlus}/> Dodaj nową działkę</button>

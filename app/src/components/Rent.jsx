@@ -41,7 +41,7 @@ export default function Rent({ele, deleteRent, editRent}) {
             <section className="flex justify-around gap-x-10">
                 <section className="flex flex-col items-center gap-y-3">
                     <p className="font-bold">ID działki</p>
-                    <p>{ele.numer_seryjny_dzialki}</p>
+                    <p>{ele.numer_seryjny_dzialki || "BRAK"}</p>
                 </section>
                 <section className="flex flex-col items-center gap-y-3">
                     <p className="font-bold">data rozpoczęcia/zakończenia Dzierżawy</p>

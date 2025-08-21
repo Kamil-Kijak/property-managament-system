@@ -48,6 +48,21 @@ router.post("/insert", [checkDataExisting(["name"])], async (req, res) => {
     } catch(err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
-})
+});
+
+router.post("/insert_many", [checkDataExisting(["data"])], async (req, res) => {
+    const {data} = req.body;
+    try {
+        const [result] = await connection.execute("SELECT nazwa FROM rodzaje_dzialek");
+        data.forEach(async (obj) => {
+            if(!result.some((value) => obj == value.nazwa)) {
+                await connection.execute("INSERT INTO rodzaje_dzialek() values(NULL, ?)", [obj]);
+            }
+        });
+        res.status(200).json({success:true, message:"wstawiono rekordy"})
+    } catch (err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+});
 
 module.exports = router;

@@ -67,7 +67,7 @@ export default function Owner({obj, requestDelete, setEditFormData}) {
                     </section>
                      <section className="flex flex-col items-center gap-y-3">
                         <p className="font-bold">Przeznaczenie</p>
-                        <p>{ele.typ}</p>
+                        <p>{ele.typ || "BRAK"}</p>
                     </section>
                 </section>)
             }

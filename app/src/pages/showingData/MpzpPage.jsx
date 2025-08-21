@@ -2,7 +2,7 @@
 
 import {useEffect} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faPen, faPlus, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faFolderPlus, faPen, faPlus, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "../../hooks/plain/useForm";
 import InsertMpzp from "../../forms/insert/InsertMpzp";
 import {useWarningStore } from "../../hooks/stores/useScreensStore";
@@ -23,7 +23,7 @@ export default function MpzpPage({}) {
     const API = useApi();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
-        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"Kod 2 litery"},
+        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ/]{1,5}$/, error:"Kod od 1 do 5 znaków"},
         "description":{regexp:/^.{0,49}$/, error:"Za długi"}
     })
 
@@ -48,6 +48,16 @@ export default function MpzpPage({}) {
                 header={
                     <>
                         <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {mpzp.length}</h1>
+                        <button className="base-btn text-2xl" onClick={() => {
+                            API.insertManyMpzp().then(result => {
+                                if(!result.error) {
+                                    API.getMpzp().then(result => {
+                                        if(!result.error)
+                                            updateMpzp(result.data)
+                                    })
+                                }
+                            })
+                        }}><FontAwesomeIcon icon={faFolderPlus}/> Dodaj zapisane MPZP</button>
                         <button className="base-btn text-2xl" onClick={() => {
                             updateForm("insert")
                         }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowy MPZP</button>

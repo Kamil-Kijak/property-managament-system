@@ -28,11 +28,11 @@ export default function EditLand({search}) {
         "area":{regexp:/^\d{0,4}\.\d{4}$/, error:"Nie ma 4 cyfr po , lub za duża liczba"},
         "kw_number":{regexp:/^([A-Za-z]{2}\d[A-Za-z]\/\d{8}\/\d)?$/, error:"Zły format", optional:true},
         "ID_owner":{regexp:/.+/, error:"Wybierz właściciela"},
-        "ID_type":{regexp:/.+/, error:"Wybierz rodzaj działki"},
-        "ID_purpose":{regexp:/.+/, error:"Wybierz przeznaczenie działki"},
-        "ID_mpzp":{regexp:/.+/, error:"Wybierz MPZP"},
-        "ID_general_plan":{regexp:/.+/, error:"Wybierz plan ogólny"},
-        "mortgage":{regexp:/.+/, error:"Czy ma kartoteke?"},
+        "ID_type":{regexp:/^.*$/, error:"Wybierz rodzaj działki", optional:true},
+        "ID_purpose":{regexp:/^.*$/, error:"Wybierz przeznaczenie działki", optional:true},
+        "ID_mpzp":{regexp:/^.*$/, error:"Wybierz MPZP", optional:true},
+        "ID_general_plan":{regexp:/^.*$/, error:"Wybierz plan ogólny", optional:true},
+        "mortgage":{regexp:/.+/, error:"Czy ma hipoteke?"},
         "description":{regexp:/^.{0,1000}$/, error:"Za długi", optional:true},
         "water_company":{regexp:/.+/, error:"Czy jest spółką wodną"},
         "purchase_date":{regexp:/^(\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))?$/, error:"Zły format", optional:true},
@@ -298,10 +298,12 @@ export default function EditLand({search}) {
                     <section className="flex justify-center w-full gap-x-10 my-5 items-center">
                         <SelectInput
                             title="Rodzaj działki"
+                            placeholder=""
                             value={landFormData.ID_type}
                             onChange={(e) => setLandFormData(prev => ({...prev, ID_type:e.target.value}))}
                             options={
                                 <>
+                                    <option value="">BRAK</option>
                                     {
                                         selectData.land_types.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwa}</option>)
                                     }
@@ -310,10 +312,12 @@ export default function EditLand({search}) {
                         />
                         <SelectInput
                             title="Przeznaczenie działki"
+                            placeholder=""
                             value={landFormData.ID_purpose}
                             onChange={(e) => setLandFormData(prev => ({...prev, ID_purpose:e.target.value}))}
                             options={
                                 <>
+                                    <option value="">BRAK</option>
                                     {
                                         selectData.land_purposes.map((obj, index) => <option key={index} value={obj.ID}>{obj.typ}</option>)
                                     }
@@ -322,10 +326,12 @@ export default function EditLand({search}) {
                         />
                         <SelectInput
                             title="Plan ogólny"
+                            placeholder=""
                             value={landFormData.ID_general_plan}
                             onChange={(e) => setLandFormData(prev => ({...prev, ID_general_plan:e.target.value}))}
                             options={
                                 <>
+                                    <option value="">BRAK</option>
                                     {
                                         selectData.general_plans.map((obj, index) => <option key={index} value={obj.ID}>{obj.kod}</option>)
                                     }
@@ -334,10 +340,12 @@ export default function EditLand({search}) {
                         />
                         <SelectInput
                             title="MPZP"
+                            placeholder=""
                             value={landFormData.ID_mpzp}
                             onChange={(e) => setLandFormData(prev => ({...prev, ID_mpzp:e.target.value}))}
                             options={
                                 <>
+                                    <option value="">BRAK</option>
                                     {
                                         selectData.mpzp.map((obj, index) => <option key={index} value={obj.ID}>{obj.kod}</option>)
                                     }

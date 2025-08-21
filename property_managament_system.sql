@@ -36,11 +36,11 @@ CREATE TABLE `dzialki` (
   `ID_wlasciciela` int NOT NULL,
   `nr_kw` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `hipoteka` tinyint(1) NOT NULL,
-  `ID_rodzaju` int NOT NULL,
+  `ID_rodzaju` int DEFAULT NULL,
   `opis` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `ID_przeznaczenia` int NOT NULL,
-  `ID_mpzp` int NOT NULL,
-  `ID_planu_ogolnego` int NOT NULL,
+  `ID_przeznaczenia` int DEFAULT NULL,
+  `ID_mpzp` int DEFAULT NULL,
+  `ID_planu_ogolnego` int DEFAULT NULL,
   `ID_dzierzawy` int DEFAULT NULL,
   `spolka_wodna` tinyint(1) NOT NULL,
   `ID_nabycia` int NOT NULL
@@ -124,7 +124,7 @@ CREATE TABLE `miejscowosci` (
 
 CREATE TABLE `mpzp` (
   `ID` int NOT NULL,
-  `kod` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `kod` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `opis` varchar(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -150,7 +150,7 @@ CREATE TABLE `nabycia` (
 
 CREATE TABLE `plany_ogolne` (
   `ID` int NOT NULL,
-  `kod` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `kod` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `opis` varchar(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -201,7 +201,7 @@ CREATE TABLE `uzytkownicy` (
   `imie` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `nazwisko` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `haslo` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `rola` enum('ADMIN','SEKRETARIAT','KSIEGOWOSC') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
+  `rola` enum('ADMIN','SEKRETARIAT','KSIEGOWOSC','TEREN') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -415,10 +415,10 @@ ALTER TABLE `wlasciciele`
 --
 ALTER TABLE `dzialki`
   ADD CONSTRAINT `dzialki_ibfk_1` FOREIGN KEY (`ID_wlasciciela`) REFERENCES `wlasciciele` (`ID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `dzialki_ibfk_2` FOREIGN KEY (`ID_rodzaju`) REFERENCES `rodzaje_dzialek` (`ID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `dzialki_ibfk_3` FOREIGN KEY (`ID_przeznaczenia`) REFERENCES `przeznaczenia_dzialek` (`ID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `dzialki_ibfk_4` FOREIGN KEY (`ID_mpzp`) REFERENCES `mpzp` (`ID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `dzialki_ibfk_5` FOREIGN KEY (`ID_planu_ogolnego`) REFERENCES `plany_ogolne` (`ID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dzialki_ibfk_2` FOREIGN KEY (`ID_rodzaju`) REFERENCES `rodzaje_dzialek` (`ID`) ON DELETE SET NULL,
+  ADD CONSTRAINT `dzialki_ibfk_3` FOREIGN KEY (`ID_przeznaczenia`) REFERENCES `przeznaczenia_dzialek` (`ID`) ON DELETE SET NULL,
+  ADD CONSTRAINT `dzialki_ibfk_4` FOREIGN KEY (`ID_mpzp`) REFERENCES `mpzp` (`ID`) ON DELETE SET NULL,
+  ADD CONSTRAINT `dzialki_ibfk_5` FOREIGN KEY (`ID_planu_ogolnego`) REFERENCES `plany_ogolne` (`ID`) ON DELETE SET NULL,
   ADD CONSTRAINT `dzialki_ibfk_7` FOREIGN KEY (`ID_miejscowosci`) REFERENCES `miejscowosci` (`ID`) ON DELETE CASCADE,
   ADD CONSTRAINT `dzialki_ibfk_8` FOREIGN KEY (`ID_nabycia`) REFERENCES `nabycia` (`ID`) ON DELETE CASCADE,
   ADD CONSTRAINT `dzialki_ibfk_9` FOREIGN KEY (`ID_dzierzawy`) REFERENCES `dzierzawy` (`ID`) ON DELETE SET NULL;

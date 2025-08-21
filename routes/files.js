@@ -12,14 +12,7 @@ if (!fs.existsSync(folder)) {
   fs.mkdirSync(folder, { recursive: true });
 }
 
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error('Nieprawidłowy typ pliku'), false);
-  }
-};
+
 
 const storage = multer.diskStorage({
     destination:(req, file, cb) => cb(null, "./land_files"),
@@ -27,7 +20,10 @@ const storage = multer.diskStorage({
         cb(null, req.params.serial + path.extname(file.originalname))
     }
 })
-const upload = multer({storage:storage, fileFilter:fileFilter})
+const upload = multer({
+    storage:storage,
+    limits: { fileSize: 10 * 1024 * 1024 }
+})
 
 const router = express.Router();
 

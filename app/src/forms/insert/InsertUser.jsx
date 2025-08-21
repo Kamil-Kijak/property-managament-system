@@ -86,6 +86,7 @@ export default function InsertUser({}) {
                     onChange={(e) => setInsertFormData(prev => ({...prev, role:e.target.value}))}
                     options={
                     <>
+                        <option value="TEREN">Terenowy</option>
                         <option value="SEKRETARIAT">Sekretariat</option>
                         <option value="Ksiegowosc">Ksiegowosc</option>
                         <option value="ADMIN">Administrator</option>

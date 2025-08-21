@@ -1,7 +1,7 @@
 
 import {useEffect} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faPlus, faPen, faTrashCan, faXmark} from "@fortawesome/free-solid-svg-icons";
+import {faPlus, faPen, faTrashCan, faXmark, faFolderPlus} from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "../../hooks/plain/useForm";
 import InsertLandPurpose from "../../forms/insert/InsertLandPurpose";
 import {useWarningStore } from "../../hooks/stores/useScreensStore";
@@ -49,13 +49,23 @@ export default function LandPurposesPage({}) {
                     <>
                         <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {landPurposes.length}</h1>
                         <button className="base-btn text-2xl" onClick={() => {
+                            API.insertManyLandPurposes().then(result => {
+                                if(!result.error) {
+                                    API.getLandPurposes().then(result => {
+                                        if(!result.error)
+                                            updateLandPurposes(result.data)
+                                    })
+                                }
+                            })
+                        }}><FontAwesomeIcon icon={faFolderPlus}/> Dodaj zapisane przeznaczenia działek</button>
+                        <button className="base-btn text-2xl" onClick={() => {
                             updateForm("insert")
                         }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowe przeznaczenie działki</button>
                     </>
                 }
-                template={(obj) => 
+                template={(obj, index) => 
                     <section className="px-8 py-5 shadow-2xl shadow-black/35 flex items-center justify-between my-5" key={obj.ID}>
-                        <h1 className="text-4xl text-green-600 font-bold">ID: {obj.ID}</h1>
+                        <h1 className="text-4xl text-green-600 font-bold">nr {index + 1}</h1>
                         <section className="flex flex-col items-start justify-center">
                             <h1 className="mx-10 text-2xl">{obj.typ}</h1>
                         </section>

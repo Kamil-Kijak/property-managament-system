@@ -2,7 +2,7 @@
 
 import {useEffect} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faPlus, faPen, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faPlus, faPen, faTrashCan, faFolderPlus} from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "../../hooks/plain/useForm";
 import InsertGeneralPlan from "../../forms/insert/InsertGeneralPlan";
 import {useWarningStore } from "../../hooks/stores/useScreensStore";
@@ -23,7 +23,7 @@ export default function GeneralPlansPage({}) {
     const API = useApi();
 
     const [editFormData, editErrors, setEditFormData] = useForm({
-        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ]{2}$/, error:"Kod 2 litery"},
+        "code":{regexp:/^[A-ZĄĘŚĆŻŹÓŁ/]{1,5}$/, error:"Kod od 1 do 5 znaków"},
         "description":{regexp:/^.{0,70}$/, error:"Za długi"}
     })
     
@@ -50,6 +50,16 @@ export default function GeneralPlansPage({}) {
                 header={
                     <>
                         <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {generalPlans.length}</h1>
+                        <button className="base-btn text-2xl" onClick={() => {
+                            API.insertManyGeneralPlans().then(result => {
+                                if(!result.error) {
+                                    API.getGeneralPlans().then(result => {
+                                        if(!result.error)
+                                            updateGeneralPlans(result.data)
+                                    })
+                                }
+                            })
+                        }}><FontAwesomeIcon icon={faFolderPlus}/> Dodaj zapisane Plany ogólne</button>
                         <button className="base-btn text-2xl" onClick={() => {
                             updateForm("insert")
                         }}><FontAwesomeIcon icon={faPlus}/> Dodaj nowy plan ogólny</button>

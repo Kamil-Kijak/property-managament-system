@@ -229,19 +229,19 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                         </section>
                         <section className="flex flex-col items-center gap-y-3">
                             <p className="font-bold">MPZP</p>
-                            <p>{obj.mpzp}</p>
+                            <p>{obj.mpzp || "BRAK"}</p>
                         </section>
                         <section className="flex flex-col items-center gap-y-3">
                             <p className="font-bold">Plan ogólny</p>
-                            <p>{obj.plan_ogolny}</p>
+                            <p>{obj.plan_ogolny || "BRAK"}</p>
                         </section>
                         <section className="flex flex-col items-center">
                             <p className="font-bold mb-3">Przeznaczenie</p>
-                            <p>{obj.przeznaczenie}</p>
+                            <p>{obj.przeznaczenie || "BRAK"}</p>
                         </section>
                         <section className="flex flex-col items-center">
                             <p className="font-bold mb-3">Rodzaj</p>
-                            <p>{obj.rodzaj}</p>
+                            <p>{obj.rodzaj || "BRAK"}</p>
                         </section>
                     </section>
                     <section className="flex justify-around gap-x-5">
