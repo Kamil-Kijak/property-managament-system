@@ -4,7 +4,7 @@ export default function LandPrintForm({}) {
         <section className="max-h-full">
             <section className="flex justify-start items-center mt-3">
                 <h2 className="text-2xl">Miejscowość:</h2>
-                <p className="text-2xl">..............................................................................................</p>
+                <p className="text-2xl">...............................................................................................................</p>
             </section>
             <section className="flex justify-start gap-x-10 mt-3">
                 <section className="flex justify-start items-center">
@@ -18,11 +18,11 @@ export default function LandPrintForm({}) {
             </section>
             <section className="flex justify-start items-center mt-3">
                 <h2 className="text-2xl">Obecny właściciel:</h2>
-                <p className="text-2xl">..............................................................................................</p>
+                <p className="text-2xl">.....................................................................................................</p>
             </section>
             <section className="flex justify-start items-center mt-3">
                 <h2 className="text-2xl">Kontakt:</h2>
-                <p className="text-2xl">...........................</p>
+                <p className="text-2xl">.........................................................................................................................</p>
             </section>
             <section className="flex flex-col justify-center items-center mt-3">
                 <h2 className="text-2xl">Opis:</h2>

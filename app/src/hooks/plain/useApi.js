@@ -246,8 +246,8 @@ const useApi = () => {
         return await requestFromApi("/api/areas/insert", postOptions(data));
     }
 
-    const fileUpload = async (serial, formData) => {
-        return await requestFromApi(`/api/files/upload/${serial.replace("/", "-")}`, {
+    const fileUpload = async (ID, formData) => {
+        return await requestFromApi(`/api/files/upload/${ID}`, {
             method: 'POST',
             credentials:"include",
             body: formData

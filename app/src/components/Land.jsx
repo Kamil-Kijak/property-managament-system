@@ -9,7 +9,7 @@ import { useApi } from "../hooks/plain/useApi";
 import { useLandsStore } from "../hooks/stores/useResultStores";
 import { useFormStore } from "../hooks/stores/useFormStore";
 
-export default function Land({obj, requestDelete, file = null, setLandFiles = () => {}, search, editArea}) {
+export default function Land({obj, requestDelete, files = [], setLandFiles = () => {}, search, editArea}) {
 
     const warningUpdate = useWarningStore((state) => state.update);
     const updateID = useLandsStore((state) => state.updateID);
@@ -35,13 +35,15 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
     const selectFile = () => {
         inputFileRef.current.click();
     }
-    const uploadFile = (e, serial) => {
-        const documentFile = e.target.files[0];
+    const uploadFile = (e, ID) => {
+        const documentFiles = Array.from(e.target.files);
         const formData = new FormData();
-        formData.append("file", documentFile);
-        API.fileUpload(serial, formData).then(result => {
+        documentFiles.forEach(file => {
+            formData.append("files", file);
+        });
+        API.fileUpload(ID, formData).then(result => {
             if(!result.error) {
-                setLandFiles(prev => [...prev, `${serial.replace("/", "-")}.png`])
+                search()
             }
         })
     }
@@ -82,13 +84,18 @@ export default function Land({obj, requestDelete, file = null, setLandFiles = ()
                 </section>
                 <section className="flex items-center justify-start gap-x-3">
                     {
-                        file && <a target="_blank" href={`/api/files/file/${file.substring(0, file.lastIndexOf("."))}`} className="pdf-btn"><FontAwesomeIcon icon={faFile}/> Plik</a>
+                        files.length > 0 &&
+                        <select className="">
+                            {
+                                files.map((ele) => <option key={ele}>{ele}</option>)
+                            }
+                        </select>
                     }
                     {
                         user.rola == "SEKRETARIAT" &&
                         <>
-                            <button className="pdf-btn" onClick={selectFile}><FontAwesomeIcon icon={faFileArrowDown}/> Wgraj plik</button>
-                            <input ref={inputFileRef} type="file" className="hidden" accept="image/png,image/jpg,application/pdf" id="file" onChange={(e) => uploadFile(e, obj.numer_seryjny_dzialki)} />
+                            <button className="pdf-btn" onClick={selectFile}><FontAwesomeIcon icon={faFileArrowDown}/> Wgraj pliki</button>
+                            <input ref={inputFileRef} type="file" className="hidden" id="files" multiple={true} onChange={(e) => uploadFile(e, obj.ID)} />
                         </>
                     }
                 </section>

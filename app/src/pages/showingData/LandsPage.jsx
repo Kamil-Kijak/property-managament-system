@@ -51,7 +51,7 @@ export default function LandsPage({}) {
     })
 
     const [landPurposes, setLandPurposes] = useState([]);
-    const [landFiles, setLandFiles] = useState([]);
+    const [landFiles, setLandFiles] = useState({});
     const [areaEditID, setAreaEditID] = useState(null);
 
 
@@ -319,7 +319,7 @@ export default function LandsPage({}) {
                         obj={obj}
                         key={obj.ID}
                         requestDelete={requestDelete}
-                        file={landFiles.find((ele) => obj.numer_seryjny_dzialki == ele.replace("-", "/").substring(0, ele.lastIndexOf(".")))}
+                        files={landFiles[obj.ID]}
                         setLandFiles={setLandFiles}
                         editArea={(ID, landID, data) => {updateForm("edit_area"); setAreaEditID(ID); updateID(landID); setEditAreaFormData(data)}}
                         search={search}

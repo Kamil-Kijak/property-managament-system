@@ -6,18 +6,16 @@ const authorization = require("../middlewares/authorization");
 const multer = require("multer");
 
 
-const folder = path.join(__dirname, '../land_files');
-
-if (!fs.existsSync(folder)) {
-  fs.mkdirSync(folder, { recursive: true });
-}
-
-
 
 const storage = multer.diskStorage({
-    destination:(req, file, cb) => cb(null, "./land_files"),
+    destination:(req, file, cb) =>{
+        if(!fs.existsSync(`./land_files/${req.params.ID}`)) {
+            fs.mkdirSync(`./land_files/${req.params.ID}`, {recursive:true});
+        }
+        cb(null, `./land_files/${req.params.ID}`)
+    },
     filename:(req, file, cb) => {
-        cb(null, req.params.serial + path.extname(file.originalname))
+        cb(null, path.parse(file.originalname).name + path.extname(file.originalname))
     }
 })
 const upload = multer({
@@ -29,14 +27,14 @@ const router = express.Router();
 
 router.use(authorization());
 
-router.get("/file/:serial", (req, res) => {
-    const {serial} = req.params;
-    const folder = path.join(__dirname, "../land_files");
+router.get("/file/:ID/:filename", (req, res) => {
+    const {ID, filename} = req.params;
+    const folder = path.join(__dirname, `../land_files/${ID}`);
     fs.readdir(folder, (err, files) => {
         if(err) {
             return res.status(500).send(`<h1 style="text-align:center">Bład przy czytaniu plików</h1>`)
         }
-        const file = files.find(file => path.parse(file).name === serial);
+        const file = files.find(file => path.parse(file).base === filename);
         if(file) {
             res.status(200).sendFile(path.join(folder, file));
         } else {
@@ -45,30 +43,11 @@ router.get("/file/:serial", (req, res) => {
     });
 });
 
-router.post("/upload/:serial", [upload.single("file")], (req, res) => {
-    if(req.file) {
-        fs.readdir("./land_files", (err, files) => {
-            if(err) {
-                console.error("Błąd odczytu folderu:", err);
-                return;
-            }
-            files.forEach(file => {
-                const fileName = path.parse(file).name;
-                if (fileName === path.parse(req.file.filename).name && file != req.file.filename) {
-                    const fullPath = path.join("./land_files", file);
-                    fs.unlink(fullPath, err => {
-                        if (err) {
-                            console.error(`Nie udało się usunąć ${file}:`, err);
-                        } else {
-                            console.log(`Usunięto: ${file}`);
-                        }
-                    });
-                }
-            });
-            });
-        res.status(200).json({success:true, message:"Plik został poprawnie wgrany", file:req.file.filename})
+router.post("/upload/:ID", upload.array("files"), (req, res) => {
+    if(req.files) {
+        res.status(200).json({success:true, message:"Pliki zostały poprawnie wgrane", files:req.files})
     } else {
-        res.status(400).json({success:false, message:"Plik został odrzucony"})
+        res.status(400).json({success:false, message:"Pliki zostały odrzucony"})
     }
 })
 

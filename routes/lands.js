@@ -78,11 +78,13 @@ router.get("/get", [checkDataExisting(["serial_filter", "land_number_filter", "p
     }
     try {
         const [result] = await connection.execute(SQL, paramns);
-        let files = [];
-        if(!(files = fs.readdirSync(path.join(__dirname, "../land_files")))) {
-            files = [];
-        }
-        res.status(200).json({success:true, message:"Przefiltrowano rekordy dzialek", data:result, files:files});
+        const allFiles = {};
+        const folders = fs.readdirSync("./land_files");
+        folders.forEach((value) => {
+            const files = fs.readdirSync(`./land_files/${value}`);
+            allFiles[value] = files;
+        });
+        res.status(200).json({success:true, message:"Przefiltrowano rekordy dzialek", data:result, files:allFiles});
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
