@@ -253,6 +253,9 @@ const useApi = () => {
             body: formData
         });
     }
+    const deleteFile = async (ID, filename) => {
+        return await requestFromApi(`/api/files/delete`, postOptions({ID, filename}))
+    }
 
     return {
         getUsers, registerAdmin, loginUser, updateUser, deleteUser, updatePassword, userLogout, insertUser, auth,
@@ -267,7 +270,7 @@ const useApi = () => {
         deleteRent, updateRent, insertRent,
         getLands, deleteLand, getInsertionRequiredData, insertLand, getLand, updateLand,
         updateArea, deleteArea, insertArea,
-        fileUpload
+        fileUpload, deleteFile
     }
 }
 export {useApi}

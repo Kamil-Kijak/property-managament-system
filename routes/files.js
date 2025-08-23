@@ -3,6 +3,7 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const authorization = require("../middlewares/authorization");
+const checkDataExisting = require("../middlewares/checkDataExisting")
 const multer = require("multer");
 
 
@@ -29,7 +30,7 @@ router.use(authorization());
 
 router.get("/file/:ID/:filename", (req, res) => {
     const {ID, filename} = req.params;
-    const folder = path.join(__dirname, `../land_files/${ID}`);
+    const folder = path.join(__dirname, `../land_files`, ID);
     fs.readdir(folder, (err, files) => {
         if(err) {
             return res.status(500).send(`<h1 style="text-align:center">Bład przy czytaniu plików</h1>`)
@@ -48,6 +49,15 @@ router.post("/upload/:ID", upload.array("files"), (req, res) => {
         res.status(200).json({success:true, message:"Pliki zostały poprawnie wgrane", files:req.files})
     } else {
         res.status(400).json({success:false, message:"Pliki zostały odrzucony"})
+    }
+})
+router.post("/delete", [checkDataExisting(["ID", "filename"])], async (req, res) => {
+    const {ID, filename} = req.body;
+    try {
+        fs.unlinkSync(path.join("./land_files", String(ID), filename));
+        return res.status(200).json({success:true, message:"pomyślnie usunięto plik"})
+    } catch (err) {
+        res.status(400).json({success:false, message:"Bład podczas usuwania pliku", error:err})
     }
 })
 

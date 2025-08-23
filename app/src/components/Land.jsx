@@ -19,6 +19,7 @@ export default function Land({obj, requestDelete, files = [], setLandFiles = () 
     const user = useUserStore((state) => state.user)
     const [showingMore, setShowingMore] = useState(false);
     const [showingGroundAreas, setShowingGroundAreas] = useState(false);
+    const [showingFiles, setShowingFiles] = useState(false);
 
     const API = useApi();
 
@@ -85,11 +86,7 @@ export default function Land({obj, requestDelete, files = [], setLandFiles = () 
                 <section className="flex items-center justify-start gap-x-3">
                     {
                         files.length > 0 &&
-                        <select className="">
-                            {
-                                files.map((ele) => <option key={ele}>{ele}</option>)
-                            }
-                        </select>
+                        <button className="pdf-btn" onClick={() => setShowingFiles(prev => !prev)}><FontAwesomeIcon icon={faFile}/> {showingFiles ? "Ukryj" : "Pokaż"} pliki</button>
                     }
                     {
                         user.rola == "SEKRETARIAT" &&
@@ -100,6 +97,32 @@ export default function Land({obj, requestDelete, files = [], setLandFiles = () 
                     }
                 </section>
             </section>
+            {
+                showingFiles &&
+                <section className="flex flex-col justify-center items-start gap-y-3">
+                    {
+                        files.map((ele) =>         
+                            <section className="flex items-center gap-x-3">
+                                <a target="_blank" href={`/api/files/file/${obj.ID}/${ele}`} className="base-btn">Otwórz</a>
+                                {
+                                    user.rola == "SEKRETARIAT" &&
+                                    <button className="warning-btn" onClick={(e) => {
+                                        
+                                        API.deleteFile(obj.ID, ele).then(result => {
+                                            if(!result.error) {
+                                                search();
+                                            }
+                                        })
+                                    }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
+                                }
+                                <h1 key={ele}>{ele}</h1>
+                            </section> 
+                        )
+                    }
+                    
+                </section>
+
+            }
             {
                 showingGroundAreas &&
                 <>
