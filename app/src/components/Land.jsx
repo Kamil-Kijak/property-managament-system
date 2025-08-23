@@ -101,18 +101,24 @@ export default function Land({obj, requestDelete, files = [], setLandFiles = () 
                 showingFiles &&
                 <section className="flex flex-col justify-center items-start gap-y-3">
                     {
-                        files.map((ele) =>         
-                            <section className="flex items-center gap-x-3">
+                        files.map((ele, index) =>         
+                            <section className="flex items-center gap-x-3" key={index}>
                                 <a target="_blank" href={`/api/files/file/${obj.ID}/${ele}`} className="base-btn">Otwórz</a>
                                 {
                                     user.rola == "SEKRETARIAT" &&
                                     <button className="warning-btn" onClick={(e) => {
-                                        
-                                        API.deleteFile(obj.ID, ele).then(result => {
-                                            if(!result.error) {
-                                                search();
-                                            }
-                                        })
+                                        warningUpdate(true, "Uwaga", () => {
+                                            API.deleteFile(obj.ID, ele).then(result => {
+                                                if(!result.error) {
+                                                    search();
+                                                }
+                                            });
+                                            warningUpdate(false)
+                                        }, () => warningUpdate(false), <>
+                                            <p className="text-white font-bold text-lg mt-5">
+                                                Czy napewno chcesz usunąć ten plik?
+                                            </p>
+                                        </>)
                                     }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                                 }
                                 <h1 key={ele}>{ele}</h1>
