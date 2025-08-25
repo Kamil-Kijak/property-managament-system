@@ -19,9 +19,18 @@ const storage = multer.diskStorage({
         cb(null, path.parse(file.originalname).name + path.extname(file.originalname))
     }
 })
+
+const MAX_SIZE = 10 * 1024 * 1024;
+
 const upload = multer({
     storage:storage,
-    limits: { fileSize: 10 * 1024 * 1024 }
+    fileFilter: (req, file, cb) => {
+        if (req.headers['content-length'] > MAX_SIZE) {
+            cb(null, false);
+        } else {
+            cb(null, true);
+        }
+  }
 })
 
 const router = express.Router();

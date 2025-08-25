@@ -91,7 +91,7 @@ export default function Land({obj, requestDelete, files = [], setLandFiles = () 
                     {
                         user.rola == "SEKRETARIAT" &&
                         <>
-                            <button className="pdf-btn" onClick={selectFile}><FontAwesomeIcon icon={faFileArrowDown}/> Wgraj pliki</button>
+                            <button className="pdf-btn" onClick={selectFile}><FontAwesomeIcon icon={faFileArrowDown}/> Wgraj pliki max 10MB</button>
                             <input ref={inputFileRef} type="file" className="hidden" id="files" multiple={true} onChange={(e) => uploadFile(e, obj.ID)} />
                         </>
                     }
