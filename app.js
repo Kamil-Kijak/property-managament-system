@@ -87,7 +87,7 @@ const generate = async () => {
       if(result.length >= 0) {
         const mailOptions = {
           from:process.env.MAIL_USER || "something@gmail.com",
-          to:"kijak935@gmail.com",
+          to:process.env.MAIL_ADMIN || "something@gmail.com",
           subject:`Raport SK invest z dnia ${today.toLocaleDateString("pl-PL")}`,
           html:`
           <h1 style="text-align:center;color:black;">Raport z systemu SK INVEST</h1>
@@ -191,7 +191,7 @@ cron.schedule(process.env.CRON_SHEDULE || "0 12 * * 1", () => {
 const server = http.createServer(app);
 
 
-server.listen(process.env.PORT || 3000, () => {
+server.listen(process.env.PORT || 3000, "0.0.0.0", () => {
   console.log(`Serwer działa na porcie ${process.env.PORT || 3000}`)
 })
 

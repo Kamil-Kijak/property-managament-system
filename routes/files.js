@@ -6,7 +6,9 @@ const authorization = require("../middlewares/authorization");
 const checkDataExisting = require("../middlewares/checkDataExisting")
 const multer = require("multer");
 
-
+ if(!fs.existsSync(`./land_files`)) {
+    fs.mkdirSync(`./land_files`, {recursive:true});
+}
 
 const storage = multer.diskStorage({
     destination:(req, file, cb) =>{
