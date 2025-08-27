@@ -104,7 +104,7 @@ export default function GroundClassesPage({}) {
                             }
                             <section className="flex flex-col items-center justify-center">
                                 <h1 className="font-bold text-xl">Rodzaj podatku klasy</h1>
-                                <p className="mx-10 text-xl">{obj.podatek}</p>
+                                <p className="mx-10 text-xl">{obj.podatek == "zwolniony" ? "brak opodatkowania" : obj.podatek}</p>
                             </section>
                             <section className="flex gap-x-3">
                                 <button className="info-btn" onClick={() => {
