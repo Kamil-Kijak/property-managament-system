@@ -28,8 +28,7 @@ export default function RentPage({}) {
         show_expired:"",
         name_filter:"",
         surname_filter:"",
-        owner_name_filter:"",
-        owner_surname_filter:"",
+        owner_data_filter:"",
         month_filter:"",
         end_year_filter:"",
         limit:"200"
@@ -133,16 +132,10 @@ export default function RentPage({}) {
                             onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value}))}
                         />
                         <SearchInput
-                            title="Imie właściciela"
-                            placeholder="owner name..."
-                            value={searchFilters.owner_name_filter}
-                            onChange={(e) => setSearchFilters(prev => ({...prev, owner_name_filter:e.target.value}))}
-                        />
-                        <SearchInput
-                            title="Nazwisko właściciela"
-                            placeholder="owner surname..."
-                            value={searchFilters.owner_surname_filter}
-                            onChange={(e) => setSearchFilters(prev => ({...prev, owner_surname_filter:e.target.value}))}
+                            title="Dane właściciela"
+                            placeholder="owner data..."
+                            value={searchFilters.owner_data_filter}
+                            onChange={(e) => setSearchFilters(prev => ({...prev, owner_data_filter:e.target.value}))}
                         />
                         <SearchSelectInput
                             title="Miesiąc wystawienia faktury"

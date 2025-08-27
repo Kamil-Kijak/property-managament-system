@@ -15,7 +15,7 @@ export default function UpdateSection({title = "Edycja", validateForm = () => {}
     return (
         <>
             <section className="my-10">
-                <button className="base-btn text-2xl" onClick={() => updateForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij</button>
+                <button className="base-btn text-2xl" onClick={() => updateForm(null)}><FontAwesomeIcon icon={faXmark}/> Zamknij i nie zapisuj</button>
             </section>
             <section className="base-card my-10">
                 <h1 className="text-2xl my-2 text-center">{title}</h1>
@@ -26,7 +26,7 @@ export default function UpdateSection({title = "Edycja", validateForm = () => {}
                         onSubmit();
                         updateForm(null);
                     }
-                }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
+                }}><FontAwesomeIcon icon={faPen}/> Zapisz zmiany</button>
             </section>
         </>
     )

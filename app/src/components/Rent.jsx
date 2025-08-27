@@ -36,7 +36,7 @@ export default function Rent({ele, deleteRent, editRent}) {
                     </>)
                     }}><FontAwesomeIcon icon={faTrashCan}/> Usuń</button>
                 }
-                <p className="text-xl font-bold">Właściciel: {ele.w_imie} {ele.w_nazwisko} tel:{ele.w_telefon}</p>
+                <p className="text-xl font-bold">Właściciel: {ele.w_dane_osobowe} tel:{ele.w_telefon || "BRAK"}</p>
             </section>
             <section className="flex justify-around gap-x-10">
                 <section className="flex flex-col items-center gap-y-3">

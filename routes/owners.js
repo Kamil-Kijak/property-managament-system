@@ -11,11 +11,11 @@ const router = express.Router();
 
 router.use(authorization());
 
-router.get("/get", [checkDataExisting(["name_filter", "surname_filter", "limit"])], async (req, res) => {
-    const {name_filter, surname_filter, limit} = req.query;
+router.get("/get", [checkDataExisting(["data_filter", "limit"])], async (req, res) => {
+    const {data_filter, limit} = req.query;
     try {
-        const params = [`%${name_filter}%`, `%${surname_filter}%`];
-        let SQL = "SELECT w.*, d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.nazwa as miejscowosc, l.gmina, l.powiat, l.wojewodztwo, p.typ FROM wlasciciele w INNER JOIN dzialki d on d.ID_wlasciciela=w.ID INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji LEFT JOIN przeznaczenia_dzialek p on p.ID=d.ID_przeznaczenia WHERE w.imie LIKE ? AND w.nazwisko LIKE ? ORDER BY w.nazwisko";
+        const params = [`%${data_filter}%`];
+        let SQL = "SELECT w.*, d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, m.nazwa as miejscowosc, l.gmina, l.powiat, l.wojewodztwo, p.typ FROM wlasciciele w INNER JOIN dzialki d on d.ID_wlasciciela=w.ID INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji LEFT JOIN przeznaczenia_dzialek p on p.ID=d.ID_przeznaczenia WHERE w.dane_osobowe LIKE ? ORDER BY w.dane_osobowe";
         if(limit) {
             SQL += " limit ?"
             params.push(limit);
@@ -27,20 +27,22 @@ router.get("/get", [checkDataExisting(["name_filter", "surname_filter", "limit"]
     }
 })
 
-router.post("/update", [checkDataExisting(["ID_owner", "name", "surname", "phone"])], async (req, res) => {
-    const {ID_owner, name, surname, phone} = req.body;
+router.post("/update", [checkDataExisting(["ID_owner", "personal_data", "phone"])], async (req, res) => {
+    const {ID_owner, personal_data, phone} = req.body;
     try {
-        await connection.execute("UPDATE wlasciciele SET imie = ?, nazwisko = ?, telefon = ? WHERE ID = ?", [name, surname, phone, ID_owner]);
+        const newPhone = phone || null
+        await connection.execute("UPDATE wlasciciele SET dane_osobowe = ?, telefon = ? WHERE ID = ?", [personal_data, newPhone, ID_owner]);
         res.status(200).json({success:true, message:"rekord zaktualizowany"})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
 })
 
-router.post("/insert", [checkDataExisting(["name", "surname", "phone"])], async (req, res) => {
-    const {name, surname, phone} = req.body;
+router.post("/insert", [checkDataExisting(["personal_data", "phone"])], async (req, res) => {
+    const {personal_data, phone} = req.body;
     try {
-        const [result] = await connection.execute("INSERT INTO wlasciciele() VALUES(NULL, ?, ?, ?)", [name, surname, phone]);
+        const newPhone = phone || null;
+        const [result] = await connection.execute("INSERT INTO wlasciciele() VALUES(NULL, ?, ?)", [personal_data, newPhone]);
         res.status(200).json({success:true, message:"dodano pomyślnie", insertID:result.insertId})
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})

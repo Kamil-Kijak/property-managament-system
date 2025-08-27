@@ -18,9 +18,8 @@ export default function EditLand({search}) {
     const API = useApi();
 
     const [ownerFormData, ownerErrors, setOwnerFormData] = useForm({
-        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
-        "surname":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
-        "phone":{regexp:/^[0-9]{9}$/, error:"Nie ma 9 cyfr"},
+        "personal_data":{regexp:/^.{1,100}$/, error:"Nie prawidłowe"},
+        "phone":{regexp:/^([0-9]{9})?$/, error:"Nie ma 9 cyfr", optional:true},
     })
     const [landFormData, landErrors, setLandFormData] = useForm({
         "land_serial_number":{regexp:/^(?:\d+_\d\.\d{4}\.(?:\d+|\d+\/\d+))?$/, error:"Zły format", optional:true},
@@ -107,7 +106,7 @@ export default function EditLand({search}) {
     }
 
     const validateOwnerForm = () => {
-        if(Object.keys(ownerFormData).length == 3) {
+        if(Object.keys(ownerFormData).length == 2) {
             if(Object.keys(ownerErrors).every(ele => ownerErrors[ele] == null)) {
                 return true;
             }
@@ -236,7 +235,7 @@ export default function EditLand({search}) {
                                 options={
                                     <>
                                         {
-                                            selectData.owners.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwisko} {obj.imie} {obj.telefon}</option>)
+                                            selectData.owners.map((obj, index) => <option key={index} value={obj.ID}>{obj.dane_osobowe} tel:{obj.telefon || "BRAK"}</option>)
                                         }
                                     </>
                                 }
@@ -251,18 +250,11 @@ export default function EditLand({search}) {
                             fields={
                                 <>
                                     <SimpleInput
-                                        title="Imie"
-                                        placeholder="name..."
-                                        value={ownerFormData.name}
-                                        onChange={(e) => setOwnerFormData(prev => ({...prev, name:e.target.value}))}
-                                        error={ownerErrors.name}
-                                    />
-                                    <SimpleInput
-                                        title="Nazwisko"
-                                        placeholder="surname..."
-                                        value={ownerFormData.surname}
-                                        onChange={(e) => setOwnerFormData(prev => ({...prev, surname:e.target.value}))}
-                                        error={ownerErrors.surname}
+                                        title="Dane"
+                                        placeholder="data..."
+                                        value={ownerFormData.personal_data}
+                                        onChange={(e) => setOwnerFormData(prev => ({...prev, personal_data:e.target.value}))}
+                                        error={ownerErrors.personal_data}
                                     />
                                     <SimpleInput
                                         title="Telefon"

@@ -13,7 +13,7 @@ export default function EditOwner({editFormData, editErrors, setEditFormData, se
 
 
     const validateEditForm = () => {
-        if(Object.keys(editFormData).length == 3) {
+        if(Object.keys(editFormData).length == 2) {
             if(Object.keys(editErrors).every(ele => editErrors[ele] == null)) {
                 return true;
             }
@@ -39,18 +39,11 @@ export default function EditOwner({editFormData, editErrors, setEditFormData, se
             fields={
                 <>
                     <SimpleInput
-                        title="Imie"
-                        placeholder="name..."
-                        value={editFormData.name}
-                        onChange={(e) => setEditFormData(prev => ({...prev, name:e.target.value}))}
-                        error={editErrors.name}
-                    />
-                    <SimpleInput
-                        title="Nazwisko"
-                        placeholder="surname..."
-                        value={editFormData.surname}
-                        onChange={(e) => setEditFormData(prev => ({...prev, surname:e.target.value}))}
-                        error={editErrors.surname}
+                        title="Dane"
+                        placeholder="data..."
+                        value={editFormData.personal_data}
+                        onChange={(e) => setEditFormData(prev => ({...prev, personal_data:e.target.value}))}
+                        error={editErrors.personal_data}
                     />
                     <SimpleInput
                         title="Telefon"

@@ -1,4 +1,4 @@
-import { faEye, faFile, faFileArrowDown, faMountainSun, faPen, faPlug, faPlus, faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faFile, faFileArrowDown, faMountainSun, faPen, faPlus, faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback } from "react";
 import { useState } from "react";
@@ -9,7 +9,7 @@ import { useApi } from "../hooks/plain/useApi";
 import { useLandsStore } from "../hooks/stores/useResultStores";
 import { useFormStore } from "../hooks/stores/useFormStore";
 
-export default function Land({obj, requestDelete, files = [], setLandFiles = () => {}, search, editArea}) {
+export default function Land({obj, requestDelete, files = [], search, editArea}) {
 
     const warningUpdate = useWarningStore((state) => state.update);
     const updateID = useLandsStore((state) => state.updateID);
@@ -198,7 +198,13 @@ export default function Land({obj, requestDelete, files = [], setLandFiles = () 
                             <h1 className="font-bold text-sm">suma ha. fizyczne</h1>
                             <h1 className="text-xl">{(obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia), 0)).toFixed(4)}ha</h1>
                             {obj.powierzchnia == (obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia), 0)).toFixed(4) ?
-                            <h1 className="font-bold text-green-600 text-xl">Zgodność</h1>:<h1 className="font-bold text-red-600 text-xl">Brak zgodności</h1>}
+                                <h1 className="font-bold text-green-600 text-xl">Zgodność</h1>
+                                :
+                                <>
+                                    <h1 className="font-bold text-red-600 text-xl">Brak zgodności</h1>
+                                    <h1 className="font-bold text-red-600 text-xl">Różnica: {(obj.powierzchnia - (obj.powierzchnie.reduce((acc, obj) =>acc + Number(obj.p_powierzchnia), 0))).toFixed(4)}ha</h1>
+                                </>
+                            }
                         </section>
                         <section className="flex flex-col items-center justify-center gap-y-3">
                             <h1 className="font-bold text-sm">suma ha. przeliczeniowe rolne</h1>
@@ -288,8 +294,8 @@ export default function Land({obj, requestDelete, files = [], setLandFiles = () 
                         </section>
                         <section className="flex flex-col items-center gap-y-3">
                             <p className="font-bold">Właściciel</p>
-                            <p>{obj.w_imie} {obj.w_nazwisko}</p>
-                            <p>{obj.w_telefon}</p>
+                            <p>{obj.w_dane_osobowe}</p>
+                            <p>{obj.w_telefon || "BRAK TEL"}</p>
                         </section>
                         <section className="flex flex-col items-center gap-y-3">
                             <p className="font-bold">Data nabycia</p>

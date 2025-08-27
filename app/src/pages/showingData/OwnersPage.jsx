@@ -20,14 +20,12 @@ export default function OwnersPage({}) {
     const limitDisplayRef = useRef(null);
 
     const [searchFilters, setSearchFilters] = useState({
-        name_filter:"",
-        surname_filter:"",
+        data_filter:"",
         limit:"200"
     });
     const [editFormData, editErrors, setEditFormData] = useForm({
-        "name":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
-        "surname":{regexp:/^[A-Z][a-ząęłćśóżź]{1,49}$/, error:"Nie prawidłowe"},
-        "phone":{regexp:/^[0-9]{9}$/, error:"Nie ma 9 cyfr"},
+        "personal_data":{regexp:/^.{1,100}$/, error:"Nie prawidłowe"},
+        "phone":{regexp:/^([0-9]{9})?$/, error:"Nie ma 9 cyfr", optional:true},
     })
 
     const search = () => {
@@ -39,10 +37,9 @@ export default function OwnersPage({}) {
                 const owners = [];
                 result.data.forEach((obj) => {
                     if(!owners.some((ele) => ele.ID == obj.ID)) {
-                        owners.push({ID:obj.ID, imie:obj.imie, nazwisko:obj.nazwisko, telefon:obj.telefon, dzialki:[]});
+                        owners.push({ID:obj.ID, dane_osobowe:obj.dane_osobowe, telefon:obj.telefon, dzialki:[]});
                     }
-                    delete obj.nazwisko;
-                    delete obj.imie;
+                    delete obj.dane_osobowe;
                     delete obj.telefon;
                     owners.find(ele => ele.ID == obj.ID).dzialki.push({...obj});
                 })
@@ -80,16 +77,10 @@ export default function OwnersPage({}) {
                                 onChange={(e) => setSearchFilters(prev => ({...prev, limit:e.target.value}))}
                             />
                             <SearchInput
-                                title="Imie właściciela"
-                                placeholder="name..."
-                                value={searchFilters.name_filter}
-                                onChange={(e) => setSearchFilters(prev => ({...prev, name_filter:e.target.value}))}
-                            />
-                            <SearchInput
-                                title="Nazwisko właściciela"
-                                placeholder="surname..."
-                                value={searchFilters.surname_filter}
-                                onChange={(e) => setSearchFilters(prev => ({...prev, surname_filter:e.target.value}))}
+                                title="Dane właściciela"
+                                placeholder="owner data..."
+                                value={searchFilters.data_filter}
+                                onChange={(e) => setSearchFilters(prev => ({...prev, data_filter:e.target.value}))}
                             />
                         </>
                     }

@@ -15,16 +15,15 @@ export default function Owner({obj, requestDelete, setEditFormData}) {
     return (
         <section>
             <section className="border-b-8 border-b-green-500 flex gap-x-20 py-5 mb-10 items-center">
-                <h1 className="text-3xl">{obj.imie} {obj.nazwisko}</h1>
-                <h1 className="text-3xl">tel:{obj.telefon}</h1>
+                <h1 className="text-3xl">{obj.dane_osobowe}</h1>
+                <h1 className="text-3xl">tel:{obj.telefon || "BRAK"}</h1>
                 <section className="flex gap-x-5">
                     <button className="info-btn" onClick={() => {
                         updateForm("edit")
                         updateID(obj.ID);
                         setEditFormData({
-                            name:obj.imie,
-                            surname:obj.nazwisko,
-                            phone:obj.telefon
+                            personal_data:obj.dane_osobowe,
+                            phone:obj.telefon || ""
                         })
                         }}><FontAwesomeIcon icon={faPen}/> Edytuj</button>
                     {user.rola == "ADMIN" && <button className="warning-btn" onClick={() => {

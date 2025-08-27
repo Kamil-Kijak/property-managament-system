@@ -38,6 +38,7 @@ export default function LandsPage({}) {
     const [searchFilters, setSearchFilters] = useState({
         serial_filter:"",
         land_number_filter:"",
+        ground_class_filter:"",
         purpose_filter:"",
         rent_filter:"",
         low_area_filter:"",
@@ -87,8 +88,7 @@ export default function LandsPage({}) {
                         wojewodztwo:obj.wojewodztwo,
                         powiat:obj.powiat,
                         gmina:obj.gmina,
-                        w_imie:obj.w_imie,
-                        w_nazwisko:obj.w_nazwisko,
+                        w_dane_osobowe:obj.w_dane_osobowe,
                         rodzaj:obj.rodzaj,
                         przeznaczenie:obj.przeznaczenie,
                         mpzp:obj.mpzp,
@@ -226,6 +226,12 @@ export default function LandsPage({}) {
                             }
                         </select>
                     }
+                    <SearchInput
+                        title="Klasa gruntu"
+                        placeholder="NaN"
+                        value={searchFilters.ground_class_filter}
+                        onChange={(e) => setSearchFilters(prev => ({...prev, ground_class_filter:e.target.value}))}
+                    />
                     <SearchSelectInput
                         title="Przeznaczenie"
                         placeholder="NaN"

@@ -2,7 +2,6 @@
 const express = require("express");
 const connection = require("../util/mysqlConnection");
 const fs = require("fs");
-const path = require("path");
 
 const checkDataExisting = require("../middlewares/checkDataExisting")
 const authorization = require("../middlewares/authorization")
@@ -34,7 +33,7 @@ router.get("/get_rent_lands", [checkDataExisting(["przeznaczenie"])], async (req
 
 router.get("/get_insertion_required_data", async (req, res) => {
     try {
-        const [resultOwners] = await connection.execute("SELECT * FROM wlasciciele order by nazwisko");
+        const [resultOwners] = await connection.execute("SELECT * FROM wlasciciele order by dane_osobowe");
         const [resultLandTypes] = await connection.execute("SELECT * FROM rodzaje_dzialek");
         const [resultLandPurposes] = await connection.execute("SELECT * FROM przeznaczenia_dzialek");
         const [resultGeneralPlans] = await connection.execute("SELECT * FROM plany_ogolne order by kod");
@@ -51,9 +50,9 @@ router.get("/get_insertion_required_data", async (req, res) => {
     }
 })
 
-router.get("/get", [checkDataExisting(["serial_filter", "land_number_filter", "purpose_filter", "rent_filter", "commune_filter", "district_filter", "province_filter", "town_filter", "low_area_filter", "high_area_filter", "limit"])], async (req, res) => {
-    const {serial_filter, purpose_filter, rent_filter, low_area_filter, high_area_filter, commune_filter, district_filter, province_filter, town_filter, land_number_filter, limit} = req.query;
-    let SQL = "SELECT d.ID, d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, d.nr_kw, d.hipoteka, d.opis, d.spolka_wodna, m.nazwa as miejscowosc, l.wojewodztwo, l.powiat, l.gmina, l.podatek_rolny, l.podatek_lesny, w.imie as w_imie, w.nazwisko as w_nazwisko, w.telefon as 'w_telefon', rd.nazwa as 'rodzaj', pd.typ as 'przeznaczenie', mp.kod as 'mpzp', po.kod as 'plan_ogolny', n.data_nabycia, n.nr_aktu, n.sprzedawca, n.cena_zakupu, di.ID as 'ID_dzierzawy', dz.imie as 'd_imie', dz.nazwisko as 'd_nazwisko', dz.telefon as 'd_telefon', pod.powierzchnia as 'p_powierzchnia', pod.zwolniona_powierzchnia, pod.ID as 'p_ID', k.ID as 'k_ID', k.klasa, k.przelicznik, k.podatek FROM dzialki d LEFT JOIN dzierzawy di on di.ID=d.ID_dzierzawy LEFT JOIN dzierzawcy dz on dz.ID=di.ID_dzierzawcy INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN wlasciciele w ON w.ID=d.ID_wlasciciela LEFT JOIN rodzaje_dzialek rd on rd.ID=d.ID_rodzaju LEFT JOIN przeznaczenia_dzialek pd on pd.ID=d.ID_przeznaczenia LEFT JOIN mpzp mp on mp.ID=d.ID_mpzp LEFT JOIN plany_ogolne po on po.ID=d.ID_planu_ogolnego INNER JOIN nabycia n on n.ID=d.ID_nabycia LEFT JOIN powierzchnie_dzialek pod on pod.ID_dzialki=d.ID LEFT JOIN klasy_gruntu k on pod.ID_klasy=k.ID WHERE d.numer_seryjny_dzialki LIKE ? AND (pd.typ LIKE ? OR pd.typ IS NULL) AND l.gmina LIKE ? AND l.powiat LIKE ? AND l.wojewodztwo LIKE ? AND m.nazwa LIKE ? AND d.nr_dzialki LIKE ?"
+router.get("/get", [checkDataExisting(["serial_filter", "land_number_filter", "purpose_filter", "rent_filter", "commune_filter", "district_filter", "province_filter", "town_filter", "low_area_filter", "high_area_filter", "ground_class_filter", "limit"])], async (req, res) => {
+    const {serial_filter, purpose_filter, rent_filter, low_area_filter, high_area_filter, commune_filter, district_filter, province_filter, town_filter, land_number_filter, ground_class_filter, limit} = req.query;
+    let SQL = "SELECT d.ID, d.numer_seryjny_dzialki, d.nr_dzialki, d.powierzchnia, d.nr_kw, d.hipoteka, d.opis, d.spolka_wodna, m.nazwa as miejscowosc, l.wojewodztwo, l.powiat, l.gmina, l.podatek_rolny, l.podatek_lesny, w.dane_osobowe as w_dane_osobowe, w.telefon as 'w_telefon', rd.nazwa as 'rodzaj', pd.typ as 'przeznaczenie', mp.kod as 'mpzp', po.kod as 'plan_ogolny', n.data_nabycia, n.nr_aktu, n.sprzedawca, n.cena_zakupu, di.ID as 'ID_dzierzawy', dz.imie as 'd_imie', dz.nazwisko as 'd_nazwisko', dz.telefon as 'd_telefon', pod.powierzchnia as 'p_powierzchnia', pod.zwolniona_powierzchnia, pod.ID as 'p_ID', k.ID as 'k_ID', k.klasa, k.przelicznik, k.podatek FROM dzialki d LEFT JOIN dzierzawy di on di.ID=d.ID_dzierzawy LEFT JOIN dzierzawcy dz on dz.ID=di.ID_dzierzawcy INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN wlasciciele w ON w.ID=d.ID_wlasciciela LEFT JOIN rodzaje_dzialek rd on rd.ID=d.ID_rodzaju LEFT JOIN przeznaczenia_dzialek pd on pd.ID=d.ID_przeznaczenia LEFT JOIN mpzp mp on mp.ID=d.ID_mpzp LEFT JOIN plany_ogolne po on po.ID=d.ID_planu_ogolnego INNER JOIN nabycia n on n.ID=d.ID_nabycia LEFT JOIN powierzchnie_dzialek pod on pod.ID_dzialki=d.ID LEFT JOIN klasy_gruntu k on pod.ID_klasy=k.ID WHERE d.numer_seryjny_dzialki LIKE ? AND (pd.typ LIKE ? OR pd.typ IS NULL) AND l.gmina LIKE ? AND l.powiat LIKE ? AND l.wojewodztwo LIKE ? AND m.nazwa LIKE ? AND d.nr_dzialki LIKE ?"
     const paramns = [`${serial_filter}%`, `${purpose_filter}%`, `${commune_filter}%`, `${district_filter}%`, `${province_filter}%`, `${town_filter}%`, `${land_number_filter}%`];
     if(low_area_filter && high_area_filter) {
         paramns.push(low_area_filter, high_area_filter);
@@ -77,14 +76,27 @@ router.get("/get", [checkDataExisting(["serial_filter", "land_number_filter", "p
         paramns.push(limit);
     }
     try {
+        const [groundClassFilterResult] = await connection.execute("SELECT DISTINCT d.ID FROM dzialki d INNER JOIN powierzchnie_dzialek pd ON pd.ID_dzialki=d.ID LEFT JOIN klasy_gruntu k ON k.ID=pd.ID_klasy WHERE k.klasa LIKE ?",
+            [`%${ground_class_filter}%`]
+        );
+        const allowedLandsID = [];
+        groundClassFilterResult.forEach((obj) => {
+            allowedLandsID.push(obj.ID)
+        })
         const [result] = await connection.execute(SQL, paramns);
-        const allFiles = {};
         const folders = fs.readdirSync("./land_files");
-        folders.forEach((value) => {
+        let newResult = result;
+        let newFolders = folders;
+        if(ground_class_filter != "") {
+            newResult = result.filter((obj) => allowedLandsID.includes(obj.ID));
+            newFolders = folders.filter((obj) => allowedLandsID.includes(Number(obj)))
+        }
+        const allFiles = {};
+        newFolders.forEach((value) => {
             const files = fs.readdirSync(`./land_files/${value}`);
             allFiles[value] = files;
         });
-        res.status(200).json({success:true, message:"Przefiltrowano rekordy dzialek", data:result, files:allFiles});
+        res.status(200).json({success:true, message:"Przefiltrowano rekordy dzialek", data:newResult, files:allFiles});
     } catch (err) {
         return res.status(500).json({error:"bład bazy danych", errorInfo:err})
     }
