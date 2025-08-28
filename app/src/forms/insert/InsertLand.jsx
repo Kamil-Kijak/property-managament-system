@@ -108,8 +108,8 @@ export default function InsertLand({search}) {
             fields={
                 <>
                     <SimpleInput
-                        title="Numer seryjny działki (ID)"
-                        placeholder="serial numer (ID)..."
+                        title="Numer seryjny działki"
+                        placeholder="serial numer..."
                         value={landFormData.land_serial_number}
                         onChange={(e) => setLandFormData(prev => ({...prev, land_serial_number:e.target.value}))}
                         error={landErrors.land_serial_number}
@@ -232,7 +232,7 @@ export default function InsertLand({search}) {
                                         error={ownerErrors.personal_data}
                                     />
                                     <SimpleInput
-                                        title="Telefon"
+                                        title="Telefon (opcjonalnie)"
                                         placeholder="phone..."
                                         value={ownerFormData.phone}
                                         onChange={(e) => setOwnerFormData(prev => ({...prev, phone:e.target.value}))}
@@ -323,7 +323,7 @@ export default function InsertLand({search}) {
                     </section>
                     <section className="flex justify-center w-full gap-x-10 my-5 items-center">
                         <SimpleTextArea
-                            title="Opis działki"
+                            title="Opis działki (opcjonalny)"
                             placeholder="land description..."
                             value={landFormData.description}
                             onChange={(e) => setLandFormData(prev => ({...prev, description:e.target.value}))}

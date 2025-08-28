@@ -260,7 +260,7 @@ export default function EditLand({search}) {
                                         error={ownerErrors.personal_data}
                                     />
                                     <SimpleInput
-                                        title="Telefon"
+                                        title="Telefon (opcjonalnie)"
                                         placeholder="phone..."
                                         value={ownerFormData.phone}
                                         onChange={(e) => setOwnerFormData(prev => ({...prev, phone:e.target.value}))}
@@ -350,7 +350,7 @@ export default function EditLand({search}) {
                     </section>
                     <section className="flex justify-center w-full gap-x-10 my-5 items-center">
                         <SimpleTextArea
-                            title="Opis działki"
+                            title="Opis działki (opcjonalny)"
                             placeholder="land description..."
                             value={landFormData.description}
                             onChange={(e) => setLandFormData(prev => ({...prev, description:e.target.value}))}
@@ -405,7 +405,7 @@ export default function EditLand({search}) {
                     <section className="flex justify-center w-full gap-x-10 my-5 items-center">
                         <SimpleInput
                             type="date"
-                            title="Data sprzedaży"
+                            title="Data sprzedaży (opcjonalnie)"
                             placeholder="sell date..."
                             value={landFormData.sell_date}
                             onChange={(e) => setLandFormData(prev => ({...prev, sell_date:e.target.value}))}

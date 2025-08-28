@@ -80,7 +80,7 @@ export default function NavBar({requiredRoles = []}) {
                         />
                         <NavButton
                             path="/districts"
-                            buttonContent={<><FontAwesomeIcon icon={faLocationDot}/> gminy i okręgi podatkowe</>}
+                            buttonContent={<><FontAwesomeIcon icon={faLocationDot}/> gminy i stawki podatkowe</>}
                         />
                     </>
                 }

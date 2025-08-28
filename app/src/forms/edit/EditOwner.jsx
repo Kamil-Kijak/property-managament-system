@@ -46,7 +46,7 @@ export default function EditOwner({editFormData, editErrors, setEditFormData, se
                         error={editErrors.personal_data}
                     />
                     <SimpleInput
-                        title="Telefon"
+                        title="Telefon (opcjonalnie)"
                         placeholder="phone..."
                         value={editFormData.phone}
                         onChange={(e) => setEditFormData(prev => ({...prev, phone:e.target.value}))}
