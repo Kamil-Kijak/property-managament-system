@@ -120,18 +120,20 @@ export default function InsertRent({search}) {
                         </section>
                     </section>
                     <section className="flex justify-center w-full gap-x-10 my-5 items-center">
-                        <SelectInput
-                            title="Dzierżawca"
-                            value={rentFormData.ID_renter}
-                            onChange={(e) => setRentFormData(prev => ({...prev, ID_renter:e.target.value}))}
-                            options={
-                            <>
-                                {
-                                    renters.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwisko} {obj.imie} {obj.telefon}</option>)
+                        <section className="w-[200px]">
+                            <SelectInput
+                                title="Dzierżawca"
+                                value={rentFormData.ID_renter}
+                                onChange={(e) => setRentFormData(prev => ({...prev, ID_renter:e.target.value}))}
+                                options={
+                                <>
+                                    {
+                                        renters.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwisko} {obj.imie} tel:{obj.telefon}</option>)
+                                    }
+                                </>
                                 }
-                            </>
-                            }
-                        />
+                            />
+                        </section>
                         <InsertSection
                             showClose={false}
                             title="Tworzenie nowego dzierżawcy"

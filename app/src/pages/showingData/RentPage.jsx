@@ -180,7 +180,7 @@ export default function RentPage({}) {
                                 <h1 className="text-4xl font-bold text-center">Podsumowanie</h1>
                                 <div className="bg-green-500 w-full h-2 rounded-2xl my-3"></div>
                                 <section className="flex flex-col gap-y-7 justify-center">
-                                    <h1 className="text-2xl">Suma czynszu: {(renters.reduce((acc, value) => acc + value.dzialki.reduce((acc, value) => acc + parseFloat((parseFloat(value.wysokosc_czynszu) * parseFloat(value.powierzchnia))), 0), 0)).toFixed(2)}zł</h1>
+                                    <h1 className="text-2xl text-center">Suma czynszu: {(renters.reduce((acc, value) => acc + value.dzialki.reduce((acc, value) => acc + parseFloat((parseFloat(value.wysokosc_czynszu) * parseFloat(value.powierzchnia))), 0), 0)).toFixed(2)}zł</h1>
                                 </section>
                             </section>
                         </SumarizeSection>

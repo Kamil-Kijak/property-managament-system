@@ -105,7 +105,7 @@ export default function EditRent({editRentFormData, editRentErrors, setEditRentF
                         </section>
                     </section>
                     <section className="flex justify-center w-full gap-x-10 my-5 items-center">
-                        <section className="w-[250px]">
+                        <section className="w-[200px]">
                             <SelectInput
                                 title="Dzierżawca"
                                 value={editRentFormData.ID_renter}
@@ -113,7 +113,7 @@ export default function EditRent({editRentFormData, editRentErrors, setEditRentF
                                 options={
                                 <>
                                     {
-                                        allRenters.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwisko} {obj.imie} {obj.telefon}</option>)
+                                        allRenters.map((obj, index) => <option key={index} value={obj.ID}>{obj.nazwisko} {obj.imie} tel:{obj.telefon}</option>)
                                     }
                                 </>
                                 }

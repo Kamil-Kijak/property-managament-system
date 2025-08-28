@@ -35,6 +35,7 @@ export default function EditLand({search}) {
         "description":{regexp:/^.{0,1000}$/, error:"Za długi", optional:true},
         "water_company":{regexp:/.+/, error:"Czy jest spółką wodną"},
         "purchase_date":{regexp:/^(\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))?$/, error:"Zły format", optional:true},
+        "sell_date":{regexp:/^(\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))?$/, error:"Zły format", optional:true},
         "case_number":{regexp:/^(\d+\/\d+)?$/, error:"Zły format", optional:true},
         "seller":{regexp:/^(.{0,49})?$/, error:"Za długi", optional:true},
         "price":{regexp:/^(\d{0,6}\.\d{2})?$/, error:"Nie ma 2 cyfr po , lub za duża liczba", optional:true},
@@ -60,6 +61,7 @@ export default function EditLand({search}) {
             const objectsToDelete = ["miejscowosc", "gmina", "powiat", "wojewodztwo"]
             objectsToDelete.forEach(obj => delete actualLandData[obj]);
             const purchase_date = actualLandData.data.data_nabycia ? new Date(actualLandData.data.data_nabycia).toLocaleDateString("sv-SE") : ""
+            const sell_date = actualLandData.data.data_sprzedazy ? new Date(actualLandData.data.data_sprzedazy).toLocaleDateString("sv-SE") : ""
             setLandFormData({
                 land_serial_number:actualLandData.data.numer_seryjny_dzialki,
                 land_number:actualLandData.data.nr_dzialki,
@@ -74,6 +76,7 @@ export default function EditLand({search}) {
                 description:actualLandData.data.opis,
                 water_company:actualLandData.data.spolka_wodna || "0",
                 purchase_date:purchase_date,
+                sell_date:sell_date,
                 seller:actualLandData.data.sprzedawca,
                 price:actualLandData.data.cena_zakupu || "",
                 case_number:actualLandData.data.nr_aktu
@@ -114,7 +117,7 @@ export default function EditLand({search}) {
         return false;
     }
     const validateForm = () => {
-        if(Object.keys(landFormData).length == 16) {
+        if(Object.keys(landFormData).length == 17) {
             if(Object.keys(landErrors).every(ele => landErrors[ele] == null)) {
                 if(Object.keys(localizations).every(ele => localizations[ele].length != 0)) {
                     return true;
@@ -227,7 +230,7 @@ export default function EditLand({search}) {
                         }
                     </section>
                     <section className="flex justify-center w-full gap-x-10 my-5 items-center">
-                        <section className="w-[150px]">
+                        <section className="w-[200px]">
                             <SelectInput
                                 title="Właściciel"
                                 value={landFormData.ID_owner}
@@ -397,6 +400,16 @@ export default function EditLand({search}) {
                             value={landFormData.price}
                             onChange={(e) => setLandFormData(prev => ({...prev, price:e.target.value}))}
                             error={landErrors.price}
+                        />
+                    </section>
+                    <section className="flex justify-center w-full gap-x-10 my-5 items-center">
+                        <SimpleInput
+                            type="date"
+                            title="Data sprzedaży"
+                            placeholder="sell date..."
+                            value={landFormData.sell_date}
+                            onChange={(e) => setLandFormData(prev => ({...prev, sell_date:e.target.value}))}
+                            error={landErrors.sell_date}
                         />
                     </section>
                 </>

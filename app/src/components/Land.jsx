@@ -230,6 +230,12 @@ export default function Land({obj, requestDelete, files = [], search, editArea})
                     }
                 </>
             }
+            {
+                obj.data_sprzedazy &&
+                <section className="flex justify-start gap-x-5">
+                    <h1 className="text-2xl text-start text-red-700 font-bold">Sprzedana dnia: {new Date(obj.data_sprzedazy).toLocaleDateString()}</h1>
+                </section>
+            }
             <section className="flex justify-around gap-x-5">
                 <section className="flex flex-col items-center gap-y-3">
                     <p className="font-bold">ID działki</p>

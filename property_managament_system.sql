@@ -1,16 +1,8 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: localhost
--- Generation Time: Aug 04, 2025 at 03:53 PM
--- Wersja serwera: 8.0.39
--- Wersja PHP: 8.2.26
+
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -43,7 +35,8 @@ CREATE TABLE `dzialki` (
   `ID_planu_ogolnego` int DEFAULT NULL,
   `ID_dzierzawy` int DEFAULT NULL,
   `spolka_wodna` tinyint(1) NOT NULL,
-  `ID_nabycia` int NOT NULL
+  `ID_nabycia` int NOT NULL,
+  `data_sprzedazy` date DEFAULT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

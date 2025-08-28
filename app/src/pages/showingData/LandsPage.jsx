@@ -38,11 +38,14 @@ export default function LandsPage({}) {
     const [searchFilters, setSearchFilters] = useState({
         serial_filter:"",
         land_number_filter:"",
+        owner_filter:"",
         ground_class_filter:"",
         purpose_filter:"",
         rent_filter:"",
         low_area_filter:"",
         high_area_filter:"",
+        low_sell_date_filter:"",
+        high_sell_date_filter:"",
         limit:"200"
     });
     const [editAreaFormData, editAreaErrors, setEditAreaFormData] = useForm({
@@ -105,7 +108,8 @@ export default function LandsPage({}) {
                         podatek_rolny:obj.podatek_rolny,
                         podatek_lesny:obj.podatek_lesny,
                         w_telefon:obj.w_telefon,
-                        d_telefon:obj.d_telefon
+                        d_telefon:obj.d_telefon,
+                        data_sprzedazy:obj.data_sprzedazy
                     }
                     if(!lands.some((ele) => ele.ID == obj.ID)) {
                         lands.push({...objToPush, powierzchnie:[]});
@@ -159,6 +163,12 @@ export default function LandsPage({}) {
                         placeholder="land number..."
                         value={searchFilters.land_number_filter}
                         onChange={(e) => setSearchFilters(prev => ({...prev, land_number_filter:e.target.value}))}
+                    />
+                    <SearchInput
+                        title="Właściciel"
+                        placeholder="owner..."
+                        value={searchFilters.owner_filter}
+                        onChange={(e) => setSearchFilters(prev => ({...prev, owner_filter:e.target.value}))}
                     />
                     <section className="w-[150px]">
                         <SearchSelectInput
@@ -272,6 +282,18 @@ export default function LandsPage({}) {
                         placeholder="ha..."
                         value={searchFilters.high_area_filter}
                         onChange={(e) => setSearchFilters(prev => ({...prev, high_area_filter:e.target.value}))}
+                    />
+                    <SearchInput
+                        type="date"
+                        title="Powyżej daty sprzedaży"
+                        value={searchFilters.low_sell_date_filter}
+                        onChange={(e) => setSearchFilters(prev => ({...prev, low_sell_date_filter:e.target.value}))}
+                    />
+                    <SearchInput
+                        type="date"
+                        title="Poniżej daty sprzedaży"
+                        value={searchFilters.high_sell_date_filter}
+                        onChange={(e) => setSearchFilters(prev => ({...prev, high_sell_date_filter:e.target.value}))}
                     />
                     </>
                 }

@@ -202,7 +202,7 @@ export default function InsertLand({search}) {
                         }
                     </section>
                     <section className="flex justify-center w-full gap-x-10 my-5 items-center">
-                        <section className="w-[150px]">
+                        <section className="w-[200px]">
                             <SelectInput
                                 title="Właściciel"
                                 value={landFormData.ID_owner}
