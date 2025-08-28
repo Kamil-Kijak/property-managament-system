@@ -36,7 +36,7 @@ CREATE TABLE `dzialki` (
   `ID_dzierzawy` int DEFAULT NULL,
   `spolka_wodna` tinyint(1) NOT NULL,
   `ID_nabycia` int NOT NULL,
-  `data_sprzedazy` date DEFAULT NULL,
+  `data_sprzedazy` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
