@@ -178,6 +178,9 @@ const useApi = () => {
             },
         });
     }
+    const getUniqueClasses = async () => {
+        return await requestFromApi("/api/ground_classes/get_unique_classes", {});
+    }
     const deleteGroundClass = async (data) => {
         return await requestFromApi("/api/ground_classes/delete", postOptions(data));
     }
@@ -274,7 +277,7 @@ const useApi = () => {
         getLandTypes, deleteLandType, updateLandType, insertLandType, insertManyLandTypes,
         getOwners, deleteOwner, updateOwner, insertOwner,
         getDistricts, updateDistricts, getTowns,
-        getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass, getLandGroundClasses,getGroundClassCount,
+        getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass, getLandGroundClasses,getGroundClassCount,getUniqueClasses,
         getAllRenters, getRenters, deleteRenter, updateRenter, insertRenter,
         deleteRent, updateRent, insertRent,
         getLands, deleteLand, getInsertionRequiredData, insertLand, getLand, updateLand,

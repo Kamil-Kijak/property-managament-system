@@ -50,9 +50,8 @@ export default function LandsForPrint({lands}) {
                                     {obj.powierzchnia}ha
                                 </td>
                                 <td className="print-table-section">
-                                    <p className="break-all">{obj.w_imie}</p>
-                                    <p className="break-all">{obj.w_nazwisko}</p>
-                                    <p>{obj.w_telefon}</p>
+                                    <p className="break-all">{obj.w_dane_osobowe}</p>
+                                    <p>tel:{obj.w_telefon || "BRAK"}</p>
                                 </td>
                                 <td className="print-table-section">
                                     <p>{obj.nr_kw}</p>
@@ -69,6 +68,14 @@ export default function LandsForPrint({lands}) {
                     }
                 </tbody>
             </table>
+            <h1 className="text-xl text-start font-bold mt-5">Razem</h1>
+            <hr className="w-[100%] my-1"/>
+            <section className="flex flex-col gap-y-4 justify-center items-start">
+                <section className="flex gap-x-1">
+                    <p>Powierzchnia fizyczna:</p>
+                    <p>{lands.reduce((acc, value) => acc + Number(value.powierzchnia), 0)}ha</p>
+                </section>
+            </section>
         </section>
     )
 }

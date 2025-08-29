@@ -59,7 +59,7 @@ export default function InsertLand({search}) {
     useEffect(() => {
         if(form == "insert") {
             fetchAllData();
-            setLandFormData(prev => ({...prev, water_company:"0", mortgage:"0"}))
+            setLandFormData(prev => ({...prev, water_company:"0", mortgage:"0", property_tax:"0"}))
         }
     }, [form]);
 

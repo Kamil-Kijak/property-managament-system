@@ -22,6 +22,14 @@ router.get("/check_count", [checkDataExisting(["ground_class", "tax_district"])]
     }
 })
 
+router.get("/get_unique_classes", async (req, res) => {
+    try {
+        const [result] = await connection.execute("SELECT DISTINCT klasa FROM klasy_gruntu");
+        res.status(200).json({success:true, data:result});
+    } catch (err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+})
 
 router.get("/get", [checkDataExisting(["tax_district"])], async (req, res) => {
     const {tax_district} = req.query;
