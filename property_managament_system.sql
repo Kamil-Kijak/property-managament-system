@@ -219,7 +219,6 @@ CREATE TABLE `wlasciciele` (
 --
 ALTER TABLE `dzialki`
   ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `numer_seryjny_dzialki` (`numer_seryjny_dzialki`),
   ADD KEY `ID_wlasciciela` (`ID_wlasciciela`),
   ADD KEY `ID_rodzaju` (`ID_rodzaju`),
   ADD KEY `ID_przeznaczenia` (`ID_przeznaczenia`),
