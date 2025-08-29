@@ -322,6 +322,12 @@ export default function Land({obj, requestDelete, files = [], search, editArea})
                     </section>
                     <section className="flex justify-around gap-x-5">
                         <section className="flex flex-col items-center gap-y-3 px-10">
+                            <p className="font-bold">Podlega podatkowi od nieruchomości</p>
+                            <p>{obj.podlega_podatkowi_nieruchomosci == 1 ? "TAK" : "NIE"}</p>
+                        </section>
+                    </section>
+                    <section className="flex justify-around gap-x-5">
+                        <section className="flex flex-col items-center gap-y-3 px-10">
                             <p className="font-bold">Opis</p>
                             <p>{obj.opis || "BRAK"} </p>
                         </section>

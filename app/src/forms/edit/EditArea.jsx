@@ -37,7 +37,7 @@ export default function EditArea({areaID, search, editAreaFormData, editAreaErro
             });
             API.getLandGroundClasses(params).then(result => {
                 if(!result.error) {
-                    setGroundClasses(result.data);
+                    setGroundClasses(result.data.sort((a, b) => a.klasa.localeCompare(b.klasa, "pl", { sensitivity: 'base' })));
                 }
             })
         }

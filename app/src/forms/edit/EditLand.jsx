@@ -39,6 +39,7 @@ export default function EditLand({search}) {
         "case_number":{regexp:/^(\d+\/\d+)?$/, error:"Zły format", optional:true},
         "seller":{regexp:/^(.{0,49})?$/, error:"Za długi", optional:true},
         "price":{regexp:/^(\d{0,6}\.\d{2})?$/, error:"Nie ma 2 cyfr po , lub za duża liczba", optional:true},
+        "property_tax":{regexp:/^.*$/, error:"czy podlega podatkowi od nieruchomości?"}
     })
     
     const [availableLocalizations, localizations, setLocalizations, matchedTowns] = useLocalizations();
@@ -73,6 +74,7 @@ export default function EditLand({search}) {
                 ID_mpzp:actualLandData.data.mpzp || "",
                 ID_general_plan:actualLandData.data.plan_ogolny || "",
                 mortgage:actualLandData.data.hipoteka || "0",
+                property_tax:actualLandData.data.podlega_podatkowi_nieruchomosci || "0",
                 description:actualLandData.data.opis,
                 water_company:actualLandData.data.spolka_wodna || "0",
                 purchase_date:purchase_date,
@@ -117,7 +119,7 @@ export default function EditLand({search}) {
         return false;
     }
     const validateForm = () => {
-        if(Object.keys(landFormData).length == 17) {
+        if(Object.keys(landFormData).length == 18) {
             if(Object.keys(landErrors).every(ele => landErrors[ele] == null)) {
                 if(Object.keys(localizations).every(ele => localizations[ele].length != 0)) {
                     return true;
@@ -136,8 +138,8 @@ export default function EditLand({search}) {
             fields={
                 <>
                     <SimpleInput
-                        title="Numer seryjny działki (ID)"
-                        placeholder="serial numer (ID)..."
+                        title="ID działki"
+                        placeholder="land ID..."
                         value={landFormData.land_serial_number}
                         onChange={(e) => setLandFormData(prev => ({...prev, land_serial_number:e.target.value}))}
                         error={landErrors.land_serial_number}
@@ -286,6 +288,20 @@ export default function EditLand({search}) {
                                 <>
                                     <option value="1">TAK</option>
                                     <option value="0">NIE</option>
+                                </>
+                            }
+                        />
+                    </section>
+                    <section className="flex justify-center w-full gap-x-10 my-5 items-center">
+                        <SelectInput
+                            title="Podlega podatkowi od nieruchomości"
+                            onChange={(e) => setLandFormData(prev => ({...prev, property_tax:e.target.value}))}
+                            value={landFormData.property_tax}
+                            options={
+                                <>
+                                    <option value="1">TAK</option>
+                                    <option value="0">NIE</option>
+                                
                                 </>
                             }
                         />

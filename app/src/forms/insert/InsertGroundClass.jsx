@@ -5,7 +5,7 @@ import SelectInput from "../../components/inputs/SelectInput";
 import { useApi } from "../../hooks/plain/useApi";
 import { useFormStore } from "../../hooks/stores/useFormStore";
 import InsertSection from "../../pages/sections/InsertSection";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 export default function InsertGroundClass({search = () => {}, taxDistrict}) {
@@ -13,6 +13,8 @@ export default function InsertGroundClass({search = () => {}, taxDistrict}) {
     const {updateForm} = useFormStore();
 
     const API = useApi();
+
+    const [groundClassExistError, setGroundClassExistError] = useState(null);
 
     const [insertFormData, insertErrors, setInsertFormData] = useForm({
         "ground_class":{regexp:/^.{0,10}$/, error:"Za długi"},
@@ -25,6 +27,22 @@ export default function InsertGroundClass({search = () => {}, taxDistrict}) {
             setInsertFormData(prev => ({...prev, converter:"1.00"}))
         }
     }, [insertFormData.tax])
+
+    useEffect(() => {
+        const params = new URLSearchParams({
+            ground_class:insertFormData.ground_class,
+            tax_district:taxDistrict
+        })
+        API.getGroundClassCount(params).then((result) => {
+            if(!result.error) {
+                if(result.data.count == 0) {
+                    setGroundClassExistError(null)
+                } else {
+                    setGroundClassExistError("Taka klasa gruntu już istnieje")
+                }
+            }
+        })
+    }, [insertFormData.ground_class])
 
 
     const requestInsertGroundClass = () => {
@@ -39,7 +57,9 @@ export default function InsertGroundClass({search = () => {}, taxDistrict}) {
     const validateForm = () => {
         if(Object.keys(insertFormData).length == 3) {
             if(Object.keys(insertErrors).every(ele => insertErrors[ele] == null)) {
-                return true;
+                if(!groundClassExistError) {
+                    return true;
+                }
             }
         }
         return false;
@@ -57,7 +77,7 @@ export default function InsertGroundClass({search = () => {}, taxDistrict}) {
                         placeholder="class..."
                         value={insertFormData.ground_class}
                         onChange={(e) => setInsertFormData(prev => ({...prev, ground_class:e.target.value}))}
-                        error={insertErrors.ground_class}
+                        error={insertErrors.ground_class || groundClassExistError}
                     />
                     <SelectInput
                         title="Rodzaj podatku klasy"

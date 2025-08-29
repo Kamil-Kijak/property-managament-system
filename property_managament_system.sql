@@ -27,16 +27,17 @@ CREATE TABLE `dzialki` (
   `ID_miejscowosci` int NOT NULL,
   `ID_wlasciciela` int NOT NULL,
   `nr_kw` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `hipoteka` tinyint(1) NOT NULL,
+  `hipoteka` tinyint(1) NOT NULL DEFAULT 0,
   `ID_rodzaju` int DEFAULT NULL,
   `opis` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `ID_przeznaczenia` int DEFAULT NULL,
   `ID_mpzp` int DEFAULT NULL,
   `ID_planu_ogolnego` int DEFAULT NULL,
   `ID_dzierzawy` int DEFAULT NULL,
-  `spolka_wodna` tinyint(1) NOT NULL,
+  `spolka_wodna` tinyint(1) NOT NULL DEFAULT 0,
   `ID_nabycia` int NOT NULL,
-  `data_sprzedazy` date DEFAULT NULL
+  `data_sprzedazy` date DEFAULT NULL,
+  "podlega_podatkowi_nieruchomosci" tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

@@ -1,6 +1,6 @@
 
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import SelectInput from "../../components/inputs/SelectInput";
 import SimpleInput from "../../components/inputs/SimpleInput";
 import { useApi } from "../../hooks/plain/useApi";
@@ -8,7 +8,7 @@ import { useFormStore } from "../../hooks/stores/useFormStore"
 import {useGroundClassesStore} from "../../hooks/stores/useResultStores"
 import UpdateSection from "../../pages/sections/UpdateSection"
 
-export default function EditGroundClass({editFormData, editErrors, setEditFormData, search}) {
+export default function EditGroundClass({editFormData, editErrors, setEditFormData, search, taxDistrict}) {
 
     const {form, updateForm} = useFormStore();
     const editID = useGroundClassesStore((state) => state.editID);

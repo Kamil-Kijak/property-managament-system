@@ -169,6 +169,15 @@ const useApi = () => {
             },
         });
     }
+    const getGroundClassCount = async (params) => {
+        return await requestFromApiLite(`/api/ground_classes/check_count?${params.toString()}`,  {
+            method:"GET",
+            credentials:"include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+    }
     const deleteGroundClass = async (data) => {
         return await requestFromApi("/api/ground_classes/delete", postOptions(data));
     }
@@ -265,7 +274,7 @@ const useApi = () => {
         getLandTypes, deleteLandType, updateLandType, insertLandType, insertManyLandTypes,
         getOwners, deleteOwner, updateOwner, insertOwner,
         getDistricts, updateDistricts, getTowns,
-        getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass,getLandGroundClasses,
+        getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass, getLandGroundClasses,getGroundClassCount,
         getAllRenters, getRenters, deleteRenter, updateRenter, insertRenter,
         deleteRent, updateRent, insertRent,
         getLands, deleteLand, getInsertionRequiredData, insertLand, getLand, updateLand,

@@ -36,6 +36,7 @@ export default function InsertLand({search}) {
         "case_number":{regexp:/^(\d+\/\d+)?$/, error:"Zły format", optional:true},
         "seller":{regexp:/^(.{0,49})?$/, error:"Za długi", optional:true},
         "price":{regexp:/^(\d{0,6}\.\d{2})?$/, error:"Nie ma 2 cyfr po , lub za duża liczba", optional:true},
+        "property_tax":{regexp:/^.*$/, error:"czy podlega podatkowi od nieruchomości?"}
     })
 
     const [availableLocalizations, localizations, setLocalizations, matchedTowns] = useLocalizations();
@@ -58,6 +59,7 @@ export default function InsertLand({search}) {
     useEffect(() => {
         if(form == "insert") {
             fetchAllData();
+            setLandFormData(prev => ({...prev, water_company:"0", mortgage:"0"}))
         }
     }, [form]);
 
@@ -81,7 +83,7 @@ export default function InsertLand({search}) {
     }
 
     const validateForm = () => {
-        if(Object.keys(landFormData).length == 16) {
+        if(Object.keys(landFormData).length == 17) {
             if(Object.keys(landErrors).every(ele => landErrors[ele] == null)) {
                 if(Object.keys(localizations).every(ele => localizations[ele].length != 0)) {
                     return true;
@@ -108,8 +110,8 @@ export default function InsertLand({search}) {
             fields={
                 <>
                     <SimpleInput
-                        title="Numer seryjny działki"
-                        placeholder="serial numer..."
+                        title="ID działki"
+                        placeholder="land ID..."
                         value={landFormData.land_serial_number}
                         onChange={(e) => setLandFormData(prev => ({...prev, land_serial_number:e.target.value}))}
                         error={landErrors.land_serial_number}
@@ -259,6 +261,19 @@ export default function InsertLand({search}) {
                                     <option value="1">TAK</option>
                                     <option value="0">NIE</option>
                                 
+                                </>
+                            }
+                        />
+                    </section>
+                    <section className="flex justify-center w-full gap-x-10 my-5 items-center">
+                        <SelectInput
+                            title="Podlega podatkowi od nieruchomości"
+                            onChange={(e) => setLandFormData(prev => ({...prev, property_tax:e.target.value}))}
+                            value={landFormData.property_tax}
+                            options={
+                                <>
+                                    <option value="1">TAK</option>
+                                    <option value="0">NIE</option>
                                 </>
                             }
                         />

@@ -109,7 +109,8 @@ export default function LandsPage({}) {
                         podatek_lesny:obj.podatek_lesny,
                         w_telefon:obj.w_telefon,
                         d_telefon:obj.d_telefon,
-                        data_sprzedazy:obj.data_sprzedazy
+                        data_sprzedazy:obj.data_sprzedazy,
+                        podlega_podatkowi_nieruchomosci:obj.podlega_podatkowi_nieruchomosci
                     }
                     if(!lands.some((ele) => ele.ID == obj.ID)) {
                         lands.push({...objToPush, powierzchnie:[]});
@@ -123,7 +124,7 @@ export default function LandsPage({}) {
                     obj.powierzchnie = [...obj.powierzchnie].sort((a, b) => a.klasa.localeCompare(b.klasa));
                 })
                 updateLands(lands.sort((a, b) =>
-                     a.wojewodztwo.localeCompare(b.wojewodztwo) || a.powiat.localeCompare(b.powiat) || a.gmina.localeCompare(b.gmina) || a.miejscowosc.localeCompare(b.miejscowosc)));
+                     a.wojewodztwo.localeCompare(b.wojewodztwo, "pl", { sensitivity: 'base' }) || a.powiat.localeCompare(b.powiat, "pl", { sensitivity: 'base' }) || a.gmina.localeCompare(b.gmina, "pl", { sensitivity: 'base' }) || a.miejscowosc.localeCompare(b.miejscowosc, "pl", { sensitivity: 'base' })));
                 setLandFiles(result.files);
                 limitDisplayRef.current.innerHTML = `Limit wyników: ${searchFilters.limit || "NIEOGRANICZONY"}`
             }

@@ -30,7 +30,7 @@ export default function InsertArea({search}) {
         })
         API.getLandGroundClasses(params).then(result => {
             if(!result.error) {
-                setGroundClasses(result.data);
+                setGroundClasses(result.data.sort((a, b) => a.klasa.localeCompare(b.klasa, "pl", { sensitivity: 'base' })));
             }
         });
     }

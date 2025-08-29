@@ -25,7 +25,7 @@ export default function GroundClassesPage({}) {
 
     const API = useApi();
 
-    const [taxDistrict, setTaxDistrict] = useState(1);
+    const [taxDistrict, setTaxDistrict] = useState(2);
     
     const [editFormData, editErrors, setEditFormData] = useForm({
         "ground_class":{regexp:/^.{0,10}$/, error:"Za długi"},
@@ -43,7 +43,7 @@ export default function GroundClassesPage({}) {
         });
         API.getGroundClasses(params).then(result => {
             if(!result.error) {
-                updateGroundClasses(result.data);
+                updateGroundClasses(result.data.sort((a, b) => a.klasa.localeCompare(b.klasa, "pl", { sensitivity: 'base' })));
             }
         });
     }
@@ -86,7 +86,7 @@ export default function GroundClassesPage({}) {
                     <>
                         <h1 className="font-bold text-lg mt-5">Znalezione wyniki: {groundClasses.length}</h1>
                         <section className="flex flex-col gap-y-2 items-center mt-10">
-                            <button className="base-btn text-2xl" onClick={() => updateForm("insert")}><FontAwesomeIcon icon={faPlus}/> Dodaj nową klase gruntu</button>
+                            <button className="base-btn text-2xl" onClick={() => updateForm("insert")}><FontAwesomeIcon icon={faPlus}/> Dodaj nową klasę gruntu</button>
                             <h1 className="text-2xl font-bold">Dla okręgu podatkowego nr {taxDistrict}</h1>
                         </section>
                     </>
@@ -123,7 +123,7 @@ export default function GroundClassesPage({}) {
                                             Usunięcie tej klasy gruntu spowoduje że wszystkie wyznaczone powierzchnie tej klasy zostaną usunięte
                                         </p>
                                         <p className="text-white font-bold text-lg mt-5">
-                                            Czy napewno chcesz usunąć tą klase gruntu?
+                                            Czy napewno chcesz usunąć tą klasę gruntu?
                                         </p>
                                     </>
                                 )

@@ -12,6 +12,17 @@ const router = express.Router();
 router.use(authorization());
 
 
+router.get("/check_count", [checkDataExisting(["ground_class", "tax_district"])], async (req, res) => {
+    const {ground_class, tax_district} = req.query;
+    try {
+        const [result] = await connection.execute("SELECT COUNT(ID) as count FROM klasy_gruntu WHERE klasa = ? AND okreg_podatkowy = ?", [ground_class, tax_district]);
+        res.status(200).json({success:true, data:result[0]});
+    } catch (err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err})
+    }
+})
+
+
 router.get("/get", [checkDataExisting(["tax_district"])], async (req, res) => {
     const {tax_district} = req.query;
     try {
