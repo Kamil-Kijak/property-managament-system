@@ -140,7 +140,11 @@ router.post("/insert", [checkDataExisting(["land_serial_number", "land_number", 
                 IDLocalization = result[0].ID;
             } else {
                 const [taxDistrictResult] = await connection.execute("SELECT okreg_podatkowy as okreg FROM lokalizacje WHERE powiat = ? AND wojewodztwo = ? LIMIT 1", [district, province]);
-                const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?, NULL, NULL, ?)", [province, district, commune, taxDistrictResult[0].okreg]);
+                let taxDistrict = null;
+                if(taxDistrictResult.length != 0) {
+                    taxDistrict = taxDistrictResult[0].okreg;
+                }
+                const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?, NULL, NULL, ?)", [province, district, commune, taxDistrict]);
                 IDLocalization = result.insertId;
             }
             const [result2] = await connection.execute("INSERT INTO miejscowosci() VALUES(NULL, ?, ?)", [IDLocalization, town]);
@@ -178,7 +182,11 @@ router.post("/update", [checkDataExisting(["ID_land", "land_serial_number", "lan
                 IDLocalization = result[0].ID;
             } else {
                 const [taxDistrictResult] = await connection.execute("SELECT okreg_podatkowy as okreg FROM lokalizacje WHERE powiat = ? AND wojewodztwo = ? LIMIT 1", [district, province]);
-                const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?, NULL, NULL, ?)", [province, district, commune, taxDistrictResult[0].okreg]);
+                let taxDistrict = null;
+                if(taxDistrictResult.length != 0) {
+                    taxDistrict = taxDistrictResult[0].okreg;
+                }
+                const [result] = await connection.execute("INSERT INTO lokalizacje() VALUES(NULL, ?, ?, ?, NULL, NULL, ?)", [province, district, commune, taxDistrict]);
                 IDLocalization = result.insertId;
             }
             const [result2] = await connection.execute("INSERT INTO miejscowosci() VALUES(NULL, ?, ?)", [IDLocalization, town]);
