@@ -16,6 +16,7 @@ To start this project type:
 ```
 npm run dev
 ```
+in backend section and same in frontend section in /app  
 Project will start using vite.js and can be avaiable in *localhost:5173*
 ## Project Config
 .env file structure
