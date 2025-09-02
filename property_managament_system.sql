@@ -37,7 +37,7 @@ CREATE TABLE `dzialki` (
   `spolka_wodna` tinyint(1) NOT NULL DEFAULT 0,
   `ID_nabycia` int NOT NULL,
   `data_sprzedazy` date DEFAULT NULL,
-  "podlega_podatkowi_nieruchomosci" tinyint(1) DEFAULT 0
+  `podlega_podatkowi_nieruchomosci` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
