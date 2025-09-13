@@ -51,7 +51,7 @@ router.get("/get_land_classes", [checkDataExisting(["ID_land"])], async (req, re
     }
 })
 
-router.use(roleAuthorization(["KSIEGOWOSC"]));
+router.use(roleAuthorization(["KSIEGOWOSC", "SEKRETARIAT"]));
 
 router.post("/update", [checkDataExisting(["ID_ground_class", "ground_class", "converter", "tax"])], async (req, res) => {
     const {ID_ground_class, ground_class, converter, tax} = req.body;

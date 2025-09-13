@@ -10,6 +10,8 @@ import { useFormStore } from "../../hooks/stores/useFormStore";
 import { useLandsStore } from "../../hooks/stores/useResultStores";
 import UpdateSection from "../../pages/sections/UpdateSection";
 import InsertSection from "../../pages/sections/InsertSection";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 
 export default function EditLand({search}) {
 
@@ -137,6 +139,9 @@ export default function EditLand({search}) {
             onSubmit={requestEditLand}
             fields={
                 <>
+                    <section className="m-4">
+                        <button className="base-btn text-md" onClick={fetchAllData}><FontAwesomeIcon icon={faDownload}/> Cofnij zmiany</button>
+                    </section>
                     <SimpleInput
                         title="ID działki"
                         placeholder="land ID..."

@@ -161,7 +161,7 @@ export default function LandsPage({}) {
                         onChange={(e) => setSearchFilters(prev => ({...prev, limit:e.target.value}))}
                     />
                     <SearchInput
-                        title="Numer seryjny"
+                        title="ID działki"
                         placeholder="land ID..."
                         value={searchFilters.serial_filter}
                         onChange={(e) => setSearchFilters(prev => ({...prev, serial_filter:e.target.value}))}
@@ -302,13 +302,13 @@ export default function LandsPage({}) {
                     />
                     <SearchInput
                         type="date"
-                        title="Powyżej daty sprzedaży"
+                        title="Sprzedane do dnia"
                         value={searchFilters.low_sell_date_filter}
                         onChange={(e) => setSearchFilters(prev => ({...prev, low_sell_date_filter:e.target.value}))}
                     />
                     <SearchInput
                         type="date"
-                        title="Poniżej daty sprzedaży"
+                        title="Sprzedane po dniu"
                         value={searchFilters.high_sell_date_filter}
                         onChange={(e) => setSearchFilters(prev => ({...prev, high_sell_date_filter:e.target.value}))}
                     />

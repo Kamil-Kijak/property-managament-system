@@ -10,7 +10,7 @@ const roleAuthorization = require("../middlewares/roleAuthorization")
 const router = express.Router();
 
 router.use(authorization());
-router.use(roleAuthorization(["KSIEGOWOSC"]));
+router.use(roleAuthorization(["KSIEGOWOSC", "SEKRETARIAT"]));
 
 router.post("/insert", [checkDataExisting(["ID_land", "ID_ground_class", "area", "released_area"])], async (req, res) => {
     const {ID_land, ID_ground_class, area, released_area} = req.body;

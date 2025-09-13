@@ -54,7 +54,7 @@ export default function DistrictsPage({}) {
     }, []);
 
     return (
-        <BasePage requiredRoles={[]}>
+        <BasePage requiredRoles={["KSIEGOWOSC", "SEKRETARIAT"]}>
             <SearchBar
                 onSearch={search}
                 elements={

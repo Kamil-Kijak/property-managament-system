@@ -169,7 +169,7 @@ export default function Land({obj, requestDelete, files = [], search, editArea})
                                     }zł</p>
                                 </section>
                                 {
-                                    user.rola == "KSIEGOWOSC" && 
+                                    (user.rola == "KSIEGOWOSC" || user.rola == "SEKRETARIAT") && 
                                     <section className="flex flex-col items-center justify-center">
                                         <button className="warning-btn" onClick={() => {
                                             warningUpdate(true, "Uwaga", () => requestDeleteArea(ele.p_ID), () => warningUpdate(false), <>
@@ -220,7 +220,7 @@ export default function Land({obj, requestDelete, files = [], search, editArea})
                         </section>
                     </section>
                     {
-                        user.rola == "KSIEGOWOSC" &&
+                        (user.rola == "KSIEGOWOSC" || user.rola == "SEKRETARIAT") &&
                         <section className="flex flex-col justify-center items-center">
                             <button className="base-btn text-xl" onClick={() => {
                                 updateForm("insert_area")

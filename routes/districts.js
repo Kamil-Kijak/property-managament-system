@@ -25,7 +25,7 @@ router.get("/get_towns", [checkDataExisting(["town"])], async (req, res) => {
     }
 })
 
-router.use(roleAuthorization(["KSIEGOWOSC"]))
+router.use(roleAuthorization(["KSIEGOWOSC", "SEKRETARIAT"]))
 
 router.get("/get", [checkDataExisting(["tax_district", "agricultural_tax", "forest_tax", "commune", "district", "province", "limit"])], async (req, res) => {
     const {tax_district, agricultural_tax, forest_tax, commune, district, province, limit} = req.query

@@ -72,7 +72,7 @@ export default function NavBar({requiredRoles = []}) {
                     </>
                 }
                 {
-                    user.rola === "KSIEGOWOSC" &&
+                    (user.rola === "KSIEGOWOSC" || user.rola === "SEKRETARIAT") &&
                     <>
                         <NavButton
                             path="/groundclasses"
