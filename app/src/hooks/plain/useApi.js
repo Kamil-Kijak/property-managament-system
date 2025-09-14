@@ -236,6 +236,9 @@ const useApi = () => {
     const getLand = async (ID) => {
         return await requestFromApi(`/api/lands/get_land?ID_land=${ID}`, {credentials:"include"});
     }
+    const getLandSerialNumberExist = async (landSerialNumber) => {
+        return await requestFromApiLite(`/api/lands/serial_exist?land_serial_number=${landSerialNumber}`, {credentials:"include"});
+    }
     const deleteLand = async (data) => {
         return await requestFromApi("/api/lands/delete", postOptions(data));
     }
@@ -280,7 +283,7 @@ const useApi = () => {
         getGroundClasses, deleteGroundClass, updateGroundClass, insertGroundClass, getLandGroundClasses,getGroundClassCount,getUniqueClasses,
         getAllRenters, getRenters, deleteRenter, updateRenter, insertRenter,
         deleteRent, updateRent, insertRent,
-        getLands, deleteLand, getInsertionRequiredData, insertLand, getLand, updateLand,
+        getLands, deleteLand, getInsertionRequiredData, insertLand, getLand, updateLand, getLandSerialNumberExist,
         updateArea, deleteArea, insertArea,
         fileUpload, deleteFile
     }

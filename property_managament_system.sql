@@ -13,12 +13,6 @@ SET time_zone = "+00:00";
 -- Database: `property_managament_system`
 --
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `dzialki`
---
-
 CREATE TABLE `dzialki` (
   `ID` int NOT NULL,
   `numer_seryjny_dzialki` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -40,12 +34,6 @@ CREATE TABLE `dzialki` (
   `podlega_podatkowi_nieruchomosci` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `dzierzawcy`
---
-
 CREATE TABLE `dzierzawcy` (
   `ID` int NOT NULL,
   `imie` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -53,11 +41,6 @@ CREATE TABLE `dzierzawcy` (
   `telefon` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `dzierzawy`
---
 
 CREATE TABLE `dzierzawy` (
   `ID` int NOT NULL,
@@ -68,11 +51,6 @@ CREATE TABLE `dzierzawy` (
   `data_wystawienia_fv_czynszowej` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `klasy_gruntu`
---
 
 CREATE TABLE `klasy_gruntu` (
   `ID` int NOT NULL,
@@ -82,11 +60,6 @@ CREATE TABLE `klasy_gruntu` (
   `podatek` enum('rolny','leśny','zwolniony') COLLATE utf8mb4_general_ci DEFAULT 'rolny'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `lokalizacje`
---
 
 CREATE TABLE `lokalizacje` (
   `ID` int NOT NULL,
@@ -98,11 +71,6 @@ CREATE TABLE `lokalizacje` (
   `okreg_podatkowy` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `miejscowosci`
---
 
 CREATE TABLE `miejscowosci` (
   `ID` int NOT NULL,
@@ -110,11 +78,6 @@ CREATE TABLE `miejscowosci` (
   `nazwa` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `mpzp`
---
 
 CREATE TABLE `mpzp` (
   `ID` int NOT NULL,
@@ -122,25 +85,15 @@ CREATE TABLE `mpzp` (
   `opis` varchar(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `nabycia`
---
 
 CREATE TABLE `nabycia` (
   `ID` int NOT NULL,
   `data_nabycia` date,
   `nr_aktu` varchar(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `sprzedawca` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `cena_zakupu` decimal(8,2)
+  `cena_zakupu` int
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `plany_ogolne`
---
 
 CREATE TABLE `plany_ogolne` (
   `ID` int NOT NULL,
@@ -148,11 +101,6 @@ CREATE TABLE `plany_ogolne` (
   `opis` varchar(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `powierzchnie_dzialek`
---
 
 CREATE TABLE `powierzchnie_dzialek` (
   `ID` int NOT NULL,
@@ -162,33 +110,18 @@ CREATE TABLE `powierzchnie_dzialek` (
   `zwolniona_powierzchnia` decimal(8,4) NOT NULL DEFAULT '0.0000'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `przeznaczenia_dzialek`
---
 
 CREATE TABLE `przeznaczenia_dzialek` (
   `ID` int NOT NULL,
   `typ` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `rodzaje_dzialek`
---
 
 CREATE TABLE `rodzaje_dzialek` (
   `ID` int NOT NULL,
   `nazwa` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `uzytkownicy`
---
 
 CREATE TABLE `uzytkownicy` (
   `ID` int NOT NULL,
@@ -198,11 +131,6 @@ CREATE TABLE `uzytkownicy` (
   `rola` enum('ADMIN','SEKRETARIAT','KSIEGOWOSC','TEREN') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `wlasciciele`
---
 
 CREATE TABLE `wlasciciele` (
   `ID` int NOT NULL,
@@ -210,13 +138,7 @@ CREATE TABLE `wlasciciele` (
   `telefon` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Indeksy dla zrzutów tabel
---
 
---
--- Indeksy dla tabeli `dzialki`
---
 ALTER TABLE `dzialki`
   ADD PRIMARY KEY (`ID`),
   ADD KEY `ID_wlasciciela` (`ID_wlasciciela`),
@@ -228,183 +150,93 @@ ALTER TABLE `dzialki`
   ADD KEY `ID_nabycia` (`ID_nabycia`),
   ADD KEY `ID_dzierzawy` (`ID_dzierzawy`);
 
---
--- Indeksy dla tabeli `dzierzawcy`
---
+
 ALTER TABLE `dzierzawcy`
   ADD PRIMARY KEY (`ID`);
 
---
--- Indeksy dla tabeli `dzierzawy`
---
+
 ALTER TABLE `dzierzawy`
   ADD PRIMARY KEY (`ID`),
   ADD KEY `ID_dzierzawcy` (`ID_dzierzawcy`);
 
---
--- Indeksy dla tabeli `klasy_gruntu`
---
 ALTER TABLE `klasy_gruntu`
   ADD PRIMARY KEY (`ID`);
 
---
--- Indeksy dla tabeli `lokalizacje`
---
 ALTER TABLE `lokalizacje`
   ADD PRIMARY KEY (`ID`);
 
---
--- Indeksy dla tabeli `miejscowosci`
---
 ALTER TABLE `miejscowosci`
   ADD PRIMARY KEY (`ID`),
   ADD KEY `ID_lokalizacji` (`ID_lokalizacji`);
 
---
--- Indeksy dla tabeli `mpzp`
---
 ALTER TABLE `mpzp`
   ADD PRIMARY KEY (`ID`);
 
---
--- Indeksy dla tabeli `nabycia`
---
 ALTER TABLE `nabycia`
   ADD PRIMARY KEY (`ID`);
 
---
--- Indeksy dla tabeli `plany_ogolne`
---
 ALTER TABLE `plany_ogolne`
   ADD PRIMARY KEY (`ID`);
 
---
--- Indeksy dla tabeli `powierzchnie_dzialek`
---
 ALTER TABLE `powierzchnie_dzialek`
   ADD PRIMARY KEY (`ID`),
   ADD KEY `ID_dzialki` (`ID_dzialki`),
   ADD KEY `ID_klasy` (`ID_klasy`);
 
---
--- Indeksy dla tabeli `przeznaczenia_dzialek`
---
 ALTER TABLE `przeznaczenia_dzialek`
   ADD PRIMARY KEY (`ID`);
 
---
--- Indeksy dla tabeli `rodzaje_dzialek`
---
 ALTER TABLE `rodzaje_dzialek`
   ADD PRIMARY KEY (`ID`);
 
---
--- Indeksy dla tabeli `uzytkownicy`
---
 ALTER TABLE `uzytkownicy`
   ADD PRIMARY KEY (`ID`);
 
---
--- Indeksy dla tabeli `wlasciciele`
---
 ALTER TABLE `wlasciciele`
   ADD PRIMARY KEY (`ID`);
 
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `dzialki`
---
 ALTER TABLE `dzialki`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `dzierzawcy`
---
 ALTER TABLE `dzierzawcy`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `dzierzawy`
---
 ALTER TABLE `dzierzawy`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `klasy_gruntu`
---
 ALTER TABLE `klasy_gruntu`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `lokalizacje`
---
 ALTER TABLE `lokalizacje`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `miejscowosci`
---
 ALTER TABLE `miejscowosci`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `mpzp`
---
 ALTER TABLE `mpzp`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `nabycia`
---
 ALTER TABLE `nabycia`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `plany_ogolne`
---
 ALTER TABLE `plany_ogolne`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `powierzchnie_dzialek`
---
 ALTER TABLE `powierzchnie_dzialek`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `przeznaczenia_dzialek`
---
 ALTER TABLE `przeznaczenia_dzialek`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `rodzaje_dzialek`
---
 ALTER TABLE `rodzaje_dzialek`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
---
--- AUTO_INCREMENT for table `uzytkownicy`
---
 ALTER TABLE `uzytkownicy`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
---
--- AUTO_INCREMENT for table `wlasciciele`
---
 ALTER TABLE `wlasciciele`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `dzialki`
---
 ALTER TABLE `dzialki`
   ADD CONSTRAINT `dzialki_ibfk_1` FOREIGN KEY (`ID_wlasciciela`) REFERENCES `wlasciciele` (`ID`) ON DELETE CASCADE,
   ADD CONSTRAINT `dzialki_ibfk_2` FOREIGN KEY (`ID_rodzaju`) REFERENCES `rodzaje_dzialek` (`ID`) ON DELETE SET NULL,
@@ -415,21 +247,12 @@ ALTER TABLE `dzialki`
   ADD CONSTRAINT `dzialki_ibfk_8` FOREIGN KEY (`ID_nabycia`) REFERENCES `nabycia` (`ID`) ON DELETE CASCADE,
   ADD CONSTRAINT `dzialki_ibfk_9` FOREIGN KEY (`ID_dzierzawy`) REFERENCES `dzierzawy` (`ID`) ON DELETE SET NULL;
 
---
--- Constraints for table `dzierzawy`
---
 ALTER TABLE `dzierzawy`
   ADD CONSTRAINT `dzierzawy_ibfk_1` FOREIGN KEY (`ID_dzierzawcy`) REFERENCES `dzierzawcy` (`ID`) ON DELETE CASCADE;
 
---
--- Constraints for table `miejscowosci`
---
 ALTER TABLE `miejscowosci`
   ADD CONSTRAINT `miejscowosci_ibfk_1` FOREIGN KEY (`ID_lokalizacji`) REFERENCES `lokalizacje` (`ID`) ON DELETE CASCADE;
 
---
--- Constraints for table `powierzchnie_dzialek`
---
 ALTER TABLE `powierzchnie_dzialek`
   ADD CONSTRAINT `powierzchnie_dzialek_ibfk_1` FOREIGN KEY (`ID_dzialki`) REFERENCES `dzialki` (`ID`) ON DELETE CASCADE,
   ADD CONSTRAINT `powierzchnie_dzialek_ibfk_2` FOREIGN KEY (`ID_klasy`) REFERENCES `klasy_gruntu` (`ID`) ON DELETE CASCADE;

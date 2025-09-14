@@ -40,7 +40,7 @@ export default function EditLand({search}) {
         "sell_date":{regexp:/^(\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))?$/, error:"Zły format", optional:true},
         "case_number":{regexp:/^(\d+\/\d+)?$/, error:"Zły format", optional:true},
         "seller":{regexp:/^(.{0,49})?$/, error:"Za długi", optional:true},
-        "price":{regexp:/^(\d{0,6}\.\d{2})?$/, error:"Nie ma 2 cyfr po , lub za duża liczba", optional:true},
+        "price":{regexp:/^(\d{0,8})?$/, error:"Za duża liczba", optional:true},
         "property_tax":{regexp:/^.*$/, error:"czy podlega podatkowi od nieruchomości?"}
     })
     
@@ -53,6 +53,10 @@ export default function EditLand({search}) {
         general_plans:[],
         mpzp:[]
     })
+
+    const [landSerialExistError, setLandSerialExistError] = useState(null);
+    const [defaultID, setDefaultID] = useState(null);
+
     const fetchAllData = async () => {
         const landSelectData = await API.getInsertionRequiredData();
         if(!landSelectData.error) {
@@ -65,6 +69,7 @@ export default function EditLand({search}) {
             objectsToDelete.forEach(obj => delete actualLandData[obj]);
             const purchase_date = actualLandData.data.data_nabycia ? new Date(actualLandData.data.data_nabycia).toLocaleDateString("sv-SE") : ""
             const sell_date = actualLandData.data.data_sprzedazy ? new Date(actualLandData.data.data_sprzedazy).toLocaleDateString("sv-SE") : ""
+            setDefaultID(actualLandData.data.numer_seryjny_dzialki);
             setLandFormData({
                 land_serial_number:actualLandData.data.numer_seryjny_dzialki,
                 land_number:actualLandData.data.nr_dzialki,
@@ -89,9 +94,25 @@ export default function EditLand({search}) {
     }
         
     useEffect(() => {
-        if(form == "edit")
+        if(form == "edit") {
             fetchAllData();
+            setLandSerialExistError(null);
+        }
     }, [form]);
+
+    useEffect(() => {
+        if(defaultID != landFormData.land_serial_number) {
+            API.getLandSerialNumberExist(landFormData.land_serial_number).then(result => {
+                if(!result.error) {
+                    if(result.data.exist == 1) {
+                        setLandSerialExistError("Działka o takim ID istnieje");
+                    } else {
+                        setLandSerialExistError(null);
+                    }
+                }
+            })
+        }
+    }, [landFormData.land_serial_number])
 
     const requestInsertOwner = () => {
         API.insertOwner({...ownerFormData}).then(result => {
@@ -124,7 +145,9 @@ export default function EditLand({search}) {
         if(Object.keys(landFormData).length == 18) {
             if(Object.keys(landErrors).every(ele => landErrors[ele] == null)) {
                 if(Object.keys(localizations).every(ele => localizations[ele].length != 0)) {
-                    return true;
+                    if(!landSerialExistError) {
+                        return true;
+                    }
                 }
             }  
         }
@@ -147,7 +170,7 @@ export default function EditLand({search}) {
                         placeholder="land ID..."
                         value={landFormData.land_serial_number}
                         onChange={(e) => setLandFormData(prev => ({...prev, land_serial_number:e.target.value}))}
-                        error={landErrors.land_serial_number}
+                        error={landErrors.land_serial_number || landSerialExistError}
                     />
                     <section className="flex justify-center w-full gap-x-5">
                         <SimpleInput

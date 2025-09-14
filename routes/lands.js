@@ -11,6 +11,16 @@ const router = express.Router();
 
 router.use(authorization());
 
+router.get("/serial_exist", [checkDataExisting(["land_serial_number"])], async (req, res) => {
+    const {land_serial_number} = req.query;
+    try {
+        const [result] = await connection.execute("SELECT COUNT(ID) as exist from dzialki WHERE numer_seryjny_dzialki = ?", [land_serial_number]);
+        res.status(200).json({success:true, message:"pobrano pomyślnie", data:result[0]})
+    } catch (err) {
+        return res.status(500).json({error:"bład bazy danych", errorInfo:err});
+    }
+})
+
 router.get("/get_land", [checkDataExisting(["ID_land"])], async (req, res) => {
     const {ID_land} = req.query;
     try {
