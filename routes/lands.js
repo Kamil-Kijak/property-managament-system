@@ -60,8 +60,8 @@ router.get("/get_insertion_required_data", async (req, res) => {
     }
 })
 
-router.get("/get", [checkDataExisting(["serial_filter", "low_sell_date_filter", "land_number_filter", "owner_filter" , "purpose_filter", "rent_filter", "commune_filter", "district_filter", "province_filter", "town_filter", "low_area_filter", "high_area_filter", "ground_class_filter", "limit"])], async (req, res) => {
-    const {serial_filter, low_sell_date_filter, high_sell_date_filter, owner_filter, purpose_filter, rent_filter, low_area_filter, high_area_filter, commune_filter, district_filter, province_filter, town_filter, land_number_filter, ground_class_filter, limit} = req.query;
+router.get("/get", [checkDataExisting(["serial_filter", "purchase_year_filter", "low_sell_date_filter", "land_number_filter", "owner_filter" , "purpose_filter", "rent_filter", "commune_filter", "district_filter", "province_filter", "town_filter", "low_area_filter", "high_area_filter", "ground_class_filter", "limit"])], async (req, res) => {
+    const {serial_filter, purchase_year_filter, low_sell_date_filter, high_sell_date_filter, owner_filter, purpose_filter, rent_filter, low_area_filter, high_area_filter, commune_filter, district_filter, province_filter, town_filter, land_number_filter, ground_class_filter, limit} = req.query;
     let SQL = "SELECT d.ID, d.numer_seryjny_dzialki, d.nr_dzialki, d.data_sprzedazy, d.podlega_podatkowi_nieruchomosci, d.powierzchnia, d.nr_kw, d.hipoteka, d.opis, d.spolka_wodna, m.nazwa as miejscowosc, l.wojewodztwo, l.powiat, l.gmina, l.podatek_rolny, l.podatek_lesny, w.dane_osobowe as w_dane_osobowe, w.telefon as 'w_telefon', rd.nazwa as 'rodzaj', pd.typ as 'przeznaczenie', mp.kod as 'mpzp', po.kod as 'plan_ogolny', n.data_nabycia, n.nr_aktu, n.sprzedawca, n.cena_zakupu, di.ID as 'ID_dzierzawy', dz.imie as 'd_imie', dz.nazwisko as 'd_nazwisko', dz.telefon as 'd_telefon', pod.powierzchnia as 'p_powierzchnia', pod.zwolniona_powierzchnia, pod.ID as 'p_ID', k.ID as 'k_ID', k.klasa, k.przelicznik, k.podatek FROM dzialki d LEFT JOIN dzierzawy di on di.ID=d.ID_dzierzawy LEFT JOIN dzierzawcy dz on dz.ID=di.ID_dzierzawcy INNER JOIN miejscowosci m on m.ID=d.ID_miejscowosci INNER JOIN lokalizacje l on l.ID=m.ID_lokalizacji INNER JOIN wlasciciele w ON w.ID=d.ID_wlasciciela LEFT JOIN rodzaje_dzialek rd on rd.ID=d.ID_rodzaju LEFT JOIN przeznaczenia_dzialek pd on pd.ID=d.ID_przeznaczenia LEFT JOIN mpzp mp on mp.ID=d.ID_mpzp LEFT JOIN plany_ogolne po on po.ID=d.ID_planu_ogolnego INNER JOIN nabycia n on n.ID=d.ID_nabycia LEFT JOIN powierzchnie_dzialek pod on pod.ID_dzialki=d.ID LEFT JOIN klasy_gruntu k on pod.ID_klasy=k.ID WHERE d.numer_seryjny_dzialki LIKE ? AND (pd.typ LIKE ? OR pd.typ IS NULL) AND l.gmina LIKE ? AND l.powiat LIKE ? AND l.wojewodztwo LIKE ? AND m.nazwa LIKE ? AND d.nr_dzialki LIKE ? AND w.dane_osobowe LIKE ?"
     const paramns = [`${serial_filter}%`, `${purpose_filter}%`, `${commune_filter}%`, `${district_filter}%`, `${province_filter}%`, `${town_filter}%`, `${land_number_filter}%`, `%${owner_filter}%`];
     if(low_sell_date_filter && high_sell_date_filter) {
@@ -75,6 +75,10 @@ router.get("/get", [checkDataExisting(["serial_filter", "low_sell_date_filter", 
         SQL+= " AND d.data_sprzedazy <= ?"
     } else {
         SQL+= " AND d.data_sprzedazy IS NULL"
+    }
+    if(purchase_year_filter) {
+        SQL+= " AND YEAR(n.data_nabycia) = ?";
+        paramns.push(purchase_year_filter);
     }
     if(low_area_filter && high_area_filter) {
         paramns.push(low_area_filter, high_area_filter);

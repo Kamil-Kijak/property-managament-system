@@ -47,6 +47,7 @@ export default function LandsPage({}) {
         high_area_filter:"",
         low_sell_date_filter:"",
         high_sell_date_filter:"",
+        purchase_year_filter:"",
         limit:"200"
     });
     const [editAreaFormData, editAreaErrors, setEditAreaFormData] = useForm({
@@ -299,6 +300,14 @@ export default function LandsPage({}) {
                         placeholder="ha..."
                         value={searchFilters.high_area_filter}
                         onChange={(e) => setSearchFilters(prev => ({...prev, high_area_filter:e.target.value}))}
+                    />
+                    <SearchInput
+                        type="number"
+                        min={2000}
+                        placeholder="year..."
+                        title="Nabyte w roku"
+                        value={searchFilters.purchase_year_filter}
+                        onChange={(e) => setSearchFilters(prev => ({...prev, purchase_year_filter:e.target.value}))}
                     />
                     <SearchInput
                         type="date"
